@@ -1,4 +1,4 @@
-package com.withinet.opaas.domain.access;
+package com.withinet.opaas.model;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface UserRepository extends  JpaRepository<User, Long> {
 
 	public Page<User> findAll (Pageable pageable);
 	
-	public List<User>  findByEmail (String email);
+	public User  findByEmail (String email);
 }

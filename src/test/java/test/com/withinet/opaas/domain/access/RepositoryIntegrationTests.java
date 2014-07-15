@@ -2,6 +2,7 @@ package test.com.withinet.opaas.domain.access;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,14 +24,14 @@ import com.withinet.opaas.domain.RolePermission;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.domain.UserPermission;
 import com.withinet.opaas.domain.UserRole;
-import com.withinet.opaas.domain.access.BundleRepository;
-import com.withinet.opaas.domain.access.InstanceRepository;
-import com.withinet.opaas.domain.access.OrganisationRepository;
-import com.withinet.opaas.domain.access.ProjectRepository;
-import com.withinet.opaas.domain.access.RolePermissionRepository;
-import com.withinet.opaas.domain.access.UserPermissionRepository;
-import com.withinet.opaas.domain.access.UserRepository;
-import com.withinet.opaas.domain.access.UserRoleRepository;
+import com.withinet.opaas.model.BundleRepository;
+import com.withinet.opaas.model.InstanceRepository;
+import com.withinet.opaas.model.OrganisationRepository;
+import com.withinet.opaas.model.ProjectRepository;
+import com.withinet.opaas.model.RolePermissionRepository;
+import com.withinet.opaas.model.UserPermissionRepository;
+import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.UserRoleRepository;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -89,6 +90,7 @@ public class RepositoryIntegrationTests {
 	public void setUp() throws Exception {
 		o.setLocation("Nigeria");
 		o.setName("University of Lagos");
+		o.setAddedBy("foo@xyz.com");
 		o.setCreated(new Date ());
 		this.oRepository.save(o);
 		
@@ -99,6 +101,7 @@ public class RepositoryIntegrationTests {
 		user.setPlatformName("CS5041");
 		user.setStatus("registered");
 		user.setOrganisation(o);
+		user.setApiKey(UUID.randomUUID().toString());
 		this.repository.save(user);
 		
 		r.setName("Project Manager");
@@ -118,7 +121,9 @@ public class RepositoryIntegrationTests {
 		
 		pr.setName("Hello");
 		pr.setOwner(user);
-		pr.setWiki("http://hello.com");
+		pr.setDetails("Some information");
+		pr.setCreated(new Date ());
+		pr.setUpdated(new Date ());
 		pRepository.save(pr);
 		
 		i.setHost("127.0.0.1");
@@ -149,8 +154,8 @@ public class RepositoryIntegrationTests {
 	
 	@Test
 	public void findByEmail () {
-		List<User> users = this.repository.findByEmail("foo@xyz.com");
-		assertThat(users.size(), is(org.hamcrest.Matchers.equalTo(1)));
+		User user = this.repository.findByEmail("foo@xyz.com");
+		assertThat(user, org.hamcrest.Matchers.notNullValue ());
 	}
 	
 	@Test

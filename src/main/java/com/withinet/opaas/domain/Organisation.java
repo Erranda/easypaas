@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.validator.constraints.Email;
 
 @Entity
 public class Organisation implements Serializable {
@@ -32,6 +33,11 @@ public class Organisation implements Serializable {
 	@Column (name="ORGANISATION_NAME", unique = false, nullable = false, length = 255)
 	@NotNull
 	private String name;
+	
+	@Column (name="ADDED_BY", unique = false, nullable = false, length = 255)
+	@NotNull
+	@Email
+	private String addedBy;
 	
 	@Column (name="ORGANISATION_LOCATION", nullable = false, length = 255)
 	@NotNull
@@ -80,6 +86,14 @@ public class Organisation implements Serializable {
 
 	public Set<User> getMembers() {
 		return members;
+	}
+
+	public String getAddedBy() {
+		return addedBy;
+	}
+
+	public void setAddedBy(String addedBy) {
+		this.addedBy = addedBy;
 	}
 	
 }

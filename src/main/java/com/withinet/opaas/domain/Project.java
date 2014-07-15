@@ -1,6 +1,7 @@
 package com.withinet.opaas.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.validator.constraints.URL;
 
 
 @Entity
@@ -30,7 +30,8 @@ public class Project implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 7879965828859090320L;
-
+	
+	
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
 	@Column(name="ID", nullable=false)	
@@ -41,10 +42,24 @@ public class Project implements Serializable {
 	@Size (min = 2, max = 30)
 	private String name;
 	
-	@Column(name="PROJECT_WIKI", nullable=true, length=255)	
+	@Column(name="PROJECT_MOUNT_POINT", nullable=false, length=255)	
 	@NotNull
-	@URL
-	private String wiki;
+	private String mountPoint = "/";
+	
+	@Column(name="PROJECT_DETAILS", nullable=false, length=255)	
+	@NotNull
+	private String details;
+	
+	@Column(name="PROJECT_CREATED", nullable=false, length=255)	
+	@NotNull
+	private Date created;
+	
+	@Column(name="PROJECT_UPDATED", nullable=true, length=255)
+	@NotNull
+	private Date updated;
+	
+	
+	
 	
 	@ManyToOne (targetEntity=User.class)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
@@ -93,20 +108,48 @@ public class Project implements Serializable {
 		this.name = name;
 	}
 
-	public String getWiki() {
-		return wiki;
-	}
-
-	public void setWiki(String wiki) {
-		this.wiki = wiki;
-	}
-
 	public Set<Bundle> getBundles() {
 		return bundles;
 	}
 
 	public Set<Instance> getInstances() {
 		return instances;
+	}
+
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
+	}
+
+	public Date getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(Date updated) {
+		this.updated = updated;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public String getMountPoint() {
+		return mountPoint;
+	}
+
+	public void setMountPoint(String mountPoint) {
+		this.mountPoint = mountPoint;
+	}
+	
+	public void setID (Long Id){ 
+		this.ID = Id;
 	}
 
 }

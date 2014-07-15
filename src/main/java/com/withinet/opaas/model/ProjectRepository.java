@@ -1,4 +1,4 @@
-package com.withinet.opaas.domain.access;
+package com.withinet.opaas.model;
 
 import java.util.List;
 

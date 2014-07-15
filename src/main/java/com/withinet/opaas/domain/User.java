@@ -32,8 +32,6 @@ public class User implements Serializable {
 	 */
 	private static final long serialVersionUID = -7169405079262126560L;
 
-
-
 	public User () {
 		
 	}
@@ -55,7 +53,7 @@ public class User implements Serializable {
 	
 	@NotNull
 	@Size (min = 2, max = 20)
-	@Column(name="USER_PLATFORM_NAME", nullable=false, length=255, unique = true)	
+	@Column(name="USER_PLATFORM_NAME", nullable=false, length=255)	
 	private String platformName;
 	
 	@NotNull
@@ -70,6 +68,10 @@ public class User implements Serializable {
 	@Column(name="USER_STATUS", nullable=false)
 	@NotNull
 	private String status;
+	
+	@Column(name="USER_API_KEY", nullable=false)
+	@NotNull
+	private String apiKey;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.LAZY)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
@@ -246,12 +248,12 @@ public class User implements Serializable {
 	}
 
 
-/*	public UserRole getAssignedRole() {
-		return assignedRole;
+	public String getApiKey() {
+		return apiKey;
 	}
 
 
-	public void setAssignedRole(UserRole assignedRole) {
-		this.assignedRole = assignedRole;
-	}*/
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+	}
 }

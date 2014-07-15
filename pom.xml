@@ -39,12 +39,6 @@
 	<artifactId>hibernate-validator-annotation-processor</artifactId>
 	<version>4.1.0.Final</version>
 	</dependency>
-	<!-- Password Hashing -->
-	<dependency>
-	<groupId>org.mindrot</groupId>
-	<artifactId>jbcrypt</artifactId>
-	<version>0.3m</version>
-	</dependency>
 	<!-- Database -->
 	<dependency>
 	<groupId>org.hsqldb</groupId>
