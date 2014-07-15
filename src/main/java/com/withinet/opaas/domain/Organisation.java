@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Cascade;
@@ -24,7 +25,10 @@ public class Organisation implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6803259397295273564L;
-
+	
+	@Transient
+	public String clientApiKey;
+	
 	@Id
 	@Column(name="ID", nullable=false)
 	@GeneratedValue( strategy = GenerationType.IDENTITY )

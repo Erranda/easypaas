@@ -17,7 +17,7 @@ public interface AccountController {
 	
 	public User createAccount (User account) throws AccountControllerException;
 	
-	public boolean deleteAccount (Long id) throws AccountControllerException;
+	public boolean deleteAccount (User account) throws AccountControllerException;
 	
 	public User updateAccount (User account) throws AccountControllerException;
 	

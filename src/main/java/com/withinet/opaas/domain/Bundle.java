@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -20,6 +21,9 @@ import javax.validation.constraints.Size;
 public class Bundle implements Serializable {
 	
 	private static final long serialVersionUID = 5894978697438021782L;
+	
+	@Transient
+	public String clientApiKey;
 
 	@Column(name="ID", nullable=false)	
 	@Id	

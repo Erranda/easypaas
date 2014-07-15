@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -18,7 +19,10 @@ import javax.validation.constraints.Pattern;
 public class Instance implements Serializable {
 	
 	private static final long serialVersionUID = 4287545779663725937L;
-
+	
+	@Transient
+	public String clientApiKey;
+	
 	@Id
 	@Column(name="ID", nullable=false)
 	@GeneratedValue( strategy = GenerationType.IDENTITY )

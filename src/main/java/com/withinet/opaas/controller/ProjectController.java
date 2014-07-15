@@ -25,7 +25,7 @@ public interface ProjectController {
 	
 	public Project updateProject (Project project) throws ProjectControllerException;
 	
-	public Project readProject (Long id) throws ProjectControllerException;
+	public Project readProject (Project project) throws ProjectControllerException;
 	
 	public Project addBundle (Bundle bundle);
 	

@@ -27,6 +27,9 @@ import org.hibernate.validator.constraints.Email;
 @Entity
 public class User implements Serializable {
 	
+	@Transient
+	public String clientApiKey;
+	
 	/**
 	 * 
 	 */
@@ -119,6 +122,9 @@ public class User implements Serializable {
 		return ID;
 	}
 	
+	public void setID(Long id) {
+		ID = id;
+	}
 	
 	public void setFullName(String value) {
 		this.fullName = value;

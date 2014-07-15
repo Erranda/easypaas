@@ -23,6 +23,7 @@ import com.withinet.opaas.Application;
 import com.withinet.opaas.controller.AccountController;
 import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.common.AccountControllerException;
+import com.withinet.opaas.controller.common.AccountNotFoundException;
 import com.withinet.opaas.controller.common.ProjectConflictException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.ProjectNotFoundException;
@@ -108,7 +109,7 @@ public class ControllerIntegrationTests {
 		user = accountController.createAccount(user);
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test (expected = ConstraintViolationException.class)
 	public void createUserInvalidPassword () throws AccountControllerException {
 		user.setFullName ("Folarin O");
 		user.setEmail("folarinomotoriogun" + count + "@gmail.com");
@@ -121,15 +122,36 @@ public class ControllerIntegrationTests {
 	
 	@Test
 	public void deleteUserPerfect () throws AccountControllerException {
-		assertTrue (accountController.deleteAccount(user.getID()));
+		user.setFullName ("Folarin O");
+		user.setEmail("folarinomotoriogun" + count + "@gmail.com");
+		user.setPassword("Fol23");
+		user.setStatus("registered");
+		user.setPlatformName("TEST PLATFORM");
+		user.setCreated(new Date ());
+		user = accountController.createAccount(user);
+		assertTrue (accountController.deleteAccount(user));
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test (expected = AccountException.class)
+	public void deleteUserUnauthorized () throws AccountControllerException {
+		user.setFullName ("Folarin O");
+		user.setEmail("folarinomotoriogun" + count + "@gmail.com");
+		user.setPassword("Fol23");
+		user.setStatus("registered");
+		user.setPlatformName("TEST PLATFORM");
+		user.setCreated(new Date ());
+		user = accountController.createAccount(user);
+		user.clientApiKey = "adadadadada";
+		assertTrue (accountController.deleteAccount(user));
+	}
+	
+	@Test (expected = AccountNotFoundException.class)
 	public void deleteUserFalse () throws AccountControllerException {
-		accountController.deleteAccount(5L);
+		user.setID(5L);
+		accountController.deleteAccount(user);
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test (expected = ConstraintViolationException.class)
 	public void updateEmailNotAllowed () throws AccountControllerException {
 		user.setFullName ("Folarin O");
 		user.setEmail("folarinomotoriogun12314@gmail.com");
@@ -142,7 +164,7 @@ public class ControllerIntegrationTests {
 		accountController.updateAccount(user);
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test (expected = ConstraintViolationException.class)
 	public void updateCreatedDateNotChangeable () throws AccountControllerException {
 		user.setFullName ("Folarin O");
 		user.setEmail("folarinomotoriogun12314@gmail.com");
@@ -167,9 +189,9 @@ public class ControllerIntegrationTests {
 		user.setStatus("registered");
 		user.setPlatformName("TEST PLATFORM");
 		user.setCreated(new Date ());
-		accountController.createAccount(user);
+		user = accountController.createAccount(user);
 		user.setPassword(newPassword);
-		accountController.updateAccount(user);
+		user = accountController.updateAccount(user);
 		assertTrue (!user.getPassword().equals(oldPassword));
 	}
 	
@@ -186,12 +208,12 @@ public class ControllerIntegrationTests {
 		assertTrue (fetched != null);
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test (expected = AccountNotFoundException.class)
 	public void getUserByIdNotFound () throws AccountControllerException {
 		accountController.readAccount(100L);
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test (expected = AccountException.class)
 	public void loginFailed () throws AccountException {
 		User user = new User ();
 		user.setEmail("folarin@xyz.com");
@@ -199,7 +221,7 @@ public class ControllerIntegrationTests {
 		accountController.login(user);
 	}
 	
-	@Test (expected = AccountControllerException.class)
+	@Test
 	public void loginSucceeded () throws AccountException, AccountControllerException {
 		user.setFullName ("Folarin O");
 		user.setEmail("folarinomotoriogun12314@gmail.com");
@@ -227,16 +249,17 @@ public class ControllerIntegrationTests {
 	 */
 	@Test
 	public void createProjectPerfect () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
 		project.setName("Operation X service");
 		project.setCreated(new Date ());
 		project.setName("Hello world");
-		project.setOwner(loggedInUser);
 		project.setUpdated(new Date());
 		projectController.createProject(project);
 	}
 	
 	@Test (expected = ConstraintViolationException.class)
 	public void createProjectNoDate () throws ProjectControllerException {		
+		project.clientApiKey = loggedInKey;
 		project.setName("Operation X service");
 		//project.setCreated(new Date ());
 		project.setName("Hello world");
@@ -247,6 +270,7 @@ public class ControllerIntegrationTests {
 	
 	@Test (expected = ConstraintViolationException.class)
 	public void createProjectNoName () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
 		project.setName("Operation X service");
 		project.setCreated(new Date ());
 		//project.setName("Hello world");
@@ -257,6 +281,7 @@ public class ControllerIntegrationTests {
 	
 	@Test (expected = ConstraintViolationException.class)
 	public void createProjectNoOwner () throws ProjectControllerException {
+		project.clientApiKey = "dadada";
 		project.setName("Operation X service");
 		project.setCreated(new Date ());
 		project.setName("Hello world");
@@ -286,8 +311,9 @@ public class ControllerIntegrationTests {
 		projectController.createProject(project);
 	}
 	
-	@Test (expected = ProjectControllerException.class)
+	@Test 
 	public void deleteProjectPerfect () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
 		project.setName("Operation X service");
 		project.setCreated(new Date ());
 		project.setName("Hello world");
@@ -299,7 +325,7 @@ public class ControllerIntegrationTests {
 	
 	@Test (expected = AccountException.class)
 	public void deleteProjectNotOwner () throws ProjectControllerException {
-		
+		project.clientApiKey = loggedInKey;
 		project.setName("Operation X service");
 		project.setCreated(new Date ());
 		project.setName("Hello world");
@@ -308,48 +334,164 @@ public class ControllerIntegrationTests {
 		projectController.createProject(project);
 		
 		Project project = new Project ();
+		project.clientApiKey = apiKey;
 		project.setID(project.getID());
 		project.setOwner(user);
-		assertTrue (projectController.deleteProject(project));
+		projectController.deleteProject(project);
 	}
 	
 	@Test (expected = ProjectNotFoundException.class)
 	public void deleteProjectNullId () throws ProjectControllerException {
 		Project project = new Project ();
+		project.clientApiKey = loggedInKey;
 		project.setOwner(user);
-		assertTrue (projectController.deleteProject(project));
+		projectController.deleteProject(project);
 	}
 	
 	@Test (expected = NullUserException.class)
 	public void deleteProjectNullUser () throws ProjectControllerException {
 		Project project = new Project ();
+		project.clientApiKey = loggedInKey;
 		project.setOwner(null);
-		assertTrue (projectController.deleteProject(project));
+		projectController.deleteProject(project);
 	}
 	
 	@Test (expected = AccountException.class)
 	public void deleteProjectUserApiKeyNull () throws ProjectControllerException {
 		Project project = new Project ();
-		User user = new User ();
-		user.setApiKey(null);
+		project.clientApiKey = null;
 		project.setOwner(user);
-		assertTrue (projectController.deleteProject(project));
+		projectController.deleteProject(project);
 	}
 	
 	@Test (expected = ProjectNotFoundException.class)
 	public void deleteProjectNotFound () throws ProjectControllerException {
 		Project project = new Project ();
+		project.clientApiKey = loggedInKey;
 		project.setID(1212L);
 		project.setOwner(user);
-		assertTrue (projectController.deleteProject(project));
+		projectController.deleteProject(project);
+	}
+	
+	@Test 
+	public void updateProjectPerfect () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		project.setName("new name");
+		project = projectController.updateProject(project);
+		assertTrue (!project.getName().equals("Hello world"));
+	}
+	
+	@Test (expected = ConstraintViolationException.class)
+	public void updateProjectChangeOwner () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		project.setOwner(user);
+		project = projectController.updateProject(project);
+	}
+	
+	@Test (expected = ConstraintViolationException.class)
+	public void updateProjectChangeCreatedDate () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		project.setCreated(new Date ());
+		project = projectController.updateProject(project);
+	}
+	
+	@Test (expected = AccountException.class)
+	public void updateProjectUnauthorized () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		project.clientApiKey = apiKey;
+		project = projectController.updateProject(project);
+	}
+
+	@Test (expected = AccountException.class)
+	public void updateProjectUnauthorizedKeyNull () throws ProjectControllerException {
+		project.clientApiKey = null;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		project.clientApiKey = apiKey;
+		project = projectController.updateProject(project);
+	}
+	
+	@Test (expected = AccountException.class)
+	public void readProjectUnauthorizedKeyNull () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		Project project = new Project ();
+		project.clientApiKey = null;
+		project.setID(this.project.getID());
+		project = projectController.readProject(project);
+	}
+	
+	@Test (expected = AccountException.class)
+	public void readProjectUnauthorizedKey () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		Project project = new Project ();
+		project.clientApiKey = apiKey;
+		project.setID(this.project.getID());
+		project = projectController.readProject(project);
+	}
+	
+	@Test (expected = ProjectNotFoundException.class)
+	public void readProjectNotFound () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		Project project = new Project ();
+		project.clientApiKey = apiKey;
+		project.setID(2121313L);
+		project = projectController.readProject(project);
+	}
+	
+	@Test
+	public void readProjectPerfect () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		Project project = new Project ();
+		project.clientApiKey = apiKey;
+		project.setID(this.project.getID());
+		project = projectController.readProject(project);
+		assertTrue (project.getID() > 0);
 	}
 	
 	
 	
-	
-	
-	
-	
-
 
 }

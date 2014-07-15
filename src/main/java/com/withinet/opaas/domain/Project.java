@@ -17,6 +17,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -31,6 +32,8 @@ public class Project implements Serializable {
 	 */
 	private static final long serialVersionUID = 7879965828859090320L;
 	
+	@Transient
+	public String clientApiKey;
 	
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
@@ -67,7 +70,7 @@ public class Project implements Serializable {
 	private User owner;
 	
 	@ManyToMany
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL})
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.MERGE})
 	    @JoinTable(
 	        name = "PROJECT_BUNDLE",
 	        joinColumns = @JoinColumn(name = "PROJECT_ID"),

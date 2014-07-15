@@ -40,7 +40,7 @@ public class AccountControllerImpl implements AccountController {
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.AccountController#deleteAccount(com.withinet.opaas.domain.User)
 	 */
-	public boolean deleteAccount(Long id) throws AccountControllerException {
+	public boolean deleteAccount(User user) throws AccountControllerException {
 		return false;
 		
 	}
