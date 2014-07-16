@@ -13,15 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.annotations.Cascade;
 
 
 @Entity
@@ -61,25 +57,17 @@ public class Project implements Serializable {
 	@NotNull
 	private Date updated;
 	
-	
-	
-	
 	@ManyToOne (targetEntity=User.class)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumns({ @JoinColumn(name="ADMINISTRATOR_ID", referencedColumnName="ID", nullable=false) })	
 	private User owner;
 	
-	@ManyToMany
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.MERGE})
-	    @JoinTable(
-	        name = "PROJECT_BUNDLE",
-	        joinColumns = @JoinColumn(name = "PROJECT_ID"),
-	        inverseJoinColumns = @JoinColumn(name = "BUNDLE_ID")
-	)
-    private final Set<Bundle> bundles = new HashSet <Bundle> ();
+	@OneToMany (mappedBy="userProject", fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
 	
 	@OneToMany(mappedBy="project",  fetch=FetchType.LAZY)
-	@Cascade({org.hibernate.annotations.CascadeType.ALL})
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
 	private final Set<Instance> instances = new HashSet<Instance> ();
 	
@@ -111,8 +99,8 @@ public class Project implements Serializable {
 		this.name = name;
 	}
 
-	public Set<Bundle> getBundles() {
-		return bundles;
+	public Set<ProjectBundle> getProjectBundles() {
+		return projectBundles;
 	}
 
 	public Set<Instance> getInstances() {

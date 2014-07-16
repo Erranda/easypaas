@@ -1,8 +1,12 @@
-package test.com.withinet.opaas.controller.common;
+package com.withinet.opaas.controller.common;
 
-import com.withinet.opaas.controller.common.ProjectControllerException;
 
 public class NullUserException extends ProjectControllerException {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9083091812016140917L;
 
 	public NullUserException() {
 		// TODO Auto-generated constructor stub

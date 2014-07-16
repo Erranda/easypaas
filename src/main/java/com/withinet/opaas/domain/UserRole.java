@@ -31,18 +31,18 @@ public class UserRole implements Serializable {
 	@JoinColumn(name="OWNER_ID", referencedColumnName="ID", nullable=false)
 	private User owner;
 	
-	@Column(name="USERS_ROLE_NAME", nullable=false)
+	@Column(name="ROLE_NAME", nullable=false)
 	@NotNull
 	@Size (min = 2, max = 30)
 	private String name;
 	
-	@Column(name="USERS_ROLE_DESCRIPTION", nullable=false)
+	@Column(name="ROLE_DESCRIPTION", nullable=false)
 	@NotNull
 	@Size (min = 2)
 	private String description;
 	
 	@OneToMany (mappedBy="userPermission", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	private Set<RolePermission> permissions = new HashSet <RolePermission> ();
 
 	public User getOwner() {

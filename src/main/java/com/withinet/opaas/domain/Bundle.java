@@ -11,8 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -45,8 +45,9 @@ public class Bundle implements Serializable {
 	@Size (min = 2, max = 30)
 	private String location;
 	
-	@ManyToMany(mappedBy = "bundles")
-	private final Set<Project> projects = new HashSet<Project> ();
+	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
 
 	public String getSymbolicName() {
 		return symbolicName;
@@ -76,8 +77,8 @@ public class Bundle implements Serializable {
 		this.owner = owner;
 	}
 
-	public Set<Project> getProjects() {
-		return projects;
-	}	
+	public Set<ProjectBundle> getProjectBundles() {
+		return projectBundles;
+	}
 	
 }

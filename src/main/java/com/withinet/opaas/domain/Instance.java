@@ -29,7 +29,7 @@ public class Instance implements Serializable {
 	private Long id;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.LAZY)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumn(name="OWNER_ID", referencedColumnName="ID", nullable=false) 
 	private User owner;
 	

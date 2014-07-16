@@ -20,6 +20,7 @@ import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.Instance;
 import com.withinet.opaas.domain.Organisation;
 import com.withinet.opaas.domain.Project;
+import com.withinet.opaas.domain.ProjectBundle;
 import com.withinet.opaas.domain.RolePermission;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.domain.UserPermission;
@@ -27,6 +28,7 @@ import com.withinet.opaas.domain.UserRole;
 import com.withinet.opaas.model.BundleRepository;
 import com.withinet.opaas.model.InstanceRepository;
 import com.withinet.opaas.model.OrganisationRepository;
+import com.withinet.opaas.model.ProjectBundleRepository;
 import com.withinet.opaas.model.ProjectRepository;
 import com.withinet.opaas.model.RolePermissionRepository;
 import com.withinet.opaas.model.UserPermissionRepository;
@@ -69,6 +71,9 @@ public class RepositoryIntegrationTests {
 	
 	@Autowired
 	RolePermissionRepository rpRepo;
+	
+	@Autowired
+	ProjectBundleRepository projectBundleRepo;
 	
 	Organisation o = new Organisation ();
 	
@@ -125,6 +130,9 @@ public class RepositoryIntegrationTests {
 		pr.setCreated(new Date ());
 		pr.setUpdated(new Date ());
 		pRepository.save(pr);
+		
+		ProjectBundle pb = new ProjectBundle (user.getEmail(), pr, b);
+		projectBundleRepo.save(pb);
 		
 		i.setHost("127.0.0.1");
 		i.setPort(8080);
@@ -186,6 +194,13 @@ public class RepositoryIntegrationTests {
 	public void getRolesForOwnerName () {
 		UserRole object =  uRoleRepository.findByOwnerAndName(user, r.getName());
 		assertThat(object, org.hamcrest.Matchers.notNullValue());	
+	}
+	
+	@Test
+	public void listBundlesByProject () {
+		List<ProjectBundle> object = projectBundleRepo.findByUserProject(pr);
+		assertThat(object, org.hamcrest.Matchers.notNullValue());
+		
 	}
 	
 }

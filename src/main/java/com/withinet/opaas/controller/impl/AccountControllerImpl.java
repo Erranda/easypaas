@@ -4,7 +4,6 @@ import javax.security.auth.login.AccountException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.AccountController;
@@ -56,7 +55,7 @@ public class AccountControllerImpl implements AccountController {
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.AccountController#readAccount(java.lang.Long)
 	 */
-	public User readAccount(Long id) throws AccountControllerException {
+	public User readAccount(User account) throws AccountControllerException {
 		// TODO Auto-generated method stub
 		return null;
 	}

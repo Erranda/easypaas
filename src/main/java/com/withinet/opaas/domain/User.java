@@ -97,7 +97,7 @@ public class User implements Serializable {
 	private final Set<UserRole> createdRoles = new HashSet <UserRole> ();
 	
 	@OneToMany(mappedBy="owner",  fetch=FetchType.LAZY)
-	@Cascade({org.hibernate.annotations.CascadeType.ALL})
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
 	private Set<Bundle> bundles = new HashSet <Bundle> ();
 			

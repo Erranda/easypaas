@@ -17,18 +17,22 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import test.com.withinet.opaas.controller.common.NullUserException;
 
 import com.withinet.opaas.Application;
 import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.common.AccountControllerException;
 import com.withinet.opaas.controller.common.AccountNotFoundException;
+import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.controller.common.NullUserException;
 import com.withinet.opaas.controller.common.ProjectConflictException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.ProjectNotFoundException;
+import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.Project;
 import com.withinet.opaas.domain.User;
+import com.withinet.opaas.domain.UserRole;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -42,6 +46,7 @@ public class ControllerIntegrationTests {
 	
 	User loggedInUser = new User ();
 	
+	User noAuthorityUser = new User ();
 
 	private Integer count;
 	
@@ -50,6 +55,40 @@ public class ControllerIntegrationTests {
 	final String apiKey = UUID.randomUUID().toString();
 	
 	final String loggedInKey = UUID.randomUUID().toString();
+	
+	final String unAuthorizedKey = UUID.randomUUID().toString();
+	
+	public ControllerIntegrationTests () throws AccountControllerException {
+		User unAuthenticated = new User ();
+		User authenticatedNoAuthority = new User ();
+		User authenticatedFullAuthority = new User ();
+		
+		authenticatedNoAuthority.setFullName ("Folarin O");
+		authenticatedNoAuthority.setEmail("folarinomotoriogun" + count + "@gmail.com");
+		authenticatedNoAuthority.setPassword("Folarin@123");
+		authenticatedNoAuthority.setStatus("registered");
+		authenticatedNoAuthority.setPlatformName("TEST PLATFORM");
+		authenticatedNoAuthority.setApiKey(loggedInKey);
+		authenticatedNoAuthority.setCreated(new Date ());
+		accountController.createAccount(authenticatedNoAuthority);
+		
+		
+		authenticatedFullAuthority.setFullName ("Folarin O");
+		authenticatedFullAuthority.setEmail("folarinomotoriogun" + count + "@gmail.com");
+		authenticatedFullAuthority.setPassword("Folarin@123");
+		authenticatedFullAuthority.setStatus("registered");
+		authenticatedFullAuthority.setPlatformName("TEST PLATFORM");
+		authenticatedFullAuthority.setApiKey(loggedInKey);
+		authenticatedFullAuthority.setCreated(new Date ());
+		accountController.createAccount(authenticatedFullAuthority);
+		
+		UserRole role = new UserRole ();
+		role.setName("Administrator");
+		role.setOwner(authenticatedFullAuthority);
+		
+		
+		
+	}
 	
 	@Before
 	public void setup () throws AccountControllerException{ 
@@ -66,6 +105,16 @@ public class ControllerIntegrationTests {
 		loggedInUser.setApiKey(loggedInKey);
 		loggedInUser.setCreated(new Date ());
 		accountController.createAccount(loggedInUser);
+		
+		noAuthorityUser.setFullName ("Folarin O");
+		noAuthorityUser.setEmail("folarinomotoriogun" + count + "@gmail.com");
+		noAuthorityUser.setPassword("Folarin@123");
+		noAuthorityUser.setStatus("registered");
+		noAuthorityUser.setPlatformName("TEST PLATFORM");
+		noAuthorityUser.setApiKey(unAuthorizedKey);
+		noAuthorityUser.setCreated(new Date ());
+		accountController.createAccount(noAuthorityUser);
+		
 		
 	}
 	
@@ -204,13 +253,15 @@ public class ControllerIntegrationTests {
 		user.setPlatformName("TEST PLATFORM");
 		user.setCreated(new Date ());
 		accountController.createAccount(user);
-		User fetched = accountController.readAccount(user.getID());
+		User fetched = accountController.readAccount(user);
 		assertTrue (fetched != null);
 	}
 	
 	@Test (expected = AccountNotFoundException.class)
 	public void getUserByIdNotFound () throws AccountControllerException {
-		accountController.readAccount(100L);
+		User user = new User ();
+		user.setID(23L);
+		accountController.readAccount(user);
 	}
 	
 	@Test (expected = AccountException.class)
@@ -476,7 +527,31 @@ public class ControllerIntegrationTests {
 		project = projectController.readProject(project);
 	}
 	
-	@Test
+	@Test (expected = AccountException.class)
+	public void readProjectUnauthorized () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		Project project = new Project ();
+		project.clientApiKey = apiKey;
+		project.setID(this.project.getID());
+		project = projectController.readProject(project);
+		assertTrue (project.getID() > 0);
+	}
+	
+	@Test (expected = ProjectNotFoundException.class)
+	public void readProjectProjectNotFoundException () throws ProjectControllerException {
+		Project project = new Project ();
+		project.clientApiKey = apiKey;
+		project.setID(4242121121L);
+		project = projectController.readProject(project);
+		assertTrue (project.getID() > 0);
+	}
+	
+	@Test (expected = AccountException.class)
 	public void readProjectPerfect () throws ProjectControllerException {
 		project.clientApiKey = loggedInKey;
 		project.setCreated(new Date ());
@@ -490,6 +565,52 @@ public class ControllerIntegrationTests {
 		project = projectController.readProject(project);
 		assertTrue (project.getID() > 0);
 	}
+	
+	@Test 
+	public void listProjectByUserUnauthorized () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		project.setCreated(new Date ());
+		project.setName("Hello world");
+		project.setOwner(loggedInUser);
+		project.setUpdated(new Date());
+		project = projectController.createProject(project);
+		projectController.listProjectsByUser(user);
+	}
+	
+	@Test 
+	public void listProjectByUserNoProjects () throws ProjectControllerException {
+		project.clientApiKey = loggedInKey;
+		assertTrue (projectController.listProjectsByUser(user).size() == 0);
+	}
+	
+	//Bundle Controller
+	
+	@Autowired
+	BundleController bundleController;
+	
+	//Create Bundle Unauthenticated, Unauthorized, ConstraintViolation, Perfect
+	@Test (expected = AccountNotFoundException.class)
+	public void createBundleUnauthenticated () throws BundleControllerException {
+		User user = new User ();
+		user.setID(44L);
+		Bundle bundle = new Bundle ();
+		bundle.setLocation("http://afafad.com/fjaj.jar");
+		bundle.setOwner(user);
+		bundle.setSymbolicName("test-b");
+		bundleController.createBundle(bundle);
+	}
+	
+	@Test (expected = AccountException.class)
+	public void createBundleUnauthrozied () throws BundleControllerException {
+		User user = new User ();
+		user.setID(44L);
+		Bundle bundle = new Bundle ();
+		bundle.setLocation("http://afafad.com/fjaj.jar");
+		bundle.setOwner(noAuthorityUser);
+		bundle.setSymbolicName("test-b");
+		bundleController.createBundle(bundle);
+	}
+	
 	
 	
 	

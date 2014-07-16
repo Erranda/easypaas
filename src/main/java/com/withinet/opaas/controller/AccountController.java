@@ -21,7 +21,7 @@ public interface AccountController {
 	
 	public User updateAccount (User account) throws AccountControllerException;
 	
-	public User readAccount (Long id) throws AccountControllerException;
+	public User readAccount (User account) throws AccountControllerException;
 	
 	public User login (User user) throws AccountException;
 	

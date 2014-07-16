@@ -4,13 +4,12 @@
 package com.withinet.opaas.controller;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.Project;
+import com.withinet.opaas.domain.User;
 
 /**
  * @author Folarin
@@ -27,10 +26,6 @@ public interface ProjectController {
 	
 	public Project readProject (Project project) throws ProjectControllerException;
 	
-	public Project addBundle (Bundle bundle);
-	
-	public Project addBundle (Set<Bundle> bundle);
-	
-	public List<Project> listProjectsByUser (Long userId);
+	public List<Project> listProjectsByUser (User user);
 	
 }
