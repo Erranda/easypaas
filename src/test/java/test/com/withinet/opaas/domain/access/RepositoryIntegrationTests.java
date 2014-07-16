@@ -2,7 +2,6 @@ package test.com.withinet.opaas.domain.access;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;

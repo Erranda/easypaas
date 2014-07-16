@@ -2,6 +2,11 @@ package com.withinet.opaas.controller.common;
 
 public class ControllerException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 143713351865847718L;
+
 	public ControllerException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
