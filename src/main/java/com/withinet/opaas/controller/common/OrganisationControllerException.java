@@ -1,15 +1,11 @@
 package com.withinet.opaas.controller.common;
 
-public class OrganisationControllerException extends Exception {
+public class OrganisationControllerException extends ControllerException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2254103399400612766L;
-
-	public OrganisationControllerException() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public OrganisationControllerException(String arg0) {
 		super(arg0);

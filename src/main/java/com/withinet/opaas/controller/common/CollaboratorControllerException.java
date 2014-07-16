@@ -1,6 +1,6 @@
 package com.withinet.opaas.controller.common;
 
-public class CollaboratorControllerException extends Exception {
+public class CollaboratorControllerException extends ControllerException {
 	/**
 	 * 
 	 */

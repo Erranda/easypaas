@@ -1,12 +1,13 @@
 package com.withinet.opaas.controller.impl;
 
-import javax.security.auth.login.AccountException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.common.AccountConflictException;
+import com.withinet.opaas.controller.common.AccountLoginException;
 import com.withinet.opaas.controller.common.AccountControllerException;
 import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.domain.User;
@@ -31,7 +32,7 @@ public class AccountControllerImpl implements AccountController {
 	public User createAccount(@Valid User account) throws AccountControllerException {
 		//Check if user already exists
 		User empty = userRepository.findByEmail(account.getEmail());
-		if (empty != null) throw new AccountControllerException ("Sorry, it looks like " + account.getEmail() + " belongs to an existing account.");
+		if (empty != null) throw new AccountConflictException ("Sorry, it looks like " + account.getEmail() + " belongs to an existing account.");
 		if (account.getPassword().length() < 6) throw new AccountControllerException ("Password must be at least 6 characters long");
 		return userRepository.saveAndFlush(account);
 	}
@@ -63,7 +64,7 @@ public class AccountControllerImpl implements AccountController {
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.AccountController#login(java.lang.String, java.lang.String)
 	 */
-	public User login(User user) throws AccountException {
+	public User login(User user) throws AccountLoginException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -28,8 +27,6 @@ public class Project implements Serializable {
 	 */
 	private static final long serialVersionUID = 7879965828859090320L;
 	
-	@Transient
-	public String clientApiKey;
 	
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
@@ -49,14 +46,23 @@ public class Project implements Serializable {
 	@NotNull
 	private String details;
 	
+	@Column(name="PROJECT_STATUS", nullable=false, length=255)	
+	@NotNull
+	private String status;
+	
+	@Column(name="PROJECT_PRIVACY", nullable=false, length=255)	
+	@NotNull
+	private String privacy;
+	
 	@Column(name="PROJECT_CREATED", nullable=false, length=255)	
 	@NotNull
 	private Date created;
 	
 	@Column(name="PROJECT_UPDATED", nullable=true, length=255)
-	@NotNull
+	@NotNull (message = "Sorry, we need to know when this project was updated")
 	private Date updated;
 	
+	@NotNull (message = "Sorry, we need to know who owns this project")
 	@ManyToOne (targetEntity=User.class)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumns({ @JoinColumn(name="ADMINISTRATOR_ID", referencedColumnName="ID", nullable=false) })	
@@ -141,6 +147,22 @@ public class Project implements Serializable {
 	
 	public void setID (Long Id){ 
 		this.ID = Id;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getPrivacy() {
+		return privacy;
+	}
+
+	public void setPrivacy(String privacy) {
+		this.privacy = privacy;
 	}
 
 }

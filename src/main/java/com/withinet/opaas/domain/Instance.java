@@ -20,9 +20,6 @@ public class Instance implements Serializable {
 	
 	private static final long serialVersionUID = 4287545779663725937L;
 	
-	@Transient
-	public String clientApiKey;
-	
 	@Id
 	@Column(name="ID", nullable=false)
 	@GeneratedValue( strategy = GenerationType.IDENTITY )

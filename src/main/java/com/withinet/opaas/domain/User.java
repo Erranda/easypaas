@@ -27,9 +27,6 @@ import org.hibernate.validator.constraints.Email;
 @Entity
 public class User implements Serializable {
 	
-	@Transient
-	public String clientApiKey;
-	
 	/**
 	 * 
 	 */
@@ -45,7 +42,7 @@ public class User implements Serializable {
 	private Long ID;
 		
 	@Column(name="USER_FULLNAME", nullable=false, length=255)	
-	@NotNull
+	@NotNull (message = "Sorry, please provide your full name")
 	@Size (min = 2, max = 30)
 	private String fullName;
 	
@@ -71,10 +68,6 @@ public class User implements Serializable {
 	@Column(name="USER_STATUS", nullable=false)
 	@NotNull
 	private String status;
-	
-	@Column(name="USER_API_KEY", nullable=false)
-	@NotNull
-	private String apiKey;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.LAZY)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
@@ -251,15 +244,5 @@ public class User implements Serializable {
 
 	public void setAssignedRole(UserRole assignedRole) {
 		this.assignedRole = assignedRole;
-	}
-
-
-	public String getApiKey() {
-		return apiKey;
-	}
-
-
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
 	}
 }

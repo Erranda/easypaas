@@ -7,7 +7,12 @@ package com.withinet.opaas.controller.common;
  * @author Folarin
  *
  */
-public class BundleControllerException extends Exception {
+public class BundleControllerException extends ControllerException {
+
+	public BundleControllerException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 

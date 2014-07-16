@@ -21,9 +21,6 @@ import javax.validation.constraints.Size;
 public class Bundle implements Serializable {
 	
 	private static final long serialVersionUID = 5894978697438021782L;
-	
-	@Transient
-	public String clientApiKey;
 
 	@Column(name="ID", nullable=false)	
 	@Id	

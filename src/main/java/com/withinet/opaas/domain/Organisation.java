@@ -26,9 +26,6 @@ public class Organisation implements Serializable {
 	 */
 	private static final long serialVersionUID = 6803259397295273564L;
 	
-	@Transient
-	public String clientApiKey;
-	
 	@Id
 	@Column(name="ID", nullable=false)
 	@GeneratedValue( strategy = GenerationType.IDENTITY )

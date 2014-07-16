@@ -1,6 +1,6 @@
 package com.withinet.opaas.controller.common;
 
-public class RoleControllerException extends Exception {
+public class RoleControllerException extends ControllerException {
 
 	/**
 	 * 

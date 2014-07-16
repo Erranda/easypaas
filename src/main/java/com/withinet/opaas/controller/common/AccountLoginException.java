@@ -1,10 +1,10 @@
 package com.withinet.opaas.controller.common;
 
-public class AccountControllerException extends ControllerException {
+public class AccountLoginException extends AccountControllerException {
 
 	private static final long serialVersionUID = -8692416416165881154L;
 	
-	public AccountControllerException (String message) {
+	public AccountLoginException (String message) {
 		super (message);
 	}
 

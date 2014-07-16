@@ -7,9 +7,6 @@ public class ProjectNotFoundException extends ProjectControllerException {
 	 */
 	private static final long serialVersionUID = -8252336320710301047L;
 
-	public ProjectNotFoundException() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public ProjectNotFoundException(String message) {
 		super(message);

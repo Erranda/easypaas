@@ -106,7 +106,6 @@ public class RepositoryIntegrationTests {
 		user.setPlatformName("CS5041");
 		user.setStatus("registered");
 		user.setOrganisation(o);
-		user.setApiKey(UUID.randomUUID().toString());
 		this.repository.save(user);
 		
 		r.setName("Project Manager");

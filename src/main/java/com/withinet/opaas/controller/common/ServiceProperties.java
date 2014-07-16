@@ -13,13 +13,15 @@ public class ServiceProperties {
 	
 	public final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
 	
-	public final String PERM_REGISTER_ACCOUNT = "ACCOUNT.REGISTER.ALL";
+	public final String PERM_CREATE_ACCOUNT = "ACCOUNT.REGISTER.ALL";
 	
 	public final String PERM_UPDATE_ACCOUNT = "ACCOUNT.UPDATE.ALL";
 	
 	public final String PERM_DELETE_ACCOUNT = "ACCOUNT.DELETE.ALL";
 	
 	public final String PERM_READ_ACCOUNT = "ACCOUNT.READ.ALL";
+	
+	public final String PERM_LOGIN_ACCOUNT = "ACCOUNT.LOGIN.ALL";
 	
 	public final String PERM_CREATE_PROJECT = "PROJECT.CREATE.ALL";
 	
@@ -76,6 +78,13 @@ public class ServiceProperties {
 	public final String PERM_UPDATE_ROLE = "ROLE.UPDATE.ALL";
 	
 	public final String PERM_DELETE_ROLE = "ROLE.DELETE.ALL";
+	
+	public final String PERM_SYSTEM_ADMIN = "MASTER.ADMIN";
+	
+	public final String PERM_ORG_ADMIN = "ORG.ADMIN";
+	
+	
+	
 	
 	
 	public String getName() {

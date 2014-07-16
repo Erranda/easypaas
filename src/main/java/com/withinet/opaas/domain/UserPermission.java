@@ -13,9 +13,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class UserPermission implements Serializable {
 	
-	@Transient
-	public String clientApiKey;
-	
 	public UserPermission () {
 		
 	}

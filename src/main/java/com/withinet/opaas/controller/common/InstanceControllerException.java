@@ -1,15 +1,11 @@
 package com.withinet.opaas.controller.common;
 
-public class InstanceControllerException extends Exception {
+public class InstanceControllerException extends ControllerException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8409968387216067117L;
-
-	public InstanceControllerException() {
-		// TODO Auto-generated constructor stub
-	}
 
 	public InstanceControllerException(String message) {
 		super(message);
