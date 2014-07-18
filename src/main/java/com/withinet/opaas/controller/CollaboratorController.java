@@ -15,16 +15,16 @@ import com.withinet.opaas.domain.User;
 
 public interface CollaboratorController {
 	
-	public User createCollaborator (User account) throws CollaboratorControllerException;
+	public User createCollaborator (User account, Long requesterId) throws CollaboratorControllerException;
 	
-	public Set<User> createCollaboratorBatch (Set<User> accounts) throws CollaboratorControllerException;
+	public Set<User> createCollaboratorBatch (Set<User> accounts, Long requesterId) throws CollaboratorControllerException;
 	
-	public boolean deleteCollaborator (Long id) throws CollaboratorControllerException;
+	public boolean deleteCollaborator (Long id, Long requesterId) throws CollaboratorControllerException;
 	
-	public User updateCollaborator (User account) throws CollaboratorControllerException;
+	public User updateCollaborator (User account, Long id, Long requesterId) throws CollaboratorControllerException;
 	
-	public User readCollaborator (Long id) throws CollaboratorControllerException;
+	public User readCollaborator (Long id, Long requesterId) throws CollaboratorControllerException;
 	
-	public Set<User> listCollaboratorsByAdminId (User user);
+	public Set<User> listCollaboratorsByAdminId (Long id, Long requesterId);
 	
 }

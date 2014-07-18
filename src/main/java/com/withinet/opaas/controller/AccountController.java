@@ -17,12 +17,13 @@ public interface AccountController {
 	
 	public User createAccount (User account) throws AccountControllerException;
 	
-	public boolean deleteAccount (User account) throws AccountControllerException;
+	public boolean deleteAccount (Long id, Long requesterId) throws AccountControllerException;
 	
-	public User updateAccount (User account) throws AccountControllerException;
+	public User updateAccount (User account, Long id, Long requesterId) throws AccountControllerException;
 	
-	public User readAccount (User account) throws AccountControllerException;
+	public User readAccount (Long id, Long requesterId) throws AccountControllerException;
 	
+	//Web access only
 	public User login (User user) throws AccountLoginException;
 	
 }

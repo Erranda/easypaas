@@ -17,14 +17,14 @@ import com.withinet.opaas.domain.UserRole;
 @RestController
 public interface RoleController {
 	
-	public UserRole createUserRole (UserRole userRole) throws RoleControllerException;
+	public UserRole createUserRole (UserRole userRole, Long requesterId) throws RoleControllerException;
 	
-	public void deleteUserRole (Long id) throws RoleControllerException;
+	public void deleteUserRole (Long id, Long requesterId) throws RoleControllerException;
 	
-	public UserRole updateUserRole (UserRole userRole) throws RoleControllerException;
+	public UserRole updateUserRole (UserRole userRole, Long id, Long requesterId) throws RoleControllerException;
 	
-	public UserRole readUserRole (Long id) throws RoleControllerException;
+	public UserRole readUserRole (Long id, Long requesterId) throws RoleControllerException;
 	
-	public List<UserRole> listRolesByUser (Long userId);
+	public List<UserRole> listRolesByUser (Long id, Long requesterId);
 	
 }

@@ -60,7 +60,7 @@ public class ProjectBundle {
     @JoinColumn(
         name = "PROJECT_ID",
         insertable = false, updatable = false)
-    private Project userProject;
+    private Project project;
 
     @ManyToOne
     @JoinColumn(
@@ -78,7 +78,7 @@ public class ProjectBundle {
 
         // Set fields
         this.addedBy = addedByUsername;
-        this.userProject = project;
+        this.project = project;
         this.bundle = bundle;
 
         // Set identifier values
@@ -103,7 +103,7 @@ public class ProjectBundle {
     }
 
     public Project getProject() {
-        return this.userProject;
+        return this.project;
     }
 
     public Bundle getBundle() {

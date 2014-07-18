@@ -127,6 +127,8 @@ public class RepositoryIntegrationTests {
 		pr.setDetails("Some information");
 		pr.setCreated(new Date ());
 		pr.setUpdated(new Date ());
+		pr.setPrivacy("public");
+		pr.setStatus("active");
 		pRepository.save(pr);
 		
 		ProjectBundle pb = new ProjectBundle (user.getEmail(), pr, b);
@@ -196,8 +198,15 @@ public class RepositoryIntegrationTests {
 	
 	@Test
 	public void listBundlesByProject () {
-		List<ProjectBundle> object = projectBundleRepo.findByUserProject(pr);
-		assertThat(object, org.hamcrest.Matchers.notNullValue());
+		List<ProjectBundle> object = projectBundleRepo.findByProject(pr);
+		assertThat(object.size(), is(org.hamcrest.Matchers.equalTo(1)));
+		
+	}
+	
+	@Test
+	public void listBundlesByBundle () {
+		List<ProjectBundle> object = projectBundleRepo.findByBundle(b);
+		assertThat(object.size(), is(org.hamcrest.Matchers.equalTo(1)));
 		
 	}
 	

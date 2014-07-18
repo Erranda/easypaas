@@ -15,10 +15,10 @@ import com.withinet.opaas.domain.UserRole;
 @RestController
 public interface RolePermissionController {
 	
-	public RolePermission createRolePermission (RolePermission rolePermMap) throws RolePermissionControllerException;
+	public RolePermission createRolePermission (RolePermission rolePermMap, Long requesterId) throws RolePermissionControllerException;
 	
-	public void deleteRolePermission (RolePermission rolePermMap) throws RolePermissionControllerException;
+	public void deleteRolePermission (RolePermission rolePermMap, Long requesterId) throws RolePermissionControllerException;
 	
-	public List<RolePermission> listRolePermissionsByProject (UserRole role);
+	public List<RolePermission> listRolePermissionsByRole (Long roleId, Long requesterId);
 	
 }

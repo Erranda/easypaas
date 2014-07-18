@@ -14,15 +14,15 @@ import com.withinet.opaas.domain.Instance;
 @RestController
 public interface InstanceController {
 	
-	public Instance createInstance (Instance instance) throws InstanceControllerException;
+	public Instance createInstance (Instance instance, Long requesterId) throws InstanceControllerException;
 	
-	public void deleteInstance (Long id) throws InstanceControllerException;
+	public void deleteInstance (Long id, Long requesterId) throws InstanceControllerException;
 	
-	public Instance updateInstance (Instance instance) throws InstanceControllerException;
+	public Instance readInstance (Long id, Long requesterId) throws InstanceControllerException;
 	
-	public Instance readInstance (Long id) throws InstanceControllerException;
+	public List<Instance> listInstancesByUser (Long userId, Long requesterId);
 	
-	public List<Instance> listInstancesByUser (Long userId);
+	public List<Instance> listInstancesByProject (Long projectId, Long requesterId);
 	
 }
 

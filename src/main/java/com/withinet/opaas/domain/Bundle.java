@@ -64,7 +64,10 @@ public class Bundle implements Serializable {
 	public Long getID() {
 		return ID;
 	}
-
+	
+	public void setID (Long id) {
+		ID = id;
+	}
 	public User getOwner() {
 		return owner;
 	}

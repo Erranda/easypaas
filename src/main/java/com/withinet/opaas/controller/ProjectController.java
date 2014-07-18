@@ -18,14 +18,17 @@ import com.withinet.opaas.domain.User;
 @RestController
 public interface ProjectController {
 	
-	public Project createProject (Project project) throws ProjectControllerException;
+	public Project createProject (Project project, Long requesterId) throws ProjectControllerException;
 	
-	public boolean deleteProject (Project project) throws ProjectControllerException;
+	public boolean deleteProject (Long id, Long requesterId) throws ProjectControllerException;
 	
-	public Project updateProject (Project project) throws ProjectControllerException;
+	public Project updateProject (Project project, Long id, Long requesterId) throws ProjectControllerException;
 	
-	public Project readProject (Project project) throws ProjectControllerException;
+	public Project readProject (Long id, Long requesterId) throws ProjectControllerException;
 	
-	public List<Project> listProjectsByUser (User user);
+	public List<Project> listProjectsByUser (Long id, Long requesterId);
+	
+	public boolean addCollaborator (Long id, Long requesterId);
+	
 	
 }

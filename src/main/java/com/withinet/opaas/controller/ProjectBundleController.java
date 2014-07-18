@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.ProjectBundleControllerException;
+import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.ProjectBundle;
 import com.withinet.opaas.domain.Project;
 
@@ -15,10 +16,12 @@ import com.withinet.opaas.domain.Project;
 @RestController
 public interface ProjectBundleController {
 	
-	public ProjectBundle createProjectBundle (ProjectBundle bundle) throws ProjectBundleControllerException;
+	public ProjectBundle createProjectBundle (ProjectBundle bundle, Long requesterId) throws ProjectBundleControllerException;
 	
-	public void deleteProjectBundle (ProjectBundle bundle) throws ProjectBundleControllerException;
+	public void deleteProjectBundle (Long id, Long requesterId) throws ProjectBundleControllerException;
 
-	public List<ProjectBundle> listProjectBundlesByProject (Project project);
+	public List<ProjectBundle> listProjectBundlesByProject (Long id, Long requesterId);
+	
+	public List<ProjectBundle> listProjectBundlesByBundle (Long id, Long requesterId);
 	
 }

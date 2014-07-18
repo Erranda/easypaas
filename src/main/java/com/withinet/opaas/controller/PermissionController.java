@@ -17,14 +17,14 @@ import com.withinet.opaas.domain.UserPermission;
 @RestController
 public interface PermissionController {
 	
-	public UserPermission createUserPermission (UserPermission userPermission) throws PermissionControllerException;
+	public UserPermission createUserPermission (UserPermission userPermission, Long requesterId) throws PermissionControllerException;
 	
-	public void deleteUserPermission (Long id) throws PermissionControllerException;
+	public void deleteUserPermission (Long id, Long requesterId) throws PermissionControllerException;
 	
-	public UserPermission updateUserPermission (UserPermission userPermission) throws PermissionControllerException;
+	public UserPermission updateUserPermission (UserPermission userPermission, Long id, Long requesterId) throws PermissionControllerException;
 	
-	public UserPermission readUserPermission (Long id) throws PermissionControllerException;
+	public UserPermission readUserPermission (Long id, Long requesterId) throws PermissionControllerException;
 	
-	public List<UserPermission> listUserPermissionsByRole (Long roleId);
+	public List<UserPermission> listUserPermissionsByRole (Long roleId, Long requesterId);
 	
 }

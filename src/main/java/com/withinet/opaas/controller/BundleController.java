@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
 import com.withinet.opaas.domain.User;
 
 /**
@@ -16,16 +15,14 @@ import com.withinet.opaas.domain.User;
 @RestController
 public interface BundleController {
 	
-	public Bundle createBundle (Bundle bundle) throws BundleControllerException;
+	public Bundle createBundle (Bundle bundle, Long requesterId) throws BundleControllerException;
 	
-	public void deleteBundle (Bundle bundle) throws BundleControllerException;
+	public boolean deleteBundle (Long id, Long requesterId) throws BundleControllerException;
 	
-	public Bundle updateBundle (Bundle bundle) throws BundleControllerException;
+	public Bundle updateBundle (Bundle bundle, Long id, Long requesterId) throws BundleControllerException;
 	
-	public Bundle readBundle (Bundle bundle) throws BundleControllerException;
+	public Bundle readBundle (Long id, Long requesterId) throws BundleControllerException;
 	
-	public List<Bundle> listBundlesByUser (User user);
-	
-	public List<Bundle> listBundlesByProject (Project project);
+	public List<Bundle> listBundlesByOwner (User user, Long requesterId);
 	
 }

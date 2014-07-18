@@ -68,7 +68,7 @@ public class Project implements Serializable {
 	@JoinColumns({ @JoinColumn(name="ADMINISTRATOR_ID", referencedColumnName="ID", nullable=false) })	
 	private User owner;
 	
-	@OneToMany (mappedBy="userProject", fetch=FetchType.EAGER)
+	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
 	
