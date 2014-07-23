@@ -17,7 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.withinet.opaas.Application;
 import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.Instance;
-import com.withinet.opaas.domain.Organisation;
 import com.withinet.opaas.domain.Project;
 import com.withinet.opaas.domain.ProjectBundle;
 import com.withinet.opaas.domain.RolePermission;
@@ -26,7 +25,6 @@ import com.withinet.opaas.domain.UserPermission;
 import com.withinet.opaas.domain.UserRole;
 import com.withinet.opaas.model.BundleRepository;
 import com.withinet.opaas.model.InstanceRepository;
-import com.withinet.opaas.model.OrganisationRepository;
 import com.withinet.opaas.model.ProjectBundleRepository;
 import com.withinet.opaas.model.ProjectRepository;
 import com.withinet.opaas.model.RolePermissionRepository;
@@ -50,8 +48,6 @@ public class RepositoryIntegrationTests {
 	@Autowired
 	UserRepository repository;
 	
-	@Autowired
-	OrganisationRepository oRepository;
 	
 	@Autowired
 	UserRoleRepository uRoleRepository;
@@ -74,8 +70,6 @@ public class RepositoryIntegrationTests {
 	@Autowired
 	ProjectBundleRepository projectBundleRepo;
 	
-	Organisation o = new Organisation ();
-	
 	User user = new User ();
 	
 	UserRole r = new UserRole ();
@@ -92,11 +86,6 @@ public class RepositoryIntegrationTests {
 	
 	@Before
 	public void setUp() throws Exception {
-		o.setLocation("Nigeria");
-		o.setName("University of Lagos");
-		o.setAddedBy("foo@xyz.com");
-		o.setCreated(new Date ());
-		this.oRepository.save(o);
 		
 		user.setCreated(new Date());
 		user.setEmail("foo@xyz.com");
@@ -104,7 +93,6 @@ public class RepositoryIntegrationTests {
 		user.setPassword("Password");
 		user.setPlatformName("CS5041");
 		user.setStatus("registered");
-		user.setOrganisation(o);
 		this.repository.save(user);
 		
 		r.setName("Project Manager");
@@ -147,7 +135,7 @@ public class RepositoryIntegrationTests {
 	@After
 	public void tearDown () {
 		this.rpRepo.delete(rp);
-		this.oRepository.delete(o);
+		this.repository.delete(user);
 		
 		
 		
@@ -166,17 +154,6 @@ public class RepositoryIntegrationTests {
 		assertThat(user, org.hamcrest.Matchers.notNullValue ());
 	}
 	
-	@Test
-	public void saveAndFind() {;
-		Page<Organisation> object = this.oRepository.findAll(new PageRequest (0, 10));
-		assertThat(object.getTotalElements(), is(org.hamcrest.Matchers.equalTo(1L)));
-	}
-	
-	@Test
-	public void saveAndFindByName() {
-		List<Organisation> object = this.oRepository.findByName("University of Lagos");
-		assertThat(object.size(), is(org.hamcrest.Matchers.equalTo(1)));
-	}
 	
 	@Test
 	public void getRolesForUser () {

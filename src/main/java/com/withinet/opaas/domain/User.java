@@ -1,16 +1,3 @@
-/**
- * "Visual Paradigm: DO NOT MODIFY THIS FILE!"
- * 
- * This is an automatic generated file. It will be regenerated every time 
- * you generate persistence class.
- * 
- * Modifying its content may cause the program not work, or your work may lost.
- */
-
-/**
- * Licensee: 
- * License Type: Evaluation
- */
 package com.withinet.opaas.domain;
 
 import java.io.Serializable;
@@ -57,27 +44,25 @@ public class User implements Serializable {
 	private String platformName;
 	
 	@NotNull
-	@Size (min = 5, max = 100)
+	@Size (min = 6, max = 100)
 	@Column(name="USER_PASSWORD", nullable=false, length=255)	
 	private String password;
 	
 	@Column(name="USER_CREATED", nullable=false)	
-	@Temporal(TemporalType.DATE)	
+	@Temporal(TemporalType.DATE)
 	private java.util.Date created;
 	
-	@Column(name="USER_STATUS", nullable=false)
+	@Column (name="USER_LOCATION", nullable = false, length = 255)
 	@NotNull
+	private String location;
+	
+	@Column(name="USER_STATUS", nullable=false)
 	private String status;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.LAZY)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumns({ @JoinColumn(name="USER_ADMINISTRATOR_ID", referencedColumnName="ID", nullable=true) })	
 	private User administrator;
-	
-	@ManyToOne(targetEntity=Organisation.class, fetch=FetchType.LAZY)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})
-	@JoinColumns({ @JoinColumn(name="USER_ORGANISATION_ID", referencedColumnName="ID", nullable=true) })	
-	private Organisation organisation;
 	
 	@ManyToOne(targetEntity=UserRole.class, fetch=FetchType.LAZY)
 	@Cascade({org.hibernate.annotations.CascadeType.ALL})
@@ -128,6 +113,7 @@ public class User implements Serializable {
 	}
 	
 	public void setEmail(String value) {
+		value = value.trim().toLowerCase();
 		this.email = value;
 	}
 	
@@ -150,18 +136,6 @@ public class User implements Serializable {
 	
 	public java.util.Date getCreated() {
 		return created;
-	}
-	
-	public void setOrganisation(Organisation value) {
-		this.organisation = value;
-	}
-	
-	public Organisation getOrganisation() {
-		return organisation;
-	}
-
-	public String toString () {
-		return ID + ", " + email + ", " + organisation.getName() ;
 	}
 
 	public Set<Project> getProjects() {
@@ -244,5 +218,13 @@ public class User implements Serializable {
 
 	public void setAssignedRole(UserRole assignedRole) {
 		this.assignedRole = assignedRole;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 }

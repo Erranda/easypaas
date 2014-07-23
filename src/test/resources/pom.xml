@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<groupId>org.springframework.boot</groupId>
+		<version>1.0.1.RELEASE</version>
+  </parent>
+  <groupId>com.withinet</groupId>
+  <artifactId>paas</artifactId>
+  <version>1.0.0</version>
+  <name>opaas</name>
+  <description>A platform as a service for running osgi cloud applications</description>
+  <properties>
+		<wicket.version>6.16.0</wicket.version>
+	</properties>
+  <dependencies>
+  <!-- Wicket -->
+<dependency>
+	<groupId>org.objenesis</groupId>
+	<artifactId>objenesis</artifactId>
+	<version>2.1</version>
+</dependency>
+
+
+  </dependencies>
+</project>

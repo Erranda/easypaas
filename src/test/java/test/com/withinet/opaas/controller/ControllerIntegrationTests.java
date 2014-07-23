@@ -61,7 +61,7 @@ public class ControllerIntegrationTests {
 	@Autowired
 	AccountController accountController;
 	
-	@Autowired
+	/*@Autowired
 	RoleController roleController;
 	
 	@Autowired
@@ -74,7 +74,7 @@ public class ControllerIntegrationTests {
 	RolePermissionController rolePermissionController;
 	
 	@Autowired
-	InstanceController instanceController;
+	InstanceController instanceController;*/
 	User web = new User ();
 	
 	@Before
@@ -85,7 +85,7 @@ public class ControllerIntegrationTests {
 		web.setPassword("Webber@123");
 		web.setPlatformName("Web");
 		web.setStatus("active");
-		web.setEmail("info@xyz.com");
+		web.setEmail("web@xyz.com");
 		userRepository.save(web);
 		/*UserRole webRole = new UserRole ();
 		webRole.setDescription("A way of authenticating clients");
@@ -111,7 +111,27 @@ public class ControllerIntegrationTests {
 	}
 	
 	
-	@Test 
+
+	
+	@Test
+	public void loginSucceeded () throws AccountException, AccountControllerException {
+		User object = new User ();
+		object.setFullName ("Folarin O");
+		object.setEmail("folarinomotoriogun1@gmail.com");
+		object.setPassword("Password");
+		object.setStatus("registered");
+		object.setPlatformName("TEST PLATFORM");
+		object.setCreated(new Date ());
+		accountController.createAccount(object);
+		
+		assertTrue (accountController.login("folarinomotoriogun1@gmail.com", "Password").getID() > 0);
+	}
+	
+	@Test (expected = AccountLoginException.class)
+	public void loginFailed () throws AccountLoginException {
+		accountController.login("folarin@xyz.com", "Password");
+	}
+	@Test
 	public void createUserNoException () throws AccountControllerException {
 		User object = new User ();
 		object.setCreated(new Date ());
@@ -119,7 +139,7 @@ public class ControllerIntegrationTests {
 		object.setPassword("Webbere@123");
 		object.setPlatformName("Web");
 		object.setStatus("active");
-		object.setEmail("infoweb@xyz.com");
+		object.setEmail("oweb@xyz.com");
 		accountController.createAccount(object);
 		assertTrue (object.getID() > 0);
 	}
@@ -132,9 +152,14 @@ public class ControllerIntegrationTests {
 		conflict.setPassword("Webber@123");
 		conflict.setPlatformName("Web");
 		conflict.setStatus("active");
-		conflict.setEmail("info@xyz.com");
-		conflict = accountController.createAccount(conflict);
+		conflict.setEmail("ino@xyz.com");
+		accountController.createAccount(conflict);
+		
+		accountController.createAccount(conflict);
 	}
+	
+	/*@Test 
+	
 	
 	@Test (expected = AccountNotFoundException.class)
 	public void deleteUserAccountNotFound () throws AccountControllerException {
@@ -190,31 +215,7 @@ public class ControllerIntegrationTests {
 		accountController.readAccount(no.getID(), web.getID());
 	}
 	
-	@Test (expected = AccountLoginException.class)
-	public void loginFailed () throws AccountLoginException {
-		User web = new User ();
-		web.setEmail("folarin@xyz.com");
-		web.setPassword("Password");
-		accountController.login(web);
-	}
 	
-	@Test
-	public void loginSucceeded () throws AccountException, AccountControllerException {
-		User object = new User ();
-		object.setFullName ("Folarin O");
-		object.setEmail("folarinomotoriogun12314@gmail.com");
-		object.setPassword("Password");
-		object.setStatus("registered");
-		object.setPlatformName("TEST PLATFORM");
-		object.setCreated(new Date ());
-		accountController.createAccount(object);
-		
-		User loginUser = new User ();
-		loginUser.setEmail("folarinomotoriogun12314@gmail.com");
-		loginUser.setPassword("Password");
-		accountController.login(loginUser);
-		assertTrue (loginUser.getID() > 0);
-	}
 	
 	@Autowired
 	ProjectController projectController;
@@ -222,10 +223,10 @@ public class ControllerIntegrationTests {
 	
 	
 	
-	/**
+	*//**
 	 * @throws ProjectControllerException 
 	 * 
-	 */
+	 *//*
 	@Test
 	public void createProjectPerfect () throws ControllerException {
 		User object = new User ();
@@ -504,7 +505,7 @@ public class ControllerIntegrationTests {
 	
 	
 	
-	
+*/	
 }
 	
 	

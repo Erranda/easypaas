@@ -24,6 +24,6 @@ public interface AccountController {
 	public User readAccount (Long id, Long requesterId) throws AccountControllerException;
 	
 	//Web access only
-	public User login (User user) throws AccountLoginException;
+	public User login (String userId, String password) throws AccountLoginException;
 	
 }

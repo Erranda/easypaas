@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.withinet.opaas.Application;
+import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,15 +37,21 @@ public class Helloworld {
 		object.setStatus("registered");
 		object.setPlatformName("TEST PLATFORM");
 		object.setCreated(new Date ());
-		getName (object);
+		DomainConstraintValidator<User> dcv = new  DomainConstraintValidator<User> ();
+		assertFalse (dcv.isValid(object)); 
 	}
 	
-	public void getName (@Valid User valid) {
-		final Set<ConstraintViolation<User>> violations = validator.validate(valid);
-		 assertEquals( 2, violations.size() );
-		 for (ConstraintViolation<User> violation : violations) {
-			 System.out.println (violation.getMessage());
-		 }
+	@Test
+	public void tes2() {
+		User object = new User ();
+		object.setFullName ("Folarin O");
+		object.setEmail("folarinomotoriogun12314@gmail.com");
+		object.setPassword("Password");
+		object.setStatus("registered");
+		object.setPlatformName("TEST PLATFORM");
+		object.setLocation("Hererin teh world");
+		object.setCreated(new Date ());
+		DomainConstraintValidator<User> dcv = new  DomainConstraintValidator<User> ();
+		assertTrue (dcv.isValid(object)); 
 	}
-
 }

@@ -23,6 +23,6 @@ public interface BundleController {
 	
 	public Bundle readBundle (Long id, Long requesterId) throws BundleControllerException;
 	
-	public List<Bundle> listBundlesByOwner (User user, Long requesterId);
+	public List<Bundle> listBundlesByOwner (Long id, Long requesterId);
 	
 }

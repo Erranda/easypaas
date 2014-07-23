@@ -8,6 +8,16 @@ import org.springframework.stereotype.Component;
 public class ServiceProperties {
 
 	public final String name = "Opaas";
+	
+    public static final int REMEMBER_ME_DURATION_IN_DAYS = 30;
+    
+    public static final String REMEMBER_ME_EMAIL_COOKIE = "opaasEmailCookie";
+    
+    public static final String REMEMBER_ME_PASSWORD_COOKIE = "opaasPasswordCookie";
+    
+    public static final String HOME = "C:/Users/Folarin/Desktop/opaas/";
+    
+    
 
 	public final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 	

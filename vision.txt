@@ -1,0 +1,2 @@
+The vision of OPaaS is to become a useful tool for reduce the complexity of deployment of
+OSGi web applications.

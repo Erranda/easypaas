@@ -3,6 +3,7 @@
  */
 package com.withinet.opaas.controller;
 
+import java.util.List;
 import java.util.Set;
 
 import com.withinet.opaas.controller.common.CollaboratorControllerException;
@@ -25,6 +26,6 @@ public interface CollaboratorController {
 	
 	public User readCollaborator (Long id, Long requesterId) throws CollaboratorControllerException;
 	
-	public Set<User> listCollaboratorsByAdminId (Long id, Long requesterId);
+	public List<User> findCollaboratorsByOwner (Long id, Long requesterId);
 	
 }
