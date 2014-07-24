@@ -35,7 +35,7 @@ public class User implements Serializable {
 	
 	@NotNull
 	@Email
-	@Column(name="USER_EMAIL", nullable=false, length=255, unique = true)	
+	@Column(name="USER_EMAIL", nullable=false, length=255, unique = false)	
 	private String email;
 	
 	@NotNull
@@ -94,6 +94,9 @@ public class User implements Serializable {
 	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
 	private Set<Instance> instances = new HashSet<Instance>();
 	
+	@OneToMany (mappedBy="user", fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
+	private final Set<ProjectTeam> projectTeam = new HashSet <ProjectTeam> ();
 	
 	
 	public Long getID() {
@@ -128,8 +131,7 @@ public class User implements Serializable {
 	public String getPassword() {
 		return password;
 	}
-	
-	
+
 	public void setCreated(java.util.Date value) {
 		this.created = value;
 	}
@@ -190,12 +192,6 @@ public class User implements Serializable {
 		this.bundles = bundles;
 	}
 
-/*
-	public Set<UserRole> getCreatedRoles() {
-		return createdRoles;
-	}*/
-
-
 	public String getStatus() {
 		return status;
 	}
@@ -215,7 +211,6 @@ public class User implements Serializable {
 		return assignedRole;
 	}
 
-
 	public void setAssignedRole(UserRole assignedRole) {
 		this.assignedRole = assignedRole;
 	}
@@ -226,5 +221,9 @@ public class User implements Serializable {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Set<ProjectTeam> getProjectTeam() {
+		return projectTeam;
 	}
 }

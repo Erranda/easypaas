@@ -3,11 +3,11 @@ package com.withinet.opaas.wicket.html;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
@@ -26,7 +26,18 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.validation.validator.StringValidator;
 
+import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.BundleController;
+import com.withinet.opaas.controller.ProjectController;
+import com.withinet.opaas.controller.common.AccountControllerException;
+import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.controller.common.ProjectControllerException;
+import com.withinet.opaas.controller.system.BundleFileInstaller;
 import com.withinet.opaas.controller.system.FileLocationGenerator;
+import com.withinet.opaas.domain.Bundle;
+import com.withinet.opaas.domain.Project;
+import com.withinet.opaas.domain.User;
+import com.withinet.opaas.wicket.services.UserSession;
 
 
 public class ProjectSetup extends WebPage {
@@ -42,18 +53,36 @@ public class ProjectSetup extends WebPage {
 
 	private ArrayList <String> projectTeam = new ArrayList<String> ();
 	
-	private Long userId;
+	private HashMap<String, User> thisTeamModel = new HashMap<String, User> ();
+	
+	private List<User> projectTeamSelected = new ArrayList<User> ();
+	
+	private Long userId = UserSession.get().getUser().getID();
 
 	private ArrayList<String> projectBundles = new ArrayList<String> ();
 	
-	private FileUpload file;
+	private FileUpload upload;
 	
-	private boolean active = true;
+	private Boolean active = true;
+	
+	private User thisUser = UserSession.get ().getUser();
 	
 	@SpringBean
 	private FileLocationGenerator fileMan;
+	
+	@SpringBean
+	private BundleFileInstaller bundleInstaller;
+	
+	@SpringBean
+	private BundleController bundleController;
+	
+	@SpringBean
+	private ProjectController projectController;
+	
+	@SpringBean
+	private AccountController accountController;
 
-
+	
 	public ProjectSetup() {
 		//Set the user
 		
@@ -61,29 +90,59 @@ public class ProjectSetup extends WebPage {
 			@Override
             protected void onSubmit()
             {
-				FileUpload upload = wicketFileUploadField.getFileUpload();
-				if (upload != null)
-	            {
-	            	String fileName =  upload.getClientFileName().toLowerCase().trim();
-	            	String extension = FilenameUtils.getExtension(fileName);
-	            	
-					if (extension.equals(".xml") || fileName.equals(".jar") || fileName.equals(".zip")){
-						File thisFile = new File (fileMan.getTempDirectoryPath() + "/" + upload.getClientFileName());
-		            	try {
-							if (thisFile.createNewFile() == true) {
-								upload.writeTo(thisFile);
-								
-							} else {
-								error ("Could not process your file at this time");
-							}
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+				//Create project first
+				Project thisProject = new Project ();
+				thisProject.setName(name);
+				thisProject.setStatus(active ? "Active" : "Disabled");
+				try {
+					thisProject = projectController.createProject(thisProject, userId);
+					//Add project team
+					if (projectTeam.size() > 0) {
+						for (String member : projectTeam) {
+							User user = thisTeamModel.get(member);
+							if (user == null) continue;
+							projectTeamSelected.add(user);
 						}
-					} else {
-						error ("Only .zip, .xml, and .jar extensions allowed");
+						accountController.addTeamMembers(projectTeamSelected, userId, userId);
 					}
-	            }
+					//If project creation succeeds, check for file upload
+					upload = wicketFileUploadField.getFileUpload();
+					if (upload != null)
+		            {
+		            	String fileName =  upload.getClientFileName().toLowerCase().trim();
+		            	String extension = FilenameUtils.getExtension(fileName);
+						if (extension.equals(".xml") || fileName.equals(".jar") || fileName.equals(".zip")){
+							File thisFile = new File (fileMan.getTempDirectoryPath() + "/" + upload.getClientFileName());
+			            	try {
+								if (thisFile.createNewFile() == true) {
+									upload.writeTo(thisFile);
+									File userLibDirectory = fileMan.getUserLibrary(userId);
+									List<String> list = new ArrayList<String> ();
+									list.add(thisFile.getAbsolutePath());
+									List<Bundle> bundles = bundleInstaller.installBundles(list, userLibDirectory.getAbsolutePath());
+									for (int i = 0; i < bundles.size(); i++) {
+										bundles.set(i, bundleController.createBundle(bundles.get(i), userId));
+									}
+									for (Bundle bundle : bundles) {
+										projectController.addBundle(bundle, thisProject.getID(), userId);
+									}	
+								} else {
+									error ("Could not process your file at this time");
+								}
+							} catch (IOException e) {
+								error (e.getMessage());
+							} catch (BundleControllerException e) {
+								error (e.getMessage());
+							}
+						} else {
+							error ("Only .zip, .xml, and .jar extensions allowed");
+						}
+		            }
+				} catch (ProjectControllerException e1) {
+					error (e1.getMessage());
+				} catch (AccountControllerException e) {
+					error (e.getMessage());
+				}
             }
 		};
 		add(setupForm);
@@ -102,8 +161,15 @@ public class ProjectSetup extends WebPage {
 				"bundles", new Model(projectBundles), listBundles());
 		setupForm.add(bundles);
 		
-		ListMultipleChoice<String> team = new ListMultipleChoice<String>(
-				"team", new Model(projectTeam), listTeam());
+		ListMultipleChoice<String> team;
+		try {
+			team = new ListMultipleChoice<String>(
+					"team", new Model(projectTeam), listTeam());
+		} catch (AccountControllerException e) {
+			team = new ListMultipleChoice<String>(
+					"team", new Model(projectTeam), Collections.EMPTY_LIST);
+			error (e.getMessage());
+		}
 		setupForm.add(team);
 		
 		wicketFileUploadField = new FileUploadField ("file");
@@ -132,11 +198,16 @@ public class ProjectSetup extends WebPage {
 		return bundles;	
 	}
 	
-	private ArrayList<String> listTeam () {
-		ArrayList<String> collaborators = new ArrayList<String> ();
-		collaborators.add("Yi Chang [yi@s.com]");
-		collaborators.add("Mark Boss [si@g.com]");
-		return collaborators;
+	private ArrayList<String> listTeam () throws AccountControllerException {
+		List<User> collaborators = accountController.listCollaborators(userId, userId);
+		ArrayList<String> formList = new ArrayList<String> ();
+		for (User user : collaborators) {
+			String formKey = user.getFullName() + "[" + user.getEmail() + "]";
+			formList.add(formKey);
+			thisTeamModel.put(formKey, user);
+		}
+		Collections.sort(formList);
+		return formList;
 	}
 	
 	@Override

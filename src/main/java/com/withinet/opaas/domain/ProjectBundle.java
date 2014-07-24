@@ -80,14 +80,14 @@ public class ProjectBundle {
         this.addedBy = addedByUsername;
         this.project = project;
         this.bundle = bundle;
-
+        this.addedOn = new Date ();
         // Set identifier values
         this.id.projectId = project.getID();
         this.id.bundleId = bundle.getID();
 
         // Guarantee referential integrity if made bidirectional
         project.getProjectBundles().add(this);
-        project.getProjectBundles().add(this);
+        bundle.getProjectBundles().add(this);
     }
 
     public Id getId() {

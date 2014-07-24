@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.Project;
+import com.withinet.opaas.domain.ProjectBundle;
+import com.withinet.opaas.domain.ProjectTeam;
 import com.withinet.opaas.domain.User;
 
 /**
@@ -26,13 +28,18 @@ public interface ProjectController {
 	
 	public Project updateProject (Project project, Long id, Long requesterId) throws ProjectControllerException;
 	
-	public Project readProject (Long id, Long requesterId) throws ProjectControllerException;
+	public Project readProjectById (Long id, Long requesterId) throws ProjectControllerException;
 	
-	public Project addBundles (Set<Bundle> bundles, Long projectId, Long requesterId);
+	public List<Project> listCreatedProjectsByOwner (Long userId, Long requesterId) throws ProjectControllerException;
 	
-	public List<Project> listProjectsByUser (Long id, Long requesterId);
+	public List<ProjectTeam> listParticipatingProjectsByUser (Long userId, Long requesterId) throws ProjectControllerException;
 	
-	public boolean addCollaborator (Long id, Long requesterId);
+	public List<ProjectTeam> listProjectTeamMembersByProject (Long projectId, Long requesterId);
 	
+	public List<ProjectBundle> listProjectBundlesByProject (Long projectId, Long requesterId);
+	
+	public Project addBundle (Bundle bundles, Long projectId, Long requesterId) throws ProjectControllerException;
+	
+	public Project addCollaborator (User user, Long projectId, Long requesterId) throws ProjectControllerException;
 	
 }

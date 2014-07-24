@@ -5,9 +5,9 @@ import java.io.File;
 public interface FileLocationGenerator {
 	public File getHomeDirectory ();
 	
-	public File getUserDrirectory (String uuid);
+	public File getUserDrirectory (Long uuid);
 	
-	public File getInstanceDirectory (String iiid);
+	public File getInstanceDirectory (Long iiid);
 	
 	public File getTempDirectory ();
 	
@@ -15,7 +15,9 @@ public interface FileLocationGenerator {
 
 	public String getTempDirectoryPath();
 
-	public String getUserDrirectoryPath(String uuid);
+	public String getUserDrirectoryPath(Long uuid);
 
 	public String getHomeDirectoryPath();
+
+	public File getUserLibrary(Long uuid);
 }

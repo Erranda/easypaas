@@ -115,7 +115,6 @@ public class RepositoryIntegrationTests {
 		pr.setDetails("Some information");
 		pr.setCreated(new Date ());
 		pr.setUpdated(new Date ());
-		pr.setPrivacy("public");
 		pr.setStatus("active");
 		pRepository.save(pr);
 		

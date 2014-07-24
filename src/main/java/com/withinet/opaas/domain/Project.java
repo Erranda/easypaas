@@ -38,10 +38,6 @@ public class Project implements Serializable {
 	@Size (min = 2, max = 30)
 	private String name;
 	
-	@Column(name="PROJECT_MOUNT_POINT", nullable=false, length=255)	
-	@NotNull
-	private String mountPoint = "/";
-	
 	@Column(name="PROJECT_DETAILS", nullable=false, length=255)	
 	@NotNull
 	private String details;
@@ -49,10 +45,6 @@ public class Project implements Serializable {
 	@Column(name="PROJECT_STATUS", nullable=false, length=255)	
 	@NotNull
 	private String status;
-	
-	@Column(name="PROJECT_PRIVACY", nullable=false, length=255)	
-	@NotNull
-	private String privacy;
 	
 	@Column(name="PROJECT_CREATED", nullable=false, length=255)	
 	@NotNull
@@ -71,6 +63,10 @@ public class Project implements Serializable {
 	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
+	
+	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	private final Set<ProjectTeam> projectTeam = new HashSet <ProjectTeam> ();
 	
 	@OneToMany(mappedBy="project",  fetch=FetchType.LAZY)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
@@ -136,14 +132,6 @@ public class Project implements Serializable {
 	public void setCreated(Date created) {
 		this.created = created;
 	}
-
-	public String getMountPoint() {
-		return mountPoint;
-	}
-
-	public void setMountPoint(String mountPoint) {
-		this.mountPoint = mountPoint;
-	}
 	
 	public void setID (Long Id){ 
 		this.ID = Id;
@@ -157,12 +145,8 @@ public class Project implements Serializable {
 		this.status = status;
 	}
 
-	public String getPrivacy() {
-		return privacy;
-	}
-
-	public void setPrivacy(String privacy) {
-		this.privacy = privacy;
+	public Set<ProjectTeam> getProjectTeam() {
+		return projectTeam;
 	}
 
 }

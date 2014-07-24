@@ -4,8 +4,8 @@
 package com.withinet.opaas.controller.impl;
 
 import java.util.Date;
+import java.util.List;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -18,9 +18,9 @@ import com.withinet.opaas.controller.AccountController;
 import com.withinet.opaas.controller.common.AccountConflictException;
 import com.withinet.opaas.controller.common.AccountControllerException;
 import com.withinet.opaas.controller.common.AccountLoginException;
+import com.withinet.opaas.controller.common.AccountNotFoundException;
+import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
-import com.withinet.opaas.controller.common.LogService;
-import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
 
@@ -51,10 +51,20 @@ public class AccountControllerImpl implements AccountController {
 	}
 
 	@Override
-	public boolean deleteAccount(Long id, Long requesterId)
+	public void deleteAccount(Long id, Long requesterId)
 			throws AccountControllerException {
-		// TODO Auto-generated method stub
-		return false;
+		User thisUser = userRepo.findOne(id);
+		if (thisUser == null)
+			throw new AccountNotFoundException ("Account not found");
+		if (thisUser.getID() != requesterId) {
+			User admin = thisUser.getAdministrator();
+			if (admin == null)
+				throw new ControllerSecurityException ("Unauthorized");
+			else if (admin.getID() != requesterId)
+				throw new ControllerSecurityException ("Unauthorized");
+		} else {
+			thisUser.setStatus("Deleted");
+		}
 	}
 
 	@Override
@@ -81,6 +91,27 @@ public class AccountControllerImpl implements AccountController {
 		//No exception thrown return user
 		return user;
 		
+	}
+
+	@Override
+	public List<User> listCollaborators(Long id, Long requesterId)
+			throws AccountControllerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<User> addTeamMembers(List<User> teamMembers, Long id,
+			Long requesterId) throws AccountControllerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<User> addTeamMember(User teamMember, Long id, Long requesterId)
+			throws AccountControllerException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

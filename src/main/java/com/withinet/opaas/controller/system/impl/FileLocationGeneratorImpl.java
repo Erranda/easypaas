@@ -8,6 +8,7 @@ import com.withinet.opaas.controller.system.FileLocationGenerator;
 
 @Component
 public class FileLocationGeneratorImpl implements FileLocationGenerator {
+	
 	public static final String systemHome = "C:/Users/Folarin/Desktop/opaas";
 	
 	public final String userHome = systemHome + "/users";
@@ -27,25 +28,26 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	}
 
 	@Override
-	public File getUserDrirectory(String uuid) {
+	public File getUserDrirectory(Long uuid) {
 		File home = new File (userHome +"/"+uuid);
 		if (home.exists()) home.mkdirs();
 		return home;
 	}
 	
 	@Override
-	public String getUserDrirectoryPath(String uuid) {
+	public String getUserDrirectoryPath(Long uuid) {
 		return userHome +"/"+uuid;
 	}
 	
-	public synchronized File getUserLibrary (String uuid) {
+	@Override
+	public synchronized File getUserLibrary (Long uuid) {
 		File home = new File (userHome + "/"+ uuid+"/library/" + System.currentTimeMillis());
 		if (home.exists()) home.mkdirs();
 		return home;
 	}
 
 	@Override
-	public File getInstanceDirectory(String iiid) {
+	public File getInstanceDirectory(Long iiid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -38,7 +38,6 @@ public class Bundle implements Serializable {
 	
 	@Column(name="BUNDLE_LOCATION", nullable=false, length=255)	
 	@NotNull
-	@Size (min = 2, max = 30)
 	private String location;
 	
 	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)
