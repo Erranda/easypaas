@@ -3,6 +3,7 @@
  */
 package com.withinet.opaas.controller.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,13 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.Application;
-import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.AccountConflictException;
-import com.withinet.opaas.controller.common.AccountControllerException;
+import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.AccountLoginException;
 import com.withinet.opaas.controller.common.AccountNotFoundException;
+import com.withinet.opaas.controller.common.CollaboratorNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
+import com.withinet.opaas.controller.common.UnauthorizedException;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
 
@@ -29,7 +32,7 @@ import com.withinet.opaas.model.UserRepository;
  *
  */
 @RestController
-public class AccountControllerImpl implements AccountController {
+public class UserControllerImpl implements UserController {
 	
 	@Autowired
 	UserRepository userRepo;
@@ -39,7 +42,7 @@ public class AccountControllerImpl implements AccountController {
 	
 	
 	@Override
-	public User createAccount(@Valid User account) throws AccountControllerException {
+	public User createAccount(@Valid User account) throws UserControllerException {
 		DomainConstraintValidator<User> dcv = new  DomainConstraintValidator<User> ();
 		if (!dcv.isValid(account)) throw new IllegalArgumentException ("Bad request");
 		if (userRepo.findByEmail(account.getEmail()) != null) throw new AccountConflictException (account.getEmail() + " is already registered on our system");
@@ -52,7 +55,7 @@ public class AccountControllerImpl implements AccountController {
 
 	@Override
 	public void deleteAccount(Long id, Long requesterId)
-			throws AccountControllerException {
+			throws UserControllerException {
 		User thisUser = userRepo.findOne(id);
 		if (thisUser == null)
 			throw new AccountNotFoundException ("Account not found");
@@ -69,16 +72,15 @@ public class AccountControllerImpl implements AccountController {
 
 	@Override
 	public User updateAccount(User account, Long id, Long requesterId)
-			throws AccountControllerException {
+			throws UserControllerException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public User readAccount(Long id, Long requesterId)
-			throws AccountControllerException {
-		// TODO Auto-generated method stub
-		return null;
+			throws UserControllerException {
+		return userRepo.findOne(id);
 	}
 
 	@Override
@@ -95,23 +97,42 @@ public class AccountControllerImpl implements AccountController {
 
 	@Override
 	public List<User> listCollaborators(Long id, Long requesterId)
-			throws AccountControllerException {
-		// TODO Auto-generated method stub
-		return null;
+			throws UserControllerException {
+		User user = userRepo.findOne(id);
+		User requester = userRepo.findOne(requesterId);
+		authorizeAssetAccess (user, requester);
+		List<User> collaborators = new ArrayList<User> ();
+		collaborators.addAll(user.getCollaborators());
+		return collaborators;
 	}
 
 	@Override
-	public List<User> addTeamMembers(List<User> teamMembers, Long id,
-			Long requesterId) throws AccountControllerException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<User> addCollaborator(User collaborator, Long id, Long requesterId)
+			throws UserControllerException {
+		User user = userRepo.findOne(id);
+		User requester = userRepo.findOne(requesterId);
+		authorizeAssetAccess (user, requester);
+		if (collaborator.getID() == 0)
+			throw new CollaboratorNotFoundException ("Please save collaborator first");
+		user.getCollaborators().add(collaborator);
+		collaborator.setAdministrator(user);
+		userRepo.save(user);
+		userRepo.save(collaborator);
+		List<User> collaborators = new ArrayList<User> ();
+		collaborators.addAll(user.getCollaborators());
+		return collaborators;
 	}
-
-	@Override
-	public List<User> addTeamMember(User teamMember, Long id, Long requesterId)
-			throws AccountControllerException {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private void authorizeAssetAccess (User user, User requester) throws AccountNotFoundException {
+		if (user == null || user.getID() == 0) 
+			throw new AccountNotFoundException ("Cannot find this user");
+		if (user.getID() != requester.getID()) {
+			User admin = user.getAdministrator();
+			if (admin == null)
+				throw new UnauthorizedException ("Unauthorized");
+			else if (admin.getID() != requester.getID()) 
+				throw new UnauthorizedException ("Unauthorized");
+		} 
 	}
 
 }

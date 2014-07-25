@@ -27,8 +27,8 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 
-import com.withinet.opaas.controller.AccountController;
-import com.withinet.opaas.controller.common.AccountControllerException;
+import com.withinet.opaas.controller.UserController;
+import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.AccountLoginException;
 
 import static com.withinet.opaas.controller.common.ServiceProperties.*;
@@ -54,7 +54,7 @@ public class Register extends Base {
 	private boolean terms;
 
 	@SpringBean
-	AccountController accountController;
+	UserController accountController;
 	
 	@SpringBean
 	CookieService cookieService;
@@ -127,7 +127,7 @@ public class Register extends Base {
                user.setLocation(location);
                try {
 				accountController.createAccount(user);
-			} catch (AccountControllerException e) {
+			} catch (UserControllerException e) {
 				error (e.getMessage());
 			}
                target.add(feedback);

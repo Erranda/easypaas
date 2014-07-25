@@ -6,7 +6,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.AccountLoginException;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
@@ -19,7 +19,7 @@ import javax.servlet.http.Cookie;
 public class SessionProvider {
     
     @Autowired
-    private AccountController accountService;
+    private UserController accountService;
     
     @Autowired
     private CookieService cookieService;

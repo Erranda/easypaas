@@ -22,7 +22,7 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 
-import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.AccountLoginException;
 
 import static com.withinet.opaas.controller.common.ServiceProperties.*;
@@ -44,7 +44,7 @@ public class Login extends Base {
 	private boolean rememberMe;
 	
 	@SpringBean
-	AccountController accountController;
+	UserController accountController;
 	
 	@SpringBean
 	CookieService cookieService;

@@ -38,8 +38,7 @@ public class Project implements Serializable {
 	@Size (min = 2, max = 30)
 	private String name;
 	
-	@Column(name="PROJECT_DETAILS", nullable=false, length=255)	
-	@NotNull
+	@Column(name="PROJECT_DETAILS", nullable=true, length=255)	
 	private String details;
 	
 	@Column(name="PROJECT_STATUS", nullable=false, length=255)	
@@ -47,11 +46,9 @@ public class Project implements Serializable {
 	private String status;
 	
 	@Column(name="PROJECT_CREATED", nullable=false, length=255)	
-	@NotNull
 	private Date created;
 	
-	@Column(name="PROJECT_UPDATED", nullable=true, length=255)
-	@NotNull (message = "Sorry, we need to know when this project was updated")
+	@Column(name="PROJECT_UPDATED", nullable=false, length=255)
 	private Date updated;
 	
 	@NotNull (message = "Sorry, we need to know who owns this project")

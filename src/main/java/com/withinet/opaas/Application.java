@@ -18,7 +18,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.withinet.opaas.controller.AccountController;
+import com.withinet.opaas.controller.BundleController;
+import com.withinet.opaas.controller.UserController;
+import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.domain.Bundle;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.wicket.html.Dashboard;
@@ -93,7 +97,10 @@ public class Application extends WebApplication {
     }
 	
 	@Autowired
-	public void createUser (UserRepository userRepository) {
+	BundleController bundleController; 
+	
+	@Autowired
+	public void createUser (UserController userController) throws BundleControllerException, UserControllerException {
 		User web = new User ();
 		web.setCreated(new Date ());
 		web.setFullName("Web");
@@ -102,7 +109,44 @@ public class Application extends WebApplication {
 		web.setStatus("active");
 		web.setEmail("abc@xyz.com");
 		web.setLocation("United Kingdom");
-		userRepository.save(web);
+		userController.createAccount(web);
+		
+		User pao = new User ();
+		pao.setCreated(new Date ());
+		pao.setFullName("Pao");
+		pao.setPassword("Pao@123");
+		pao.setPlatformName("Yes man");
+		pao.setStatus("active");
+		pao.setEmail("pao@xyz.com");
+		pao.setLocation("United Kingdom");
+		userController.createAccount(pao);
+		
+		User ming = new User ();
+		ming.setCreated(new Date ());
+		ming.setFullName("Ming");
+		ming.setPassword("Ming@123");
+		ming.setPlatformName("Web");
+		ming.setStatus("active");
+		ming.setEmail("ming@xyz.com");
+		ming.setLocation("United Kingdom");
+		userController.createAccount(ming);
+		
+		userController.addCollaborator(pao, web.getID(), web.getID());
+		userController.addCollaborator(ming, web.getID (), web.getID());
+		
+		Bundle bundle = new Bundle ();
+		bundle.setLocation("http:ssdasaa");
+		bundle.setOwner(web);
+		bundle.setSymbolicName("Hello");
+		
+		Bundle bundle1 = new Bundle ();
+		bundle1.setLocation("http:ssdasaa");
+		bundle1.setOwner(web);
+		bundle1.setSymbolicName("Hello Two");
+		
+		bundleController.createBundle(bundle, web.getID());
+		bundleController.createBundle(bundle1, web.getID());
+		
 	}
 
 }

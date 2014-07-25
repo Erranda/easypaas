@@ -59,7 +59,7 @@ public class User implements Serializable {
 	@Column(name="USER_STATUS", nullable=false)
 	private String status;
 	
-	@ManyToOne(targetEntity=User.class, fetch=FetchType.LAZY)	
+	@ManyToOne(targetEntity=User.class, fetch=FetchType.EAGER)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumns({ @JoinColumn(name="USER_ADMINISTRATOR_ID", referencedColumnName="ID", nullable=true) })	
 	private User administrator;
@@ -69,29 +69,24 @@ public class User implements Serializable {
 	@JoinColumns({ @JoinColumn(name="USER_ROLE_ID", referencedColumnName="ID", nullable=true) })	
 	private UserRole assignedRole;
 	
-	@OneToMany(mappedBy="owner",  fetch=FetchType.LAZY)
-	@Cascade({org.hibernate.annotations.CascadeType.DELETE})
-	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
+	@OneToMany(mappedBy="owner",   fetch=FetchType.EAGER)
+	@Cascade({org.hibernate.annotations.CascadeType.DELETE})	
 	private final Set<UserRole> createdRoles = new HashSet <UserRole> ();
 	
-	@OneToMany(mappedBy="owner",  fetch=FetchType.LAZY)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
-	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
+	@OneToMany(mappedBy="owner",  fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})		
 	private Set<Bundle> bundles = new HashSet <Bundle> ();
 			
-	@OneToMany(mappedBy="owner", targetEntity=Project.class)	
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
-	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
+	@OneToMany(mappedBy="owner", targetEntity=Project.class,  fetch=FetchType.EAGER)	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})		
 	private Set<Project> projects = new HashSet<Project>();
 		
-	@OneToMany(mappedBy="administrator", targetEntity=User.class)	
+	@OneToMany(mappedBy="administrator", targetEntity=User.class,  fetch=FetchType.EAGER)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
-	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
 	private Set<User> collaborators = new HashSet<User>();
 		
-	@OneToMany(mappedBy="owner", targetEntity=Instance.class)	
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})		
-	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
+	@OneToMany(mappedBy="owner", targetEntity=Instance.class,  fetch=FetchType.EAGER)	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})			
 	private Set<Instance> instances = new HashSet<Instance>();
 	
 	@OneToMany (mappedBy="user", fetch=FetchType.EAGER)
@@ -225,5 +220,14 @@ public class User implements Serializable {
 
 	public Set<ProjectTeam> getProjectTeam() {
 		return projectTeam;
+	}
+	
+	@Override
+	public boolean equals (Object o) {
+		if (!(o instanceof User))
+			return false;
+		else if (((User) o).getID() == this.getID())
+			return true;
+		return false;
 	}
 }

@@ -1,12 +1,11 @@
 package com.withinet.opaas.controller.system.impl;
 
 import java.io.File;
-
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.withinet.opaas.controller.system.FileLocationGenerator;
 
-@Component
+@Service
 public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	
 	public static final String systemHome = "C:/Users/Folarin/Desktop/opaas";
@@ -18,7 +17,7 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	@Override
 	public File getHomeDirectory() {
 		File home = new File (systemHome);
-		if (home.exists()) home.mkdirs();
+		if (!home.exists()) home.mkdirs();
 		return home;
 	}
 	
@@ -30,7 +29,7 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	@Override
 	public File getUserDrirectory(Long uuid) {
 		File home = new File (userHome +"/"+uuid);
-		if (home.exists()) home.mkdirs();
+		if (!home.exists()) home.mkdirs();
 		return home;
 	}
 	
@@ -42,7 +41,7 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	@Override
 	public synchronized File getUserLibrary (Long uuid) {
 		File home = new File (userHome + "/"+ uuid+"/library/" + System.currentTimeMillis());
-		if (home.exists()) home.mkdirs();
+		if (!home.exists()) home.mkdirs();
 		return home;
 	}
 
@@ -55,7 +54,7 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	@Override
 	public synchronized File getTempDirectory() {
 		File home = new File (tempHome + "/" + System.currentTimeMillis());
-		if (home.exists()) home.mkdirs();
+		if (!home.exists()) home.mkdirs();
 		return home;
 	}
 	

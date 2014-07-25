@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -39,6 +41,10 @@ public class Bundle implements Serializable {
 	@Column(name="BUNDLE_LOCATION", nullable=false, length=255)	
 	@NotNull
 	private String location;
+	
+	@Column(name="UPDATED", nullable=false)	
+	@Temporal(TemporalType.DATE)
+	private java.util.Date updated;
 	
 	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
@@ -77,6 +83,14 @@ public class Bundle implements Serializable {
 
 	public Set<ProjectBundle> getProjectBundles() {
 		return projectBundles;
+	}
+
+	public java.util.Date getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(java.util.Date updated) {
+		this.updated = updated;
 	}
 	
 }

@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.cli.MavenCli;
+import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -25,21 +27,24 @@ import javax.xml.validation.*;
 import com.withinet.opaas.controller.system.BundleFileInstaller;
 import com.withinet.opaas.domain.Bundle;
 
+@Service
 public class BundleFileInstallerImpl implements BundleFileInstaller {
 	
 	@Override
 	public List<Bundle> installBundles(List<String> pomJarZipPath, String destPath) throws IOException {
 		List<Bundle> bundles = new ArrayList<Bundle> ();
-		for (String filePath : pomJarZipPath) {
-			filePath = filePath.toLowerCase().trim();
-			if (filePath.endsWith(".xml"))
-				bundles.addAll(installPom (filePath, destPath));
-			else if (filePath.endsWith(".zip"))
-				bundles.addAll (installZip (filePath, destPath));
-			else if (filePath.endsWith(".jar"))
-				bundles.add(installBundle (filePath, destPath));
+		for (String fileName : pomJarZipPath) {
+			fileName = fileName.toLowerCase().trim();
+			String extension = FilenameUtils.getExtension(fileName);
+			extension = extension.toLowerCase().trim();
+			if (extension.equals("xml"))
+				bundles.addAll(installPom (fileName, destPath));
+			else if (extension.equals("zip"))
+				bundles.addAll (installZip (fileName, destPath));
+			else if (extension.equals("jar"))
+				bundles.add(installBundle (fileName, destPath));
 			else{
-				new File (filePath).delete();
+				new File (fileName).delete();
 				throw new IOException ("Invalid extension submitted");
 			}	
 		}
@@ -72,6 +77,7 @@ public class BundleFileInstallerImpl implements BundleFileInstaller {
 			} else {
 				bundle = new Bundle ();
 				bundle.setLocation(file.getCanonicalPath());
+				bundle.setSymbolicName(file.getName());
 				bundles.add(bundle);
 			}
 		}
@@ -93,8 +99,8 @@ public class BundleFileInstallerImpl implements BundleFileInstaller {
 		ZipEntry ze = null;
 		while ((ze = zin.getNextEntry()) != null) {
 		    if (ze.getName().endsWith(".jar")) {
-		    	String fileName = new File (destPath + "/" + ze.getName()).getAbsolutePath();
-		    	OutputStream out = new FileOutputStream(fileName);
+		    	String fileLocation = new File (destPath + "/" + ze.getName()).getAbsolutePath();
+		    	OutputStream out = new FileOutputStream(fileLocation);
 		    	byte[] buffer = new byte[8192];
 		        int len;
 		        while ((len = zin.read(buffer)) != -1) {
@@ -102,7 +108,8 @@ public class BundleFileInstallerImpl implements BundleFileInstaller {
 		        }
 		        out.close();
 		        Bundle bundle = new Bundle ();
-		        bundle.setLocation(fileName);
+		        bundle.setLocation(fileLocation);
+		        bundle.setSymbolicName(new File(fileLocation).getName());
 		        bundles.add(bundle);
 		    } else if (ze.getName().endsWith(".xml")) {
 		    	String destFilePath = new File (destPath + "/" + ze.getName()).getAbsolutePath();
