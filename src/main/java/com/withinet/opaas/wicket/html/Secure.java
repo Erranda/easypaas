@@ -12,6 +12,7 @@ import com.withinet.opaas.wicket.services.UserSession;
 public abstract class Secure extends WebPage {
 	
 	public Secure() {
+		setVersioned (false);
 		if(UserSession.get().userNotLoggedIn()) throw new RestartResponseAtInterceptPageException(
 				Login.class);
 	}

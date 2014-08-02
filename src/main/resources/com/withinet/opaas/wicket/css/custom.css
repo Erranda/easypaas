@@ -31,3 +31,8 @@ Assigned to:	You
   font-weight: 600;
   src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxn5HxGBcBvicCpTp6spHfNo.woff) format('woff');
 }
+
+.chosen-container
+{
+    width: 100% !important;
+}

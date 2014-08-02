@@ -81,7 +81,7 @@ h6 {
   border-radius: 0 !important;
 }
 .navbar.navbar-inverse {
-  background-image: -webkit-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+  background: #292929;
   border-color: #292929;
   border-bottom: 1px solid #000;
 }
@@ -1379,7 +1379,7 @@ ul.pagination li.active a:hover {
   background-image: -webkit-gradient(linear, left 0%, left 100%, from(#ff9900), to(#cc7a00));
   background-image: -webkit-linear-gradient(top, #ff9900, 0%, #cc7a00, 100%);
   background-image: -moz-linear-gradient(top, #ff9900 0%, #cc7a00 100%);
-  background-image: linear-gradient(to bottom, #696969  0%, #696969  100%);
+  background-image: linear-gradient(to bottom, #ff9900 0%, #cc7a00 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff9900', endColorstr='#ffcc7a00', GradientType=0);
   border-color: #c27400;
@@ -1453,8 +1453,8 @@ ul.pagination li.active a:hover {
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-  background-color: #696969;
-  border-color: #696969;
+  background-color: #cc7a00;
+  border-color: #c27400;
 }
 .thumbnail,
 .img-thumbnail {

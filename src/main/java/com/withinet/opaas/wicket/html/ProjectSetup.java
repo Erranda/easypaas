@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
@@ -30,6 +32,7 @@ import org.apache.wicket.validation.validator.StringValidator;
 import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.ProjectController;
+import com.withinet.opaas.controller.common.BundleConflictException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
@@ -40,7 +43,7 @@ import com.withinet.opaas.domain.Project;
 import com.withinet.opaas.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
 
-public class ProjectSetup extends WebPage {
+public class ProjectSetup extends Secure {
 
 	/**
 	 * 
@@ -59,7 +62,7 @@ public class ProjectSetup extends WebPage {
 
 	private Long userId = UserSession.get().getUser().getID();
 
-	private ArrayList<String> projectBundlesSelected = new ArrayList<String>();
+	private ArrayList<String> projectFileBundlesSelected = new ArrayList<String>();
 
 	private HashMap<String, Bundle> thisBundleModel = new HashMap<String, Bundle>();
 
@@ -73,7 +76,7 @@ public class ProjectSetup extends WebPage {
 
 	private boolean noError = true;
 
-	private List<Bundle> projectBundles = new ArrayList<Bundle>();
+	private List<Bundle> projectFileBundles = new ArrayList<Bundle>();
 
 	@SpringBean
 	private FileLocationGenerator fileMan;
@@ -97,6 +100,8 @@ public class ProjectSetup extends WebPage {
 		Form<Void> setupForm = new Form<Void>("form") {
 			@Override
 			protected void onSubmit() {
+				Long start = System.currentTimeMillis();
+				Double startD = start.doubleValue();
 				upload = wicketFileUploadField.getFileUpload();
 				try {
 					if (upload != null) {
@@ -108,7 +113,12 @@ public class ProjectSetup extends WebPage {
 								|| extension.equals("zip")) {
 							processUpload();
 							try {
-								createProject();
+								Project project = createProject();
+								Long end = System.currentTimeMillis();
+								Double endD = end.doubleValue();
+								info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds");
+								info ("Cached bundles: " + project.getProjectBundles().size());
+								info ("Team Size: " + project.getProjectTeam().size());
 							} catch (ProjectControllerException e) {
 								e.printStackTrace();
 								error (e.getMessage());
@@ -118,7 +128,12 @@ public class ProjectSetup extends WebPage {
 							deleteProject();
 						}
 					} else {
-						createProject();
+						Project project = createProject();
+						Long end = System.currentTimeMillis();
+						Double endD = end.doubleValue();
+						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds");
+						info ("Cached bundles: " + project.getProjectBundles().size());
+						info ("Team Size: " + project.getProjectTeam().size());
 					}
 				} catch (ProjectControllerException e) {
 					e.printStackTrace();
@@ -143,7 +158,7 @@ public class ProjectSetup extends WebPage {
 		setupForm.add(wicketName);
 
 		ListMultipleChoice<String> bundles = new ListMultipleChoice<String>(
-				"bundles", new Model(projectBundlesSelected), listBundles());
+				"bundles", new Model(projectFileBundlesSelected), listBundles());
 		setupForm.add(bundles);
 
 		ListMultipleChoice<String> team = new ListMultipleChoice<String>(
@@ -160,6 +175,19 @@ public class ProjectSetup extends WebPage {
 		setupForm.add(progress);
 		setupForm.add(new CheckBox("active", new PropertyModel<Boolean>(this,
 				"active"))); // this line
+		setupForm.add(new IndicatingAjaxButton ("submit", setupForm){
+			@Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+			{
+				target.add(feedback);
+			}
+			
+			@Override
+            protected void onError(AjaxRequestTarget target, Form<?> form)
+            {
+            	target.add(feedback);
+            }
+		});
 
 	}
 
@@ -182,11 +210,24 @@ public class ProjectSetup extends WebPage {
 			System.out.println (userLibDirectory.getAbsolutePath());
 			List<String> list = new ArrayList<String>();
 			list.add(thisFile.getAbsolutePath());
-			projectBundles = bundleInstaller.installBundles(list,
+			projectFileBundles = bundleInstaller.installBundles(list,
 					userLibDirectory.getAbsolutePath());
-				for (int i = 0; i < projectBundles.size(); i++) {
-					projectBundles.set(i, bundleController.createBundle(
-							projectBundles.get(i), userId));
+				for (int i = 0; i < projectFileBundles.size(); i++) {
+					try {
+						projectFileBundles.set(i, bundleController.createBundle(
+							projectFileBundles.get(i), userId));
+					}  catch (BundleControllerException e) {
+						if (e instanceof BundleConflictException) {
+							e.printStackTrace();
+							try {
+								projectFileBundles.set(i, bundleController.readBundleByName(projectFileBundles.get(i).getSymbolicName(), userId));
+								info ("Some bundles have been reused from your library due to name conflict");
+								info (e.getMessage());
+							} catch (BundleControllerException e1) {
+								throw new RuntimeException (e1.getMessage());
+							}
+						}
+					}
 				}
 			} else {
 				error("Could not process your file at this time");
@@ -194,17 +235,15 @@ public class ProjectSetup extends WebPage {
 		} catch (IOException e) {
 			e.printStackTrace();
 			error(e.getMessage());
-		} catch (BundleControllerException e) {
-			e.printStackTrace();
-			error(e.getMessage());
 		}
-		return projectBundles;
+		return projectFileBundles;
 	}
 
 	private List<Bundle> processSelectedBundles() {
 		List<Bundle> bundles = new ArrayList<Bundle>();
-		for (String bundle : projectBundlesSelected)
-			bundles.add(thisBundleModel.get(bundle));
+		for (String bundle : projectFileBundlesSelected)
+			if (thisBundleModel.get(bundle) != null)
+				bundles.add(thisBundleModel.get(bundle));
 		return bundles;
 
 	}
@@ -216,6 +255,8 @@ public class ProjectSetup extends WebPage {
 			bundles.add(bundle.getSymbolicName());
 			thisBundleModel.put(bundle.getSymbolicName(), bundle);
 		}
+		if (bundles.size() == 0)
+			bundles.add("Bundle Library Empty");
 		return bundles;
 	}
 
@@ -227,6 +268,8 @@ public class ProjectSetup extends WebPage {
 			formList.add(formKey);
 			thisTeamModel.put(formKey, user);
 		}
+		if (formList.size () == 0)
+			formList.add("Your team list is empty");
 		Collections.sort(formList);
 		return formList;
 	}
@@ -252,20 +295,23 @@ public class ProjectSetup extends WebPage {
 		for (Bundle bundle : processSelectedBundles()) {
 			projectController.addBundle(bundle, thisProject.getID(), userId);
 		}
-		for (Bundle bundle : projectBundles) {
+		
+		for (Bundle bundle : projectFileBundles) {
 			projectController.addBundle(bundle, thisProject.getID(), userId);
 		}
+		
 		for (User user : processSelectedTeam()) {
-			projectController.addCollaborator(user, userId, userId);
+			projectController.addCollaborator(user, thisProject.getID(), userId);
 		}
 
-		return thisProject;
+		return projectController.readProjectById(thisProject.getID(), userId);
 	}
 
 	private List<User> processSelectedTeam() {
 		List<User> projectMembers = new ArrayList<User>();
 		for (String memberKey : projectTeam) {
-			projectMembers.add(thisTeamModel.get(memberKey));
+			if (thisTeamModel.get(memberKey) != null)
+				projectMembers.add(thisTeamModel.get(memberKey));
 		}
 		return projectMembers;
 	}

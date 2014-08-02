@@ -64,7 +64,9 @@ public class BundleControllerTest {
 		bundle.setLocation("http:ssdasaa");
 		bundle.setOwner(web);
 		bundle.setSymbolicName("Hello");
+		web.getBundles().add(bundle);
 		assertTrue (bundleController.createBundle(bundle, web.getID()).getID() > 0);
+		bundleController.deleteBundle(bundle.getID(), web.getID());
 	}
 
 	@Test (expected = BundleConflictException.class) 
@@ -73,9 +75,10 @@ public class BundleControllerTest {
 		bundle.setLocation("http:ssdasaa");
 		bundle.setOwner(web);
 		bundle.setSymbolicName("Hello");
+		web.getBundles().add(bundle);
 		bundleController.createBundle(bundle, web.getID());
 		bundleController.createBundle(bundle, web.getID());
-		
+		bundleController.deleteBundle(bundle.getID(), web.getID());
 	}
 	
 }

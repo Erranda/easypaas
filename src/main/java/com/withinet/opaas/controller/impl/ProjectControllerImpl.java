@@ -106,7 +106,7 @@ public class ProjectControllerImpl implements ProjectController {
 	public List<Project> listCreatedProjectsByOwner(Long userId,
 			Long requesterId) throws ProjectControllerException {
 		User target = approveAccessCascadeType (userId, requesterId);
-		if (target == null) 
+		if (target == null || target.getID() == 0) 
 			throw new ControllerSecurityException ("Unauthenticated");
 		return projectRepository.findByOwner(target);
 	}
@@ -167,6 +167,9 @@ public class ProjectControllerImpl implements ProjectController {
 			throws ProjectControllerException {
 		Project thisProject = projectRepository.findOne(projectId);
 		User user = userRepository.findOne(requesterId);
+		if (bundle == null) throw new IllegalArgumentException ("Bundle cannot be null");
+		if (bundle.getID() == 0) 
+			throw new ProjectNotFoundException ("Please save the bundle first");
 		if (thisProject == null)
 			throw new ProjectNotFoundException ("Project is not recognized");
 		if ((thisProject.getOwner().getID() != requesterId) 

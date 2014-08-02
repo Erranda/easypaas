@@ -87,7 +87,6 @@ public class Project implements Serializable {
 		if (!(o instanceof Project)) return false;
 		if (((Project) o).getID() == ID) return true;
 		return false;
-		
 	}
 
 	public String getName() {

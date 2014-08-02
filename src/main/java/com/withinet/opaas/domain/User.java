@@ -35,7 +35,7 @@ public class User implements Serializable {
 	
 	@NotNull
 	@Email
-	@Column(name="USER_EMAIL", nullable=false, length=255, unique = false)	
+	@Column(name="USER_EMAIL", nullable=false, length=255, unique = true)	
 	private String email;
 	
 	@NotNull

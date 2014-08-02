@@ -7,7 +7,10 @@ import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.resource.UrlResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.apache.wicket.util.lang.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +19,19 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.withinet.opaas.controller.BundleController;
+import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.UserController;
+import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.domain.Bundle;
+import com.withinet.opaas.domain.Project;
 import com.withinet.opaas.domain.User;
-import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.wicket.html.Dashboard;
 import com.withinet.opaas.wicket.html.Login;
+import com.withinet.opaas.wicket.html.ProjectIndex;
 import com.withinet.opaas.wicket.html.ProjectSetup;
 import com.withinet.opaas.wicket.html.Register;
 import com.withinet.opaas.wicket.services.SessionProvider;
@@ -69,7 +74,7 @@ public class Application extends WebApplication {
 	 */
 	@Override
 	public Class<? extends Page> getHomePage() {
-		return ProjectSetup.class;
+		return ProjectIndex.class;
 	}
 
 	/**
@@ -84,10 +89,13 @@ public class Application extends WebApplication {
 	protected void init() {
 		super.init();
 		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
+		getStoreSettings().setMaxSizePerSession(Bytes.kilobytes(5000));
+		getStoreSettings().setInmemoryCacheSize(500);
 		getComponentInstantiationListeners().add(
 				new SpringComponentInjector(this, applicationContext));
 		mountPage("/login", Login.class);
 		mountPage("/register", Register.class);
+		mountPage("/projects", ProjectIndex.class);
 		mountPage("/dashboard", Dashboard.class);
 	}
 	
@@ -100,11 +108,14 @@ public class Application extends WebApplication {
 	BundleController bundleController; 
 	
 	@Autowired
-	public void createUser (UserController userController) throws BundleControllerException, UserControllerException {
+	ProjectController projectController;
+	
+	@Autowired
+	public void createUser (UserController userController) throws BundleControllerException, UserControllerException, ProjectControllerException {
 		User web = new User ();
 		web.setCreated(new Date ());
 		web.setFullName("Web");
-		web.setPassword("Folarin@123");
+		web.setPassword("abc@xyz.com");
 		web.setPlatformName("Web");
 		web.setStatus("active");
 		web.setEmail("abc@xyz.com");
@@ -146,6 +157,23 @@ public class Application extends WebApplication {
 		
 		bundleController.createBundle(bundle, web.getID());
 		bundleController.createBundle(bundle1, web.getID());
+		
+		Project p = new Project ();
+		p.setCreated(new Date());
+		p.setDetails("Hello world");
+		p.setName("Hello world");
+		p.setStatus("Active");
+		p.setUpdated(new Date());
+		p.setOwner(web);
+		projectController.createProject(p, web.getID());
+		Project p1 = new Project ();
+		p1.setCreated(new Date());
+		p1.setDetails("Hello world2");
+		p1.setName("Hello world1");
+		p1.setStatus("Active");
+		p1.setUpdated(new Date());
+		p1.setOwner(web);
+		projectController.createProject(p1, web.getID());
 		
 	}
 

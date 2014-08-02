@@ -65,7 +65,7 @@ public class ProjectTeam implements Serializable {
     @ManyToOne
     @JoinColumn(
         name = "PROJECT_ID",
-        insertable = false, updatable = false, referencedColumnName = "ID")
+        insertable = false, updatable = false)
     private Project project;
 
     @ManyToOne

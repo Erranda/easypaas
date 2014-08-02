@@ -93,11 +93,13 @@ public class RepositoryIntegrationTests {
 		user.setPassword("Password");
 		user.setPlatformName("CS5041");
 		user.setStatus("registered");
+		user.setLocation("United Kingdom");
 		this.repository.save(user);
 		
 		r.setName("Project Manager");
 		r.setDescription("Can create projects");
 		r.setOwner(user);
+		user.getCreatedRoles().add(r);
 		this.uRoleRepository.save(r);
 		
 		p.setValue("Start-Instance");
@@ -108,6 +110,8 @@ public class RepositoryIntegrationTests {
 		b.setLocation("file://C:/sample/location");
 		b.setOwner(user);
 		b.setSymbolicName("opaasbundle");
+		b.setUpdated(new Date());
+		user.getBundles().add(b);
 		bRepository.save(b);
 		
 		pr.setName("Hello");
@@ -116,6 +120,7 @@ public class RepositoryIntegrationTests {
 		pr.setCreated(new Date ());
 		pr.setUpdated(new Date ());
 		pr.setStatus("active");
+		user.getProjects().add(pr);
 		pRepository.save(pr);
 		
 		ProjectBundle pb = new ProjectBundle (user.getEmail(), pr, b);
@@ -133,18 +138,12 @@ public class RepositoryIntegrationTests {
 	
 	@After
 	public void tearDown () {
-		this.rpRepo.delete(rp);
+		//this.rpRepo.delete(rp);
 		this.repository.delete(user);
 		
 		
 		
 
-	}
-	
-	@Test
-	public void findsFirstPageOfUsers() {
-		Page<User> users = this.repository.findAll(new PageRequest (0, 10));
-		assertThat(users.getTotalElements(), is(org.hamcrest.Matchers.equalTo(1L)));
 	}
 	
 	@Test

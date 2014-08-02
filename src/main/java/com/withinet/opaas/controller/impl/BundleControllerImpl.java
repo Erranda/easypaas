@@ -45,7 +45,7 @@ public class BundleControllerImpl implements BundleController {
 		if (user == null || user.getID() == 0)
 			throw new UnauthorizedException ("Unauthorized");
 		if (bundleRepository.findByOwnerAndSymbolicName(user, bundle.getSymbolicName()).size() > 0) 
-			throw new BundleConflictException ("Bundle with this name already exists");
+			throw new BundleConflictException ("Bundle with name " + bundle.getSymbolicName() + " already exists");
 		bundle.setUpdated(new Date());
 		bundle.setOwner(user);
 		return bundleRepository.save(bundle);
@@ -86,6 +86,13 @@ public class BundleControllerImpl implements BundleController {
 	 */
 	@Override
 	public List<Bundle> listBundlesByOwner(Long id, Long requesterId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Bundle readBundleByName(String name, Long requesterId)
+			throws BundleControllerException {
 		// TODO Auto-generated method stub
 		return null;
 	}
