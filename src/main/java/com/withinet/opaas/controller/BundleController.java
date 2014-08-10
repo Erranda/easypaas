@@ -19,12 +19,13 @@ public interface BundleController {
 	
 	public boolean deleteBundle (Long id, Long requesterId) throws BundleControllerException;
 	
-	public Bundle updateBundle (Bundle bundle, Long id, Long requesterId) throws BundleControllerException;
-	
 	public Bundle readBundle (Long id, Long requesterId) throws BundleControllerException;
 	
 	public Bundle readBundleByName (String name, Long requesterId) throws BundleControllerException;
 	
-	public List<Bundle> listBundlesByOwner (Long id, Long requesterId);
+	public List<Bundle> listBundlesByOwner (Long id, Long requesterId) throws BundleControllerException;
+
+	Bundle updateBundle(Bundle bundle, Long requesterId)
+			throws BundleControllerException;
 	
 }

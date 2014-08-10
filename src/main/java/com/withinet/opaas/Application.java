@@ -34,7 +34,6 @@ import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.html.Dashboard;
 import com.withinet.opaas.wicket.html.Login;
 import com.withinet.opaas.wicket.html.ProjectIndex;
-import com.withinet.opaas.wicket.html.ProjectSetup;
 import com.withinet.opaas.wicket.html.Register;
 import com.withinet.opaas.wicket.services.SessionProvider;
 

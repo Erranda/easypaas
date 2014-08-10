@@ -11,6 +11,6 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
 	
 	public List<Bundle> findByOwner (User owner) ;
 	
-	public List<Bundle> findByOwnerAndSymbolicName (User owner, String symbolicName);
+	public Bundle findByOwnerAndSymbolicName (User owner, String symbolicName);
 	
 }

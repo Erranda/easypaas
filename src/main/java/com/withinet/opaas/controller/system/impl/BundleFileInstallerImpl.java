@@ -24,11 +24,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.*;
 
-import com.withinet.opaas.controller.system.BundleFileInstaller;
+import com.withinet.opaas.controller.system.BundleInstaller;
 import com.withinet.opaas.model.domain.Bundle;
 
 @Service
-public class BundleFileInstallerImpl implements BundleFileInstaller {
+public class BundleFileInstallerImpl implements BundleInstaller {
 	
 	@Override
 	public List<Bundle> installBundles(List<String> pomJarZipPath, String destPath) throws IOException {

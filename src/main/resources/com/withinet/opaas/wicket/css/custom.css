@@ -69,7 +69,7 @@ li.feedbackPanelINFO:before {
 .feedbackPanel {
     width: 100%;
     display: block;
-    margin: 0;
+    margin-bottom: 1em;
     padding: 0;
 }
 
@@ -88,4 +88,22 @@ li.feedbackPanelINFO:before {
 
 section {
 	margin-bottom: 10px;
+}
+
+a.project-setup {
+	position:relative;
+	padding-left: 30px;
+}
+
+a.project-setup:before {
+	content: "\f055";
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: inherit;
+	font-size: 22px;
+	padding-right: 0.5em;
+	position: absolute;
+	left: 5px;
+	font-family: FontAwesome;
+	top: 0px;
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.withinet.opaas.model.domain.Bundle;
 
-public interface BundleFileInstaller {
+public interface BundleInstaller {
 	
 	public List<Bundle> installZip(String zipPath, String destPath) throws IOException;
 

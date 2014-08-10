@@ -166,7 +166,7 @@ h6 {
 [ Subnavbar / .subnavbar ]
 */
 .subnavbar {
-  margin-bottom: 2.5em;
+  margin-bottom: 1em;
   border-top: 1px solid #595959;
 }
 .subnavbar .subnav-toggle {

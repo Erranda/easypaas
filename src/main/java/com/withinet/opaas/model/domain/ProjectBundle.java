@@ -90,10 +90,6 @@ public class ProjectBundle implements Serializable {
         // Set identifier values
         this.id.projectId = project.getID();
         this.id.bundleId = bundle.getID();
-
-        // Guarantee referential integrity if made bidirectional
-        project.getProjectBundles().add(this);
-        bundle.getProjectBundles().add(this);
     }
 
     public Id getId() {

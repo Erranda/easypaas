@@ -59,10 +59,6 @@ public class Project implements Serializable {
 	
 	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
-	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
-	
-	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectTeam> projectTeam = new HashSet <ProjectTeam> ();
 	
 	@OneToMany(mappedBy="project",  fetch=FetchType.EAGER)
@@ -95,10 +91,6 @@ public class Project implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Set<ProjectBundle> getProjectBundles() {
-		return projectBundles;
 	}
 
 	public Set<Instance> getInstances() {

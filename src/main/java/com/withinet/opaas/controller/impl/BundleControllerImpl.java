@@ -3,6 +3,8 @@
  */
 package com.withinet.opaas.controller.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -10,14 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.BundleController;
+import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.BundleConflictException;
 import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.UnauthorizedException;
+import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.controller.system.FileService;
+import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.BundleRepository;
+import com.withinet.opaas.model.ProjectBundleRepository;
 import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.model.domain.Bundle;
-import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.ProjectBundle;
 import com.withinet.opaas.model.domain.User;
 
 /**
@@ -27,11 +35,36 @@ import com.withinet.opaas.model.domain.User;
 @RestController
 public class BundleControllerImpl implements BundleController {
 	
-	@Autowired
+	
 	BundleRepository bundleRepository;
 	
+	UserController userController;
+	
+	FileService fileService;
+	
+	ProjectBundleRepository projectBundleRepository;
+	
 	@Autowired
-	UserRepository userRepository;
+	public void setBundleRepository (BundleRepository bundleRepository) {
+		this.bundleRepository = bundleRepository;
+	}
+	
+	@Autowired
+	public void setUserController (UserController userController) {
+		this.userController = userController;
+	}
+	
+	@Autowired
+	public void setProjectBundleRepository (ProjectBundleRepository repository) {
+		this.projectBundleRepository = repository;
+	}
+	
+	@Autowired
+	public void setFileService (FileService fileService) {
+		this.fileService = fileService;
+	}
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.BundleController#createBundle(com.withinet.opaas.domain.Bundle, java.lang.Long)
@@ -41,10 +74,17 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		DomainConstraintValidator<Bundle> dcv = new  DomainConstraintValidator<Bundle> ();
 		if (!dcv.isValid(bundle)) throw new IllegalArgumentException ("Bad request");
-		User user = userRepository.findOne(requesterId);
+		User user;
+		
+		try {
+			user = userController.readAccount(requesterId, requesterId);
+		} catch (UserControllerException e) {
+			throw new BundleControllerException (e.getMessage());
+		}
+		
 		if (user == null || user.getID() == 0)
 			throw new UnauthorizedException ("Unauthorized");
-		if (bundleRepository.findByOwnerAndSymbolicName(user, bundle.getSymbolicName()).size() > 0) 
+		if (bundleRepository.findByOwnerAndSymbolicName(user, bundle.getSymbolicName()) != null) 
 			throw new BundleConflictException ("Bundle with name " + bundle.getSymbolicName() + " already exists");
 		bundle.setUpdated(new Date());
 		bundle.setOwner(user);
@@ -57,18 +97,25 @@ public class BundleControllerImpl implements BundleController {
 	@Override
 	public boolean deleteBundle(Long id, Long requesterId)
 			throws BundleControllerException {
-		// TODO Auto-generated method stub
-		return false;
+		Bundle forDelete = getWithBasicAuth (id, requesterId);
+		List<ProjectBundle> projects = projectBundleRepository.findByBundle(forDelete);
+		projectBundleRepository.delete(projects);
+		bundleRepository.delete(forDelete);
+		fileService.deleteFile(forDelete.getLocation());
+		return true;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.BundleController#updateBundle(com.withinet.opaas.domain.Bundle, java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public Bundle updateBundle(Bundle bundle, Long id, Long requesterId)
+	public Bundle updateBundle(Bundle bundle, Long requesterId)
 			throws BundleControllerException {
-		// TODO Auto-generated method stub
-		return null;
+		Bundle forSave = getWithBasicAuth (bundle.getID(), requesterId);
+		if (bundle.getLocation() != null)
+			forSave.setLocation(bundle.getLocation());
+		bundleRepository.save(forSave);
+		return forSave;
 	}
 
 	/* (non-Javadoc)
@@ -77,24 +124,46 @@ public class BundleControllerImpl implements BundleController {
 	@Override
 	public Bundle readBundle(Long id, Long requesterId)
 			throws BundleControllerException {
-		// TODO Auto-generated method stub
-		return null;
+		return getWithBasicAuth (id, requesterId);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.BundleController#listBundlesByOwner(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public List<Bundle> listBundlesByOwner(Long id, Long requesterId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Bundle> listBundlesByOwner(Long id, Long requesterId) throws BundleControllerException {
+		try {
+			User user = userController.readAccount(requesterId, requesterId);
+			return bundleRepository.findByOwner(user);
+		} catch (UserControllerException e) {
+			throw new BundleControllerException (e.getMessage());
+		}
 	}
 
 	@Override
 	public Bundle readBundleByName(String name, Long requesterId)
 			throws BundleControllerException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			User user = userController.readAccount(requesterId, requesterId);
+			return bundleRepository.findByOwnerAndSymbolicName(user, name);
+		} catch (UserControllerException e) {
+			throw new BundleControllerException (e.getMessage());
+		}
+	}
+	
+	private Bundle getWithBasicAuth (Long bundleId, Long requesterId) throws BundleControllerException {
+		Validation.assertNotNull(bundleId);
+		Validation.assertNotNull(requesterId);
+		Bundle bundle = bundleRepository.findOne(bundleId);
+		if (bundle == null)
+			throw new BundleControllerException ("Bundle not found");
+		if ((requesterId
+				!= bundle.getOwner().getID())
+			&&
+			requesterId 
+			 	!= bundle.getOwner().getAdministrator().getID())
+			throw new ControllerSecurityException ("You are not authorized to perform this action");
+		return bundle;
 	}
 
 }

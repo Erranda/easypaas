@@ -39,7 +39,7 @@ import com.withinet.opaas.controller.common.BundleConflictException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.controller.system.BundleFileInstaller;
+import com.withinet.opaas.controller.system.BundleInstaller;
 import com.withinet.opaas.controller.system.FileLocationGenerator;
 import com.withinet.opaas.model.domain.Bundle;
 import com.withinet.opaas.model.domain.Project;
@@ -82,7 +82,7 @@ public class ProjectSetupWidget extends Panel {
 	private FileLocationGenerator fileMan;
 
 	@SpringBean
-	private BundleFileInstaller bundleInstaller;
+	private BundleInstaller bundleInstaller;
 
 	@SpringBean
 	private BundleController bundleController;
@@ -150,7 +150,7 @@ public class ProjectSetupWidget extends Panel {
 								Long end = System.currentTimeMillis();
 								Double endD = end.doubleValue();
 								info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds \n"
-								+ "Cached bundles: " + project.getProjectBundles().size() + "\n" +
+								+ "Cached bundles: " + projectController.listProjectBundlesByProject(project.getID(), userId).size() + "\n" +
 								"Team Size: " + project.getProjectTeam().size() + "\n");
 								setResponsePage (this.getPage());
 							} catch (ProjectControllerException e) {
@@ -166,7 +166,7 @@ public class ProjectSetupWidget extends Panel {
 						Long end = System.currentTimeMillis();
 						Double endD = end.doubleValue();
 						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds with "
-								+ project.getProjectBundles().size() + " bundles: " + "and " +
+								+ projectController.listProjectBundlesByProject(project.getID(), userId).size() + " bundles: " + "and " +
 								project.getProjectTeam().size()+ " team members");
 						setResponsePage (this.getPage());
 					}

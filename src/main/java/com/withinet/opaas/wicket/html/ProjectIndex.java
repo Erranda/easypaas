@@ -26,21 +26,18 @@ public class ProjectIndex extends Authenticated
 	
 	Long userId = UserSession.get().getUser().getID();
 	
-	transient Integer projectSize;
     /**
      * Constructor.
      */
     public ProjectIndex ()
     {
-        try {
-        	projectSize = projectController.listCreatedProjectsByOwner(userId, userId).size();
-			add (new ProjectTableWidget ("project-table-widget"));
-	        add (new ProjectSetupWidget ("project-setup-widget"));
-		} catch (ProjectControllerException e) {
-			error (e.getMessage());	
+        add (new ProjectTableWidget ("project-table-widget"));
+	    try {
+			add (new ProjectSetupWidget ("project-setup-widget"));
 		} catch (UserControllerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			error (e.getMessage());
 		}
         
     }
