@@ -15,14 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.withinet.opaas.Application;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Instance;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.ProjectBundle;
-import com.withinet.opaas.domain.RolePermission;
-import com.withinet.opaas.domain.User;
-import com.withinet.opaas.domain.UserPermission;
-import com.withinet.opaas.domain.UserRole;
 import com.withinet.opaas.model.BundleRepository;
 import com.withinet.opaas.model.InstanceRepository;
 import com.withinet.opaas.model.ProjectBundleRepository;
@@ -31,6 +23,14 @@ import com.withinet.opaas.model.RolePermissionRepository;
 import com.withinet.opaas.model.UserPermissionRepository;
 import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.model.UserRoleRepository;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Instance;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.ProjectBundle;
+import com.withinet.opaas.model.domain.RolePermission;
+import com.withinet.opaas.model.domain.User;
+import com.withinet.opaas.model.domain.UserPermission;
+import com.withinet.opaas.model.domain.UserRole;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -126,7 +126,7 @@ public class RepositoryIntegrationTests {
 		ProjectBundle pb = new ProjectBundle (user.getEmail(), pr, b);
 		projectBundleRepo.save(pb);
 		
-		i.setHost("127.0.0.1");
+		i.setHostName("127.0.0.1");
 		i.setPort(8080);
 		i.setProject(pr);
 		i.setOwner(user);

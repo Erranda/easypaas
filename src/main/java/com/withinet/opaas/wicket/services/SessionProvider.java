@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.AccountLoginException;
-import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.domain.User;
 
 import static com.withinet.opaas.controller.common.ServiceProperties.*;
 
@@ -38,7 +38,6 @@ public class SessionProvider {
 				
 				if(user != null) {
 	                session.setUser(user);
-	                session.info("You were automatically logged in.");
 	            }
 			} catch (AccountLoginException e) {
 				

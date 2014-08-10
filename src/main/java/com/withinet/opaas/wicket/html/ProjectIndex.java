@@ -19,7 +19,7 @@ import com.withinet.opaas.wicket.services.UserSession;
 /**
  * @author Martijn Dashorst
  */
-public class ProjectIndex extends Secure
+public class ProjectIndex extends Authenticated
 {
 	@SpringBean
 	ProjectController projectController;
@@ -32,12 +32,9 @@ public class ProjectIndex extends Secure
      */
     public ProjectIndex ()
     {
-    	add (new FeedbackPanel ("feedback-main"));
-    	setVersioned(false);
         try {
         	projectSize = projectController.listCreatedProjectsByOwner(userId, userId).size();
-			add (new ProjectViewWidget ("project-view-widget", projectController, userId));
-	        add (new ProjectStatWidget ("stats", projectSize));
+			add (new ProjectTableWidget ("project-table-widget"));
 	        add (new ProjectSetupWidget ("project-setup-widget"));
 		} catch (ProjectControllerException e) {
 			error (e.getMessage());	

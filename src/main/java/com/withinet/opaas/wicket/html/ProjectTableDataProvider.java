@@ -11,13 +11,8 @@ import java.util.List;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.withinet.opaas.controller.ProjectController;
-import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.wicket.services.UserSession;
+import com.withinet.opaas.model.domain.Project;
 
 /**
  * 
@@ -25,27 +20,31 @@ import com.withinet.opaas.wicket.services.UserSession;
  *
  */
 public class ProjectTableDataProvider extends SortableDataProvider<Project, String> {
-		
-	private Long userId;
 	
-	private transient List<Project> userProjects = null;
-	
-	private ProjectController projectController;
-	
-	public ProjectTableDataProvider (ProjectController projectController, Long userId) throws ProjectControllerException {
+	public ProjectTableDataProvider (Long userId) {
 		//Initialize projects for user
-		this.projectController = projectController;
-		this.userId = userId;
-		userProjects = projectController.listCreatedProjectsByOwner(userId, userId);
-	}	
+		Project p = new Project ();
+		p.setCreated(new Date());
+		p.setDetails("Hello world");
+		p.setName("Hello world");
+		p.setStatus("Active");
+		p.setUpdated(new Date());
+		p.setID(1L);
+		userProjects.add(p);
+		Project p1 = new Project ();
+		p1.setCreated(new Date());
+		p1.setDetails("Hello world2");
+		p1.setName("Hello world1");
+		p1.setStatus("Active");
+		p1.setUpdated(new Date());
+		p1.setID(2L);
+		userProjects.add(p1);
+	}
+	
+	private List<Project> userProjects = new ArrayList<Project> ();
 	
 	@Override
 	public Iterator<? extends Project> iterator(long arg0, long arg1) {
-		try {
-			userProjects = projectController.listCreatedProjectsByOwner(userId, userId);
-		} catch (ProjectControllerException e) {
-			e.printStackTrace();
-		}
 		return userProjects.subList((int) arg0, Math.min((int) userProjects.size(), (int) arg1)).iterator();
 	}
 
@@ -56,12 +55,6 @@ public class ProjectTableDataProvider extends SortableDataProvider<Project, Stri
 
 	@Override
 	public long size() {
-		try {
-			userProjects = projectController.listCreatedProjectsByOwner(userId, userId);
-		} catch (ProjectControllerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return userProjects.size();
 	}
 

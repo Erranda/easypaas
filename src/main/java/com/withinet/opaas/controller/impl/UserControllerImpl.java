@@ -24,8 +24,9 @@ import com.withinet.opaas.controller.common.CollaboratorNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.UnauthorizedException;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.domain.User;
 
 /**
  * @author Folarin
@@ -80,7 +81,12 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public User readAccount(Long id, Long requesterId)
 			throws UserControllerException {
-		return userRepo.findOne(id);
+		Validation.assertNotNull(id);
+		User user = userRepo.findOne(id);
+		if (user == null)
+			throw new AccountNotFoundException ("Account does not exist");
+		else
+			return user;
 	}
 
 	@Override

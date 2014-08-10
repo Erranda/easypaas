@@ -1,18 +1,29 @@
 <wicket:panel>
-	<div class="content clearfix">
+	<section id="modals">
+		<div class="row">
+		<a class="btn btn-danger btn-large " data-toggle="modal" href="#bigModal">New Project</a>
+		<div id="bigModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h4 class="modal-title">Create Project</h4>
+          </div>
+          <div class="modal-body">
+          <div class="content clearfix">
 		
 		<form wicket:id="form" class="form-horizontal">
 		<div wicket:id="feedback">
             
          </div>		
-			<div class="login-fields">
+			<div class="modal-form-fields">
 				
 				<div class="field">
 					<h6>1. Give the project a unique name identifier </h6>
 				</div>
 				
 				<div class="field">
-					<label for="name">Project Name:</label>
 					<input style="padding:5px !important" wicket:id="name" type="text" id="name" name="name" value="" required placeholder="Project Name" class="form-control" />
 				</div> <!-- /field -->
 				
@@ -64,5 +75,12 @@
 		</form>
 		
 	</div> <!-- /content -->
+            
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+  </div>
+	</section>
 
 </wicket:panel>

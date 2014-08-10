@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.RoleControllerException;
-import com.withinet.opaas.domain.UserRole;
+import com.withinet.opaas.model.domain.UserRole;
 
 /**
  * @author Folarin

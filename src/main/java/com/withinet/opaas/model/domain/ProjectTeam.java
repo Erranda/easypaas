@@ -1,4 +1,4 @@
-package com.withinet.opaas.domain;
+package com.withinet.opaas.model.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -7,12 +7,12 @@ import java.util.Date;
 
 @Entity
 @org.hibernate.annotations.Immutable
-public class ProjectBundle implements Serializable {
+public class ProjectTeam implements Serializable {
 
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 7381827857540432854L;
+	private static final long serialVersionUID = 4072070367798093499L;
 
 	@Embeddable
     public static class Id implements Serializable {
@@ -25,28 +25,28 @@ public class ProjectBundle implements Serializable {
 		@Column(name = "PROJECT_ID")
         private Long projectId;
 
-        @Column(name = "BUNDLE_ID")
-        private Long bundleId;
+        @Column(name = "USER_ID")
+        private Long userId;
 
         public Id() {
         }
 
-        public Id(Long projectId, Long bundleId) {
+        public Id(Long projectId, Long userId) {
             this.projectId = projectId;
-            this.bundleId = bundleId;
+            this.userId = userId;
         }
 
         public boolean equals(Object o) {
             if (o != null && o instanceof Id) {
                 Id that = (Id) o;
                 return this.projectId.equals(that.projectId)
-                    && this.bundleId.equals(that.bundleId);
+                    && this.userId.equals(that.userId);
             }
             return false;
         }
 
         public int hashCode() {
-            return projectId.hashCode() + bundleId.hashCode();
+            return projectId.hashCode() + userId.hashCode();
         }
     }
 
@@ -70,30 +70,31 @@ public class ProjectBundle implements Serializable {
 
     @ManyToOne
     @JoinColumn(
-        name = "BUNDLE_ID",
+        name = "USER_ID",
         insertable = false, updatable = false)
-    private Bundle bundle;
+    private User user;
 
 
-    public ProjectBundle() {
+    public ProjectTeam() {
     }
 
-    public ProjectBundle(String addedByUsername,
+    public ProjectTeam(String addedByUsername,
                            Project project,
-                           Bundle bundle) {
+                           User user) {
 
         // Set fields
         this.addedBy = addedByUsername;
         this.project = project;
-        this.bundle = bundle;
+        this.user = user;
         this.addedOn = new Date ();
+
         // Set identifier values
         this.id.projectId = project.getID();
-        this.id.bundleId = bundle.getID();
+        this.id.userId = user.getID();
 
         // Guarantee referential integrity if made bidirectional
-        project.getProjectBundles().add(this);
-        bundle.getProjectBundles().add(this);
+        project.getProjectTeam().add(this);
+        user.getProjectTeam().add(this);
     }
 
     public Id getId() {
@@ -112,8 +113,8 @@ public class ProjectBundle implements Serializable {
         return this.project;
     }
 
-    public Bundle getBundle() {
-        return this.bundle;
+    public User getUser() {
+        return this.user;
     }
 
 }

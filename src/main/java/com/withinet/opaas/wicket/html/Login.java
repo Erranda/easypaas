@@ -26,7 +26,8 @@ import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.AccountLoginException;
 
 import static com.withinet.opaas.controller.common.ServiceProperties.*;
-import com.withinet.opaas.domain.User;
+
+import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.CookieService;
 import com.withinet.opaas.wicket.services.UserSession;
 

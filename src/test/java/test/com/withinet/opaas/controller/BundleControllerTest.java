@@ -21,10 +21,10 @@ import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.common.BundleConflictException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ControllerException;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

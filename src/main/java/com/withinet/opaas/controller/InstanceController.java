@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.InstanceControllerException;
-import com.withinet.opaas.domain.Instance;
+import com.withinet.opaas.model.domain.Instance;
 
 /**
  * @author Folarin
@@ -14,15 +14,19 @@ import com.withinet.opaas.domain.Instance;
 @RestController
 public interface InstanceController {
 	
-	public Instance createInstance (Instance instance, Long requesterId) throws InstanceControllerException;
+	public Instance createInstance (Instance instance, Long projectId, Long userId, Long requesterId) throws InstanceControllerException;
 	
-	public void deleteInstance (Long id, Long requesterId) throws InstanceControllerException;
+	public boolean deleteInstance (Long id, Long requesterId) throws InstanceControllerException;
+	
+	public Instance updateInstance (Instance instance, Long requesterId) throws InstanceControllerException;
 	
 	public Instance readInstance (Long id, Long requesterId) throws InstanceControllerException;
 	
-	public List<Instance> listInstancesByUser (Long userId, Long requesterId);
+	public List<Instance> listInstancesByUser (Long userId, Long requesterId) throws InstanceControllerException;
 	
-	public List<Instance> listInstancesByProject (Long projectId, Long requesterId);
+	public List<Instance> listInstancesByProject (Long projectId, Long requesterId) throws InstanceControllerException;
+	
+	public List<Instance> listInstancesByAdministrator (Long adminId, Long requesterId) throws InstanceControllerException;
 	
 }
 

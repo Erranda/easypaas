@@ -3,7 +3,7 @@ package com.withinet.opaas.controller.system;
 import java.io.IOException;
 import java.util.List;
 
-import com.withinet.opaas.domain.Bundle;
+import com.withinet.opaas.model.domain.Bundle;
 
 public interface BundleFileInstaller {
 	

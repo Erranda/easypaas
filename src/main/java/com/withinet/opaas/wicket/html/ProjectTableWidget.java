@@ -21,32 +21,27 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-import com.withinet.opaas.controller.ProjectController;
-import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.domain.Project;
+import com.withinet.opaas.model.domain.Project;
 
 /**
  * @author Folarin
  *
  */
-public class ProjectViewWidget extends Panel {
+public class ProjectTableWidget extends Panel {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6426148890485840838L;
-	private transient SortableDataProvider<Project, String> provider;
+	private transient SortableDataProvider<Project, String> provider = new ProjectTableDataProvider (1L);
 	private final List<IColumn<Project, String>> columns = Collections.synchronizedList(new ArrayList<IColumn<Project, String>>());
 	private int resultSize = 20;
 	/**
 	 * @param id
-	 * @param userId2 
-	 * @param projectController 
-	 * @throws ProjectControllerException 
 	 */
-	public ProjectViewWidget(String id, ProjectController projectController, Long userId) throws ProjectControllerException {
+	public ProjectTableWidget(String id) {
 		super(id);
-		provider = new ProjectTableDataProvider (projectController, userId);
+		
 		columns.add(new PropertyColumn<Project, String>(
 				new Model<String>("Name"), "name"));
 		columns.add(new PropertyColumn<Project, String>(
@@ -60,33 +55,42 @@ public class ProjectViewWidget extends Panel {
 
 			@Override
 			public void populateItem(Item<ICellPopulator<Project>> item,
-					String componentId, final IModel<Project> model) {
+					String componentId, IModel<Project> model) {
 				// TODO Auto-generated method stub
-				BookmarkablePageLink<InstanceLauncher> startInstance = new BookmarkablePageLink<InstanceLauncher> ("start-instance", InstanceLauncher.class, setStartInstanceLinkParameters (model.getObject()));
-				if (model.getObject().getStatus().equals("Disabled"))
-					startInstance.setVisible(false);
-			
-				BookmarkablePageLink<ProjectAction> viewProject = new BookmarkablePageLink<ProjectAction> ("view-project", ProjectAction.class, setViewProjectLinkParameters (model.getObject()));
-				BookmarkablePageLink<ProjectAction> deleteProject = new BookmarkablePageLink<ProjectAction> ("delete-project", ProjectAction.class, setDeleteProjectLinkParameters (model.getObject()));
-				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, viewProject, deleteProject);
+				BookmarkablePageLink<InstanceIndex> startInstance = new BookmarkablePageLink<InstanceIndex> ("start-instance", InstanceIndex.class, setStartInstanceLinkParameters (model.getObject()));
+				BookmarkablePageLink<ProjectIndex> viewProject = new BookmarkablePageLink<ProjectIndex> ("view-project", ProjectIndex.class, setViewProjectLinkParameters (model.getObject()));
+				BookmarkablePageLink<ProjectIndex> deleteProject = new BookmarkablePageLink<ProjectIndex> ("delete-project", ProjectIndex.class, setDeleteProjectLinkParameters (model.getObject()));
+				BookmarkablePageLink<ProjectIndex> viewBundles = new BookmarkablePageLink<ProjectIndex> ("view-bundles", BundleIndex.class, setBundlesLinkParameters (model.getObject()));
+				BookmarkablePageLink<ProjectIndex> viewInstances = new BookmarkablePageLink<ProjectIndex> ("view-instances", InstanceIndex.class, setInstancesLinkParameters (model.getObject()));
+				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, viewProject, deleteProject, viewBundles, viewInstances);
 				item.add(button);
 			}
-			
+			private PageParameters setInstancesLinkParameters(Project project) {
+				PageParameters linkParameters = new PageParameters();
+				linkParameters.add("pid", project.getID());
+				return linkParameters;
+			}
+			private PageParameters setBundlesLinkParameters(Project project) {
+				PageParameters linkParameters = new PageParameters();
+				linkParameters.add("pid", project.getID());
+				return linkParameters;
+			}
 			private PageParameters setStartInstanceLinkParameters (Project project) {
 				PageParameters linkParameters = new PageParameters();
-				linkParameters.add("id", project.getID());
+				linkParameters.add("pid", project.getID());
+				linkParameters.add("action", "start");
 				return linkParameters;
 			}
 			
 			private PageParameters setViewProjectLinkParameters (Project project) {
 				PageParameters linkParameters = new PageParameters();
-				linkParameters.add("id", project.getID());
+				linkParameters.add("pid", project.getID());
 				return linkParameters;
 			}
 			
 			private PageParameters setDeleteProjectLinkParameters(Project project) {
 					PageParameters linkParameters = new PageParameters();
-					linkParameters.add("id", project.getID());
+					linkParameters.add("pid", project.getID());
 					return linkParameters;
 			}
 		});

@@ -15,15 +15,15 @@ import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.ProjectNotFoundException;
 import com.withinet.opaas.controller.common.ProjectOwnerNotFoundException;
 import com.withinet.opaas.controller.common.UnauthorizedException;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.ProjectBundle;
-import com.withinet.opaas.domain.ProjectTeam;
-import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.ProjectBundleRepository;
 import com.withinet.opaas.model.ProjectRepository;
 import com.withinet.opaas.model.ProjectTeamRepository;
 import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.ProjectBundle;
+import com.withinet.opaas.model.domain.ProjectTeam;
+import com.withinet.opaas.model.domain.User;
 
 @RestController
 public class ProjectControllerImpl implements ProjectController {

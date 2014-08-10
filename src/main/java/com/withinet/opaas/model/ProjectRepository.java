@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 	

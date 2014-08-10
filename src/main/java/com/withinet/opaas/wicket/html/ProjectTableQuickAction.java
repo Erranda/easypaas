@@ -12,11 +12,15 @@ import org.apache.wicket.markup.html.panel.Panel;
  */
 public class ProjectTableQuickAction extends Panel {
 
-	public ProjectTableQuickAction(String id, WebMarkupContainer startInstanceLink, WebMarkupContainer deleteProject, WebMarkupContainer viewProject) {
+	public ProjectTableQuickAction(String id, WebMarkupContainer startInstanceLink, 
+			WebMarkupContainer deleteProject, WebMarkupContainer viewProject,
+			WebMarkupContainer viewBundles, WebMarkupContainer viewInstances) {
 		super(id);
 		add (startInstanceLink);
 		add (viewProject);
 		add (deleteProject);
+		add (viewBundles);
+		add (viewInstances);
 	}
 
 }

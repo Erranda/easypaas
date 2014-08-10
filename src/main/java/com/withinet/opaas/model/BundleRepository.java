@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.User;
 
 public interface BundleRepository extends JpaRepository<Bundle, Long> {
 	

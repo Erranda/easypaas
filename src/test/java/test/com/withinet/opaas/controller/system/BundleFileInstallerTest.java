@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.withinet.opaas.controller.system.BundleFileInstaller;
 import com.withinet.opaas.controller.system.impl.BundleFileInstallerImpl;
-import com.withinet.opaas.domain.Bundle;
+import com.withinet.opaas.model.domain.Bundle;
 
 public class BundleFileInstallerTest {
 	BundleFileInstaller object = new BundleFileInstallerImpl ();

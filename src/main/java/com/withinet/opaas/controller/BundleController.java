@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.BundleControllerException;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.User;
 
 /**
  * @author Folarin

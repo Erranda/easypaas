@@ -1,4 +1,4 @@
-package com.withinet.opaas.domain;
+package com.withinet.opaas.model.domain;
 
 import java.io.Serializable;
 

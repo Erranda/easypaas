@@ -38,9 +38,9 @@ import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.system.BundleFileInstaller;
 import com.withinet.opaas.controller.system.FileLocationGenerator;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
 
 public class ProjectSetup extends Secure {

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.RolePermissionControllerException;
-import com.withinet.opaas.domain.RolePermission;
-import com.withinet.opaas.domain.UserRole;
+import com.withinet.opaas.model.domain.RolePermission;
+import com.withinet.opaas.model.domain.UserRole;
 
 /**
  * @author Folarin

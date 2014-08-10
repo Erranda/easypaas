@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EmailTextField;
+import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -27,14 +28,6 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 
-import com.withinet.opaas.controller.UserController;
-import com.withinet.opaas.controller.common.UserControllerException;
-import com.withinet.opaas.controller.common.AccountLoginException;
-
-import static com.withinet.opaas.controller.common.ServiceProperties.*;
-import com.withinet.opaas.domain.User;
-import com.withinet.opaas.wicket.services.CookieService;
-import com.withinet.opaas.wicket.services.UserSession;
 
 
 /**
@@ -43,7 +36,7 @@ import com.withinet.opaas.wicket.services.UserSession;
  * @author kloe and Folarin
  *
  */
-public class Register extends Base {
+public class Register extends Stateless {
 
 	private String fullName;
 	private String email;
@@ -52,41 +45,35 @@ public class Register extends Base {
 	private String platformName;
 	
 	private boolean terms;
-
-	@SpringBean
-	UserController accountController;
-	
-	@SpringBean
-	CookieService cookieService;
 	
 
 	public Register () {
-	    Form<Void> signupForm = new Form<Void>("form");
-	    add(signupForm);
+	    StatelessForm<Void> signupStatelessForm = new StatelessForm<Void>("form");
+	    add(signupStatelessForm);
 	    final CSSFeedbackPanel feedback = new CSSFeedbackPanel ("feedback");
 	    feedback.setOutputMarkupId(true);
-	    signupForm.add(feedback);
+	    signupStatelessForm.add(feedback);
 	    
 	    RequiredTextField wicketName = new RequiredTextField("name", new PropertyModel<String>(this, "fullName"));
 	    wicketName.add(StringValidator.minimumLength(2));
 	    wicketName.setLabel(new ResourceModel ("label.name"));
-	    signupForm.add(wicketName);
+	    signupStatelessForm.add(wicketName);
 	    
 	    EmailTextField wicketEmail = new EmailTextField("email", new PropertyModel<String>(this, "email"));
 	    wicketEmail.setLabel(new ResourceModel ("label.email"));
 	    wicketEmail.setRequired(true);
-	    signupForm.add(wicketEmail);
+	    signupStatelessForm.add(wicketEmail);
 	    
 	    PasswordTextField wicketPassword = new PasswordTextField("password", new PropertyModel<String>(this, "password"));
 	    wicketPassword.setLabel(new ResourceModel ("label.password"));
 	    wicketPassword.add(StringValidator.minimumLength(6));
-	    signupForm.add(wicketPassword);
+	    signupStatelessForm.add(wicketPassword);
 	    
 	    RequiredTextField wicketPlatformName = new RequiredTextField("platformName", new PropertyModel<String>(this, "platformName"));
 	    wicketPlatformName.add(StringValidator.minimumLength(5));
 	    wicketPlatformName.add(StringValidator.maximumLength(20));
 	    wicketPlatformName.setLabel(new ResourceModel ("label.platformName"));
-	    signupForm.add(wicketPlatformName);
+	    signupStatelessForm.add(wicketPlatformName);
 		
 		List<String> countries = new ArrayList<String>();
 	    
@@ -105,11 +92,11 @@ public class Register extends Base {
     	
     	};
     	wicketLocation.setNullValid(false);
-    	signupForm.add(wicketLocation);		
+    	signupStatelessForm.add(wicketLocation);		
     	
-    	signupForm.add(new CheckBox("terms", new PropertyModel<Boolean>(this, "terms"))); // this line
+    	signupStatelessForm.add(new CheckBox("terms", new PropertyModel<Boolean>(this, "terms"))); // this line
 	    
-	    signupForm.add(new AjaxButton("submit", signupForm)
+	    signupStatelessForm.add(new AjaxButton("submit", signupStatelessForm)
         {
             /**
 			 * 
@@ -119,18 +106,7 @@ public class Register extends Base {
 			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-               User user = new User();
-               user.setFullName(fullName);
-               user.setEmail(email);
-               user.setPassword(password);
-               user.setPlatformName(platformName);
-               user.setLocation(location);
-               try {
-				accountController.createAccount(user);
-			} catch (UserControllerException e) {
-				error (e.getMessage());
-			}
-               target.add(feedback);
+              
             }
 
             @Override

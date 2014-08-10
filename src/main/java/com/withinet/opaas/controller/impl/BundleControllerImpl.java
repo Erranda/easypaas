@@ -14,11 +14,11 @@ import com.withinet.opaas.controller.common.BundleConflictException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.UnauthorizedException;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.BundleRepository;
 import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 
 /**
  * @author Folarin

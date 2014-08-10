@@ -41,9 +41,9 @@ import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.system.BundleFileInstaller;
 import com.withinet.opaas.controller.system.FileLocationGenerator;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
 
 public class ProjectSetupWidget extends Panel {
@@ -98,56 +98,7 @@ public class ProjectSetupWidget extends Panel {
 		// Set the user
 		thisUser = accountController.readAccount(userId, userId);
 		
-		Form<Void> setupForm = new Form<Void>("form") {
-			@Override
-			protected void onSubmit() {
-				Long start = System.currentTimeMillis();
-				Double startD = start.doubleValue();
-				upload = wicketFileUploadField.getFileUpload();
-				try {
-					if (upload != null) {
-						String fileName = upload.getClientFileName().toLowerCase()
-								.trim();
-						String extension = FilenameUtils.getExtension(fileName);
-						extension = extension.toLowerCase().trim();
-						if (extension.equals("xml") || extension.equals("jar")
-								|| extension.equals("zip")) {
-							processUpload();
-							try {
-								Project project = createProject();
-								Long end = System.currentTimeMillis();
-								Double endD = end.doubleValue();
-								info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds");
-								info ("Cached bundles: " + project.getProjectBundles().size());
-								info ("Team Size: " + project.getProjectTeam().size());
-								setResponsePage (ProjectIndex.class);
-							} catch (ProjectControllerException e) {
-								e.printStackTrace();
-								error (e.getMessage());
-							}
-						} else {
-							error("Only .zip, .xml, and .jar extensions allowed");
-							//deleteProject();
-						}
-					} else {
-						Project project = createProject();
-						Long end = System.currentTimeMillis();
-						Double endD = end.doubleValue();
-						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds");
-						info ("Cached bundles: " + project.getProjectBundles().size());
-						info ("Team Size: " + project.getProjectTeam().size());
-						setResponsePage (ProjectIndex.class);
-					}
-				} catch (ProjectControllerException e) {
-					e.printStackTrace();
-					error (e.getMessage());
-				} catch (RuntimeException e) {
-					e.printStackTrace();
-					error (e.getMessage());
-				}
-				
-			}
-		};
+		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
 
 		final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
@@ -182,6 +133,50 @@ public class ProjectSetupWidget extends Panel {
 			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
+				Long start = System.currentTimeMillis();
+				Double startD = start.doubleValue();
+				upload = wicketFileUploadField.getFileUpload();
+				try {
+					if (upload != null) {
+						String fileName = upload.getClientFileName().toLowerCase()
+								.trim();
+						String extension = FilenameUtils.getExtension(fileName);
+						extension = extension.toLowerCase().trim();
+						if (extension.equals("xml") || extension.equals("jar")
+								|| extension.equals("zip")) {
+							processUpload();
+							try {
+								Project project = createProject();
+								Long end = System.currentTimeMillis();
+								Double endD = end.doubleValue();
+								info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds \n"
+								+ "Cached bundles: " + project.getProjectBundles().size() + "\n" +
+								"Team Size: " + project.getProjectTeam().size() + "\n");
+								setResponsePage (this.getPage());
+							} catch (ProjectControllerException e) {
+								e.printStackTrace();
+								error (e.getMessage());
+							}
+						} else {
+							error("Only .zip, .xml, and .jar extensions allowed");
+							//deleteProject();
+						}
+					} else {
+						Project project = createProject();
+						Long end = System.currentTimeMillis();
+						Double endD = end.doubleValue();
+						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds with "
+								+ project.getProjectBundles().size() + " bundles: " + "and " +
+								project.getProjectTeam().size()+ " team members");
+						setResponsePage (this.getPage());
+					}
+				} catch (ProjectControllerException e) {
+					e.printStackTrace();
+					error (e.getMessage());
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+					error (e.getMessage());
+				}
 				target.add(feedback);
 			}
 			

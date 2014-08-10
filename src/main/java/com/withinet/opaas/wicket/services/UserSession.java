@@ -3,7 +3,7 @@ package com.withinet.opaas.wicket.services;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.User;
 
 public class UserSession extends WebSession {
 
@@ -13,6 +13,8 @@ public class UserSession extends WebSession {
 	private static final long serialVersionUID = -1713951920830505354L;
 	
 	private User user;
+	
+	public static FeedbackMessage message = null;
 
     public UserSession(Request request) {
         super(request);

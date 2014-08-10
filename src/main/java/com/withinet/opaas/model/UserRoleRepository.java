@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.withinet.opaas.domain.User;
-import com.withinet.opaas.domain.UserRole;
+import com.withinet.opaas.model.domain.User;
+import com.withinet.opaas.model.domain.UserRole;
 
 public interface UserRoleRepository extends JpaRepository <UserRole, Long>{
 	

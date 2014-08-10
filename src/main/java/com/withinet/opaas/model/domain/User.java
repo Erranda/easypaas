@@ -1,4 +1,4 @@
-package com.withinet.opaas.domain;
+package com.withinet.opaas.model.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ public class User implements Serializable {
 	@Column(name="USER_PASSWORD", nullable=false, length=255)	
 	private String password;
 	
-	@Column(name="USER_CREATED", nullable=false)	
+	@Column(name="CREATED", nullable=false)	
 	@Temporal(TemporalType.DATE)
 	private java.util.Date created;
 	
@@ -82,11 +82,11 @@ public class User implements Serializable {
 	private Set<Project> projects = new HashSet<Project>();
 		
 	@OneToMany(mappedBy="administrator", targetEntity=User.class,  fetch=FetchType.EAGER)	
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
 	private Set<User> collaborators = new HashSet<User>();
 		
 	@OneToMany(mappedBy="owner", targetEntity=Instance.class,  fetch=FetchType.EAGER)	
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})			
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})			
 	private Set<Instance> instances = new HashSet<Instance>();
 	
 	@OneToMany (mappedBy="user", fetch=FetchType.EAGER)

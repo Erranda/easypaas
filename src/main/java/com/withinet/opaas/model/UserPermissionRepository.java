@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.withinet.opaas.domain.UserPermission;
+import com.withinet.opaas.model.domain.UserPermission;
 
 public interface UserPermissionRepository extends JpaRepository <UserPermission, Long>{
 	

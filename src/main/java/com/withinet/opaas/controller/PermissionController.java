@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.PermissionControllerException;
-import com.withinet.opaas.domain.UserPermission;
+import com.withinet.opaas.model.domain.UserPermission;
 
 /**
  * @author Folarin

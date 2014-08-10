@@ -44,11 +44,11 @@ import com.withinet.opaas.controller.common.ProjectNotFoundException;
 import com.withinet.opaas.controller.common.AccountLoginException;
 import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.common.RequestParameterConstraintViolation;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Instance;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
 import com.withinet.opaas.model.UserRepository;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Instance;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

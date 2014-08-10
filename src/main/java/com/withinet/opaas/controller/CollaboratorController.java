@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.withinet.opaas.controller.common.CollaboratorControllerException;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.User;
 
 /**
  * @author Folarin

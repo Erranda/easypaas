@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.withinet.opaas.controller.common.AccountLoginException;
 import com.withinet.opaas.controller.common.UserControllerException;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.User;
 
 
 /**

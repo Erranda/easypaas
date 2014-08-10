@@ -1,4 +1,4 @@
-package com.withinet.opaas.domain;
+package com.withinet.opaas.model.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -65,7 +65,7 @@ public class Project implements Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectTeam> projectTeam = new HashSet <ProjectTeam> ();
 	
-	@OneToMany(mappedBy="project",  fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="project",  fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
 	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
 	private final Set<Instance> instances = new HashSet<Instance> ();

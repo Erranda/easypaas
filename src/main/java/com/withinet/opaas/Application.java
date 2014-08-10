@@ -3,7 +3,9 @@ package com.withinet.opaas;
 import java.util.Date;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
+import org.apache.wicket.core.request.mapper.IMapperContext;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
@@ -26,9 +28,9 @@ import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.BundleControllerException;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.html.Dashboard;
 import com.withinet.opaas.wicket.html.Login;
 import com.withinet.opaas.wicket.html.ProjectIndex;
@@ -88,6 +90,11 @@ public class Application extends WebApplication {
 	@Override
 	protected void init() {
 		super.init();
+		if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
+	          getMarkupSettings().setStripWicketTags(true);
+	          getMarkupSettings().setStripComments(true);
+	          getMarkupSettings().setCompressWhitespace(true);
+	    }
 		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 		getStoreSettings().setMaxSizePerSession(Bytes.kilobytes(5000));
 		getStoreSettings().setInmemoryCacheSize(500);
@@ -103,6 +110,7 @@ public class Application extends WebApplication {
     public Session newSession(Request request, Response response) {
         return sessionProvider.createNewSession(request);
     }
+	
 	
 	@Autowired
 	BundleController bundleController; 

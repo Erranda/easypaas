@@ -9,11 +9,11 @@ import java.util.Set;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.domain.Bundle;
-import com.withinet.opaas.domain.Project;
-import com.withinet.opaas.domain.ProjectBundle;
-import com.withinet.opaas.domain.ProjectTeam;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.ProjectBundle;
+import com.withinet.opaas.model.domain.ProjectTeam;
+import com.withinet.opaas.model.domain.User;
 
 /**
  * @author Folarin

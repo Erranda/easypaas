@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.withinet.opaas.Application;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
-import com.withinet.opaas.domain.User;
+import com.withinet.opaas.model.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
