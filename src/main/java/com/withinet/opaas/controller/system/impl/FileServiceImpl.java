@@ -1,15 +1,21 @@
 /**
  * 
  */
-package com.withinet.opaas.controller.system;
+package com.withinet.opaas.controller.system.impl;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.springframework.stereotype.Service;
+
+import com.withinet.opaas.controller.system.FileService;
+import com.withinet.opaas.controller.system.Validation;
 
 /**
  * @author Folarin
  *
  */
+@Service
 public class FileServiceImpl implements FileService {
 
 	/**
@@ -23,19 +29,20 @@ public class FileServiceImpl implements FileService {
 	 * @see com.withinet.opaas.controller.system.FileService#createFile(java.lang.String)
 	 */
 	@Override
-	public boolean createFile(String fileLocation) {
+	public File createFile(String fileLocation) {
 		Validation.assertNotNull(fileLocation);
-		File forDelete = new File (fileLocation);
-		if (!forDelete.exists()) {
-			forDelete.mkdirs();
+		File forCreate = new File (fileLocation);
+		if (!forCreate.exists()) {
+			forCreate.mkdirs();
 			try {
-				return forDelete.createNewFile();
+				forCreate.createNewFile();
+				return forCreate;
 			} catch (IOException e) {
 				e.printStackTrace();
-				return false;
+				return null;
 			}
 		}
-		return true;
+		return forCreate;
 	}
 
 	/* (non-Javadoc)
@@ -47,7 +54,19 @@ public class FileServiceImpl implements FileService {
 		File forDelete = new File (fileLocation);
 		if (forDelete.exists())
 			return forDelete.delete();
+		else 
+			return true;
+	}
+
+	@Override
+	public boolean updateFile(String fileLocation, File file) {
+		if (deleteFile (fileLocation)) {
+			file.renameTo(new File (fileLocation));
+			return true;
+		}
 		return false;
 	}
+	
+	
 
 }

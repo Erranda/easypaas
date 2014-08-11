@@ -74,7 +74,7 @@ public class User implements Serializable {
 	private final Set<UserRole> createdRoles = new HashSet <UserRole> ();
 	
 	@OneToMany(mappedBy="owner",  fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})		
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})		
 	private Set<Bundle> bundles = new HashSet <Bundle> ();
 			
 	@OneToMany(mappedBy="owner", targetEntity=Project.class,  fetch=FetchType.EAGER)	

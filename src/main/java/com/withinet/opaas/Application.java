@@ -31,6 +31,7 @@ import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.model.domain.Bundle;
 import com.withinet.opaas.model.domain.Project;
 import com.withinet.opaas.model.domain.User;
+import com.withinet.opaas.wicket.html.BundleIndex;
 import com.withinet.opaas.wicket.html.Dashboard;
 import com.withinet.opaas.wicket.html.Login;
 import com.withinet.opaas.wicket.html.ProjectIndex;
@@ -103,6 +104,7 @@ public class Application extends WebApplication {
 		mountPage("/register", Register.class);
 		mountPage("/projects", ProjectIndex.class);
 		mountPage("/dashboard", Dashboard.class);
+		mountPage("/bundles", BundleIndex.class);
 	}
 	
 	@Override

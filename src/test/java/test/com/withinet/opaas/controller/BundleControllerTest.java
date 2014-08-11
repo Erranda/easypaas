@@ -27,7 +27,7 @@ import com.withinet.opaas.controller.common.ControllerException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.impl.BundleControllerImpl;
-import com.withinet.opaas.controller.system.FileServiceImpl;
+import com.withinet.opaas.controller.system.impl.FileServiceImpl;
 import com.withinet.opaas.model.BundleRepository;
 import com.withinet.opaas.model.ProjectBundleRepository;
 import com.withinet.opaas.controller.UserController;

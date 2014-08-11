@@ -61,6 +61,9 @@ public class ControllerIntegrationTests {
 	@Autowired
 	UserController accountController;
 	
+	@Autowired
+	BundleController controller;
+	
 	/*@Autowired
 	RoleController roleController;
 	
@@ -111,7 +114,18 @@ public class ControllerIntegrationTests {
 		userRepository.delete(web);
 	}
 	
-	
+	@Test (expected = BundleNotFoundException.class)
+	public void deleteBundle () throws BundleControllerException {
+		Bundle bundle = new Bundle ();
+		bundle.setLocation("http:..adada");
+		bundle.setOwner(web);
+		bundle.setSymbolicName("Hello");
+		bundle.setUpdated(new Date ());
+		
+		controller.createBundle(bundle, web.getID());
+		controller.deleteBundle(bundle.getID(), web.getID());
+		controller.readBundle(bundle.getID(), web.getID());
+	}
 
 	
 	@Test

@@ -24,6 +24,8 @@ public interface BundleController {
 	public Bundle readBundleByName (String name, Long requesterId) throws BundleControllerException;
 	
 	public List<Bundle> listBundlesByOwner (Long id, Long requesterId) throws BundleControllerException;
+	
+	public List<Bundle> listBundlesByProject (Long id, Long requesterId) throws BundleControllerException;
 
 	Bundle updateBundle(Bundle bundle, Long requesterId)
 			throws BundleControllerException;
