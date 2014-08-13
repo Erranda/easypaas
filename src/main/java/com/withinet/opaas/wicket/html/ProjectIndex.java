@@ -8,8 +8,10 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
@@ -23,6 +25,9 @@ public class ProjectIndex extends Authenticated
 {
 	@SpringBean
 	ProjectController projectController;
+	
+	@SpringBean
+	InstanceController instanceController;
 	
 	Long userId = UserSession.get().getUser().getID();
 	
@@ -39,6 +44,13 @@ public class ProjectIndex extends Authenticated
 			e.printStackTrace();
 			error (e.getMessage());
 		}
-        
+    }
+    
+    public ProjectIndex (PageParameters pageParameters) {
+    	if (!pageParameters.get("action").isNull()) {
+    		if (pageParameters.get("action").equals("start") &&
+    				pageParameters.get("pid").isNull()) {
+    		}
+    	}
     }
 }

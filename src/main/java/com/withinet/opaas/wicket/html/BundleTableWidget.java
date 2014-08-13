@@ -176,7 +176,8 @@ public class BundleTableWidget extends Panel {
 		String location = bundle.getLocation();
 		fileService.deleteFile(location);
 		upload.writeTo(fileService.createFile(location));
-		info (bundle.getSymbolicName() + " updated projects using this bundle will need to be restarted");
+		info (bundle.getSymbolicName() + " updated.");
+		info ("Projects using this bundle will need to be restarted");
 		setResponsePage (this.getPage());
 	}
 
@@ -201,9 +202,16 @@ public class BundleTableWidget extends Panel {
 			if (pid != null) {
 				try {
 					userBundles = bundleController.listBundlesByProject(pid, USER_ID);
-					pid = null;
+					//pid = null;
 				} catch (BundleControllerException e1) {
-					error (e1.getMessage ());
+					//error (e1.getMessage ());
+					try {
+						userBundles = bundleController.listBundlesByOwner(USER_ID, USER_ID);
+					} catch (BundleControllerException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					e1.printStackTrace();
 				}
 			} else {
 				try {

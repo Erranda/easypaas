@@ -96,7 +96,7 @@ public class BundleControllerImpl implements BundleController {
 		bundle.setUpdated(new Date());
 		bundle.setOwner(user);
 		user.getBundles().add(bundle);
-		return bundleRepository.save(bundle);
+		return bundleRepository.saveAndFlush(bundle);
 	}
 
 	/* (non-Javadoc)
@@ -126,7 +126,7 @@ public class BundleControllerImpl implements BundleController {
 		Bundle forSave = getWithBasicAuth (bundle.getID(), requesterId);
 		if (bundle.getLocation() != null)
 			forSave.setLocation(bundle.getLocation());
-		bundleRepository.save(forSave);
+		bundleRepository.saveAndFlush(forSave);
 		return forSave;
 	}
 
@@ -189,17 +189,11 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		try {
-			Project project = projectController.readProjectById(id, requesterId);
-			List<ProjectBundle> projectBundles = projectBundleRepository.findByProject(project);
-			List<Bundle> bundles = new ArrayList<Bundle> ();
-			if (projectBundles.size() > 0)
-				for (ProjectBundle pb: projectBundles)
-					bundles.add(pb.getBundle());
-			return bundles;
-		} catch (ProjectControllerException e) {
-			e.printStackTrace();
-			throw new BundleControllerException (e.getMessage());
-		}
+		List<ProjectBundle> projectBundles = projectController.listProjectBundlesByProject(id, requesterId);
+		List<Bundle> bundles = new ArrayList<Bundle> ();
+		if (projectBundles.size() > 0)
+			for (ProjectBundle pb: projectBundles)
+				bundles.add(pb.getBundle());
+		return bundles;
 	}
 }

@@ -82,7 +82,7 @@ public class ProjectControllerImpl implements ProjectController {
 			object.setStatus(project.getStatus());
 		if (project.getDetails() != null)
 			object.setDetails(project.getDetails());
-		return projectRepository.save(object);
+		return projectRepository.saveAndFlush(object);
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class ProjectControllerImpl implements ProjectController {
 				&& (thisProject.getOwner().getAdministrator().getID() != requesterId))
 			throw new UnauthorizedException ("Unauthorized request");
 		ProjectBundle thisProjectBundle = new ProjectBundle (user.getEmail(), thisProject, bundle);
-		projectBundleRepo.save(thisProjectBundle);
+		projectBundleRepo.saveAndFlush(thisProjectBundle);
 		return thisProject;
 	}
 
@@ -195,7 +195,7 @@ public class ProjectControllerImpl implements ProjectController {
 				&& (thisProject.getOwner().getAdministrator().getID() != requesterId))
 			throw new UnauthorizedException ("Unauthorized");
 		ProjectTeam thisProjectMember = new ProjectTeam (owner.getEmail(), thisProject, user);
-		projectTeamRepo.save(thisProjectMember);
+		projectTeamRepo.saveAndFlush(thisProjectMember);
 		return thisProject;
 	}
 

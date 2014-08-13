@@ -1,6 +1,8 @@
 package com.withinet.opaas.controller.system.impl;
 
 import java.io.File;
+import java.io.IOException;
+
 import org.springframework.stereotype.Service;
 
 import com.withinet.opaas.controller.system.FileLocationGenerator;
@@ -46,10 +48,22 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	}
 
 	@Override
-	public File getInstanceDirectory(Long iiid) {
-		// TODO Auto-generated method stub
-		return null;
+	public File getInstanceDirectory(Long uid, Long iid) {
+		File userDir = getUserDrirectory (uid);
+		File instanceDir = new File (userDir.getAbsolutePath() + "/instances/" + iid);
+		if (!instanceDir.exists()) instanceDir.mkdirs();
+		return instanceDir;
 	}
+	
+	@Override
+	public File getInstanceLogFile(Long uid, Long iid) throws IOException {
+		File instanceDir = getInstanceDirectory (uid, iid);
+		File logFile = new File (instanceDir.getAbsolutePath() + "/log.txt");
+		if (logFile.exists())
+			logFile.createNewFile();
+		return logFile;
+	}
+
 
 	@Override
 	public synchronized File getTempDirectory() {

@@ -3,8 +3,6 @@ package com.withinet.opaas.controller.common;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
-@Component
 public class ServiceProperties {
 
 	public final String name = "Opaas";
@@ -17,7 +15,11 @@ public class ServiceProperties {
     
     public static final String HOME = "C:/Users/Folarin/Desktop/opaas/";
     
+    public static final String DOMAIN = "http://localhost";
     
+    public static final int MINPORT = 9000;
+    
+    public static final int MAXPORT = 65535;
 
 	public final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 	

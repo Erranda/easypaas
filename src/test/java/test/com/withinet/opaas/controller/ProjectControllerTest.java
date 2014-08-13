@@ -219,7 +219,7 @@ public class ProjectControllerTest {
 		
 		assertTrue (projectController.listProjectBundlesByProject(p.getID(), web.getID()).size() == 1);
 	}
-	
+		
 }
 	
 	

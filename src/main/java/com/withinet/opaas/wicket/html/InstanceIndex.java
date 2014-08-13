@@ -13,6 +13,10 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import com.withinet.opaas.controller.InstanceController;
 
 
 /**
@@ -20,11 +24,17 @@ import org.apache.wicket.model.Model;
  */
 public class InstanceIndex extends Authenticated
 {
+	@SpringBean
+	InstanceController instanceController;
     /**
      * Constructor.
      */
     public InstanceIndex ()
     {
         add (new InstanceTableWidget ("instance-table-widget"));
+    }
+    
+    public InstanceIndex (PageParameters pageParameters) {
+    	
     }
 }

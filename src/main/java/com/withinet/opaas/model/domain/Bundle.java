@@ -28,7 +28,7 @@ public class Bundle implements Serializable {
 	@GeneratedValue( strategy = GenerationType.IDENTITY )
 	private Long ID;
 	
-	@ManyToOne (targetEntity=User.class, fetch=FetchType.EAGER)
+	@ManyToOne (targetEntity=User.class, fetch=FetchType.LAZY)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumn(name="OWNER_ID", referencedColumnName="ID", nullable=false)	
 	private User owner;
@@ -46,6 +46,10 @@ public class Bundle implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private java.util.Date updated;
 	
+	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
+
 	public String getSymbolicName() {
 		return symbolicName;
 	}
@@ -75,6 +79,10 @@ public class Bundle implements Serializable {
 
 	public void setOwner(User owner) {
 		this.owner = owner;
+	}
+
+	public Set<ProjectBundle> getProjectBundles() {
+		return projectBundles;
 	}
 
 	public java.util.Date getUpdated() {

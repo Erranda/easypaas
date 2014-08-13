@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -15,17 +18,28 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataT
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.StringValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
+import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
+import com.withinet.opaas.model.domain.Instance;
 import com.withinet.opaas.model.domain.Project;
+import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
 
 /**
@@ -41,6 +55,14 @@ public class ProjectTableWidget extends Panel {
 	private SortableDataProvider<Project, String> provider = new ProjectTableDataProvider ();
 	private final List<IColumn<Project, String>> columns = Collections.synchronizedList(new ArrayList<IColumn<Project, String>>());
 	private int resultSize = 20;
+	private User currentUser = UserSession.get().getUser();
+	private Long selected = null;
+	
+	private String projectName = null;
+	private String containerChoice = "Felix";
+	
+	@SpringBean
+	private InstanceController instanceController;
 	
 	@SpringBean
 	private static ProjectController projectController;
@@ -50,6 +72,51 @@ public class ProjectTableWidget extends Panel {
 	public ProjectTableWidget(String id) {
 		super(id);
 		
+	}
+	
+	public ProjectTableWidget(String id, Long iid) {
+		super(id);
+		
+	}
+	
+	private class ProjectTableDataProvider extends SortableDataProvider<Project, String> {
+		
+		
+		private final long USER_ID = UserSession.get().getUser().getID();
+		
+		public ProjectTableDataProvider () {
+			
+		}
+		
+		private List<Project> userProjects = new ArrayList<Project> ();
+		
+		@Override
+		public Iterator<? extends Project> iterator(long arg0, long arg1) {
+			return userProjects.subList((int) arg0, Math.min((int) userProjects.size(), (int) arg1)).iterator();
+		}
+
+		@Override
+		public IModel<Project> model(Project arg0) {
+			return Model.of(arg0);
+		}
+
+		@Override
+		public long size() {
+			try {
+				userProjects = projectController.listCreatedProjectsByOwner(USER_ID, USER_ID);
+			} catch (ProjectControllerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			return userProjects.size();
+		}
+
+	}
+	
+	@Override
+	public void onInitialize () {
+		super.onInitialize();
+		addStartInstanceForm ();
 		columns.add(new PropertyColumn<Project, String>(
 				new Model<String>("Name"), "name"));
 		columns.add(new PropertyColumn<Project, String>(
@@ -63,9 +130,18 @@ public class ProjectTableWidget extends Panel {
 
 			@Override
 			public void populateItem(Item<ICellPopulator<Project>> item,
-					String componentId, IModel<Project> model) {
+					String componentId, final IModel<Project> model) {
 				// TODO Auto-generated method stub
-				BookmarkablePageLink<InstanceIndex> startInstance = new BookmarkablePageLink<InstanceIndex> ("start-instance", InstanceIndex.class, setStartInstanceLinkParameters (model.getObject()));
+				AjaxLink startInstance = new AjaxLink("start-instance"){                                                                                                                                                                                                                                                                                                  
+					private static final long serialVersionUID = 1L;                                                                                                       
+
+					@Override                                                                                                                                              
+					public void onClick(AjaxRequestTarget target) {                                                                                                        
+						 selected = model.getObject().getID();
+						 projectName = model.getObject().getName();
+						 target.appendJavaScript("showModal ()");
+					}                                                                                                                                                      
+				};
 				BookmarkablePageLink<ProjectIndex> viewProject = new BookmarkablePageLink<ProjectIndex> ("view-project", ProjectIndex.class, setViewProjectLinkParameters (model.getObject()));
 				viewProject.setVisible(false);
 				BookmarkablePageLink<ProjectIndex> deleteProject = new BookmarkablePageLink<ProjectIndex> ("delete-project", ProjectIndex.class, setDeleteProjectLinkParameters (model.getObject()));
@@ -108,39 +184,57 @@ public class ProjectTableWidget extends Panel {
 		
 	}
 	
-	private class ProjectTableDataProvider extends SortableDataProvider<Project, String> {
-		
-		
-		private final long USER_ID = UserSession.get().getUser().getID();
-		
-		public ProjectTableDataProvider () {
-			
-		}
-		
-		private List<Project> userProjects = new ArrayList<Project> ();
-		
-		@Override
-		public Iterator<? extends Project> iterator(long arg0, long arg1) {
-			return userProjects.subList((int) arg0, Math.min((int) userProjects.size(), (int) arg1)).iterator();
-		}
+	private void addStartInstanceForm () {
+		Form<Void> setupForm = new Form<Void>("startInstance");
+		add(setupForm);
 
-		@Override
-		public IModel<Project> model(Project arg0) {
-			return Model.of(arg0);
-		}
+		final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
+		feedback.setOutputMarkupPlaceholderTag(true);
+		setupForm.add(feedback);
+		
+		 
+	    TextField wicketName = new TextField("name", new PropertyModel<String>(this, "projectName"));
+	    setupForm.add(wicketName);
+		
+		List<String> containerChoices = new ArrayList<String> ();
+		containerChoices.add("Felix");
+		containerChoices.add("Equinox");
+		containerChoices.add("Knopflerfish");
+		containerChoices.add("Concierge");
+		
+		DropDownChoice<String> wicketContainerChoices = new DropDownChoice<String>("containerChoice" ,new PropertyModel<String>(this,"containerChoice"), containerChoices);
+		setupForm.add (wicketContainerChoices);
+		
+		setupForm.add(new AjaxButton("submit", setupForm)
+	        {
+	            /**
+				 * 
+				 */
+				private static final long serialVersionUID = -6415555183396288060L;
 
-		@Override
-		public long size() {
-			try {
-				userProjects = projectController.listCreatedProjectsByOwner(USER_ID, USER_ID);
-			} catch (ProjectControllerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			return userProjects.size();
-		}
+				@Override
+	            protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+				{
 
+					Instance instance = new Instance ();
+					try {
+						Long uid = currentUser.getID();
+						instance.setContainerType(containerChoice);
+						instanceController.createInstance(instance, selected, uid, uid);
+					} catch (InstanceControllerException e) {
+						error (e.getMessage());
+						e.printStackTrace();
+						setResponsePage (getPage());
+					}
+					info("Your instance is ready <a href=\"" + instance.getCpanelUrl() + "\">Go to Cpanel</a>");
+					setResponsePage (getPage());
+	            }
+
+	            @Override
+	            protected void onError(AjaxRequestTarget target, Form<?> form)
+	            {
+	            	target.add(feedback);
+	            }
+	        });
 	}
-	
-
 }

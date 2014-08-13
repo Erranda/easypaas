@@ -3,8 +3,11 @@
  */
 package com.withinet.opaas.controller.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Validator;
@@ -19,7 +22,9 @@ import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
+import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.controller.system.FileLocationGenerator;
 import com.withinet.opaas.controller.system.ProcessService;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.InstanceRepository;
@@ -48,6 +53,9 @@ public class InstanceControllerImpl implements InstanceController {
 	@Autowired
 	ProcessService processService;
 	
+	@Autowired
+	FileLocationGenerator fileLocationGenerator;
+	
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.InstanceController#createInstance(java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
@@ -55,29 +63,64 @@ public class InstanceControllerImpl implements InstanceController {
 	public Instance createInstance(Instance instance, Long projectId, Long userId, Long requesterId)
 			throws InstanceControllerException {
 		Validation.assertNotNull(instance);
+		Validation.assertNotNull(instance.getContainerType());
 		Validation.assertNotNull(projectId);
 		Validation.assertNotNull(userId);
 		Validation.assertNotNull(requesterId);
-		DomainConstraintValidator<Instance> dcv = new  DomainConstraintValidator<Instance> ();
-		if (!dcv.isValid(instance)) throw new IllegalArgumentException ("Bad request");
+		
 		try {
 			User user = userController.readAccount(userId, requesterId);
 			user.getInstances().add(instance);
 			Project project = projectController.readProjectById(projectId, requesterId);
 			project.getInstances().add(instance);
 			instance.setProject(project);
+			instance.setProjectName(project.getName());
 			instance.setOwner(user);
+			instance.setOwnerName(user.getFullName());
 			instance.setAdministrator(user.getAdministrator());
-			instanceRepository.save(instance);
+			instance.setPort(getOpenPort ());
+			instance.setCpanelUrl(ServiceProperties.DOMAIN + ":" + instance.getPort () + "/system/console");
+			instance.setStatus("Starting");
+			instance.setCreated(new Date());
+			//For scalability host will have their identifiers
+			instance.setHostName("server-1");
+			DomainConstraintValidator<Instance> dcv = new  DomainConstraintValidator<Instance> ();
+			if (!dcv.isValid(instance)) throw new IllegalArgumentException ("Bad request");
+			//Step one
+			instanceRepository.saveAndFlush(instance);
+			//Step two
+			Long iid = instance.getId();
+			File workingDir = fileLocationGenerator.getInstanceDirectory(userId, iid);
+			instance.setWorkingDirectory(workingDir.getAbsolutePath());
+			File logFile = fileLocationGenerator.getInstanceLogFile(userId, iid);
+			instance.setLogFile(logFile.getAbsolutePath());
+			processService.startProcess(instance);
+			//There should be a cron like service monitoring instances
+			instance.setStatus("Live");
 		} catch (ProjectControllerException e) {
 			throw new InstanceControllerException (e.getMessage());
 		} catch (UserControllerException e) {
+			throw new InstanceControllerException (e.getMessage());
+		} catch (IOException e) {
 			throw new InstanceControllerException (e.getMessage());
 		}
 		
 		return instance;
 	}
-
+	
+	private int getOpenPort () {
+		int min = ServiceProperties.MINPORT;
+		int max = ServiceProperties.MAXPORT;
+		int difference = max - min;
+		int port = (int)((Math.random()*difference) + min);		
+		while (true) {
+			if(instanceRepository.findByPort (port) == null)
+					return port;
+			else 
+				port = (int)((Math.random()*difference) + min);	
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.InstanceController#deleteInstance(java.lang.Long, java.lang.Long)
 	 */
@@ -100,7 +143,7 @@ public class InstanceControllerImpl implements InstanceController {
 		Instance instancePersist = getWithBasicAuth (instance.getId(), requesterId);
 		if (instance.getStatus() != null)
 			instancePersist.setStatus(instance.getStatus());
-		instanceRepository.save(instancePersist);
+		instanceRepository.saveAndFlush(instancePersist);
 		return instancePersist;
 	}
 

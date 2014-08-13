@@ -33,7 +33,6 @@ public class FileServiceImpl implements FileService {
 		Validation.assertNotNull(fileLocation);
 		File forCreate = new File (fileLocation);
 		if (!forCreate.exists()) {
-			forCreate.mkdirs();
 			try {
 				forCreate.createNewFile();
 				return forCreate;

@@ -14,7 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.maven.cli.MavenCli;
+//import org.apache.maven.cli.MavenCli;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
@@ -65,8 +65,9 @@ public class BundleFileInstallerImpl implements BundleInstaller {
 		if (!destDir.exists())destDir.mkdirs();
 		if (!destDir.isDirectory()) throw new IOException ("Destination path not directory");
 		if (!new File(destPath).isDirectory()) throw new IOException ("Destination path not directory");
-		MavenCli cli = new MavenCli();
-		cli.doMain(new String[]{"-f" + pomFile.getAbsolutePath(), "dependency:copy-dependencies", "-DoutputDirectory=" + destDir.getAbsolutePath()},null, System.out, System.out);
+		
+		//MavenCli cli = new MavenCli();
+		//cli.doMain(new String[]{"-f" + pomFile.getAbsolutePath(), "dependency:copy-dependencies", "-DoutputDirectory=" + destDir.getAbsolutePath()},null, System.out, System.out);
 		File[] files = new File(destPath).listFiles();
 		List<Bundle> bundles = new ArrayList <Bundle> ();
 		for (File file : files) {

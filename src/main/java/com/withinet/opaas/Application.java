@@ -129,6 +129,7 @@ public class Application extends WebApplication {
 		web.setStatus("active");
 		web.setEmail("abc@xyz.com");
 		web.setLocation("United Kingdom");
+		web.setAdministrator(web);
 		userController.createAccount(web);
 		
 		User pao = new User ();

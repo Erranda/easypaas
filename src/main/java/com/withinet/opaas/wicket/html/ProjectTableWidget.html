@@ -15,5 +15,63 @@
 				</div> <!-- /widget-content -->
 			
 			</div> <!-- /widget -->
-					
+					<section id="modals">
+		<a id="startInstanceButton" style="display:none" class="btn btn-danger btn-large project-setup" data-toggle="modal" href="#launch">New Project</a>
+		<div id="launch" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h4 class="modal-title">Launch Project</h4>
+          </div>
+          <div class="modal-body">
+          <div class="content clearfix">
+		
+		<form wicket:id="startInstance" class="form-horizontal">
+		<div wicket:id="feedback">
+            
+         </div>		
+			<div class="modal-form-fields">
+				
+				<div class="field">
+					<h6>1. Project Name </h6>
+				</div>
+				
+				<div class="field">
+					<input disabled="" style="padding:5px !important" wicket:id="name" type="text" id="name" name="name" value="" required placeholder="Project Name" class="form-control" />
+				</div> <!-- /field -->
+				
+			
+				<div class="field">
+					<h6>2. OSGi Container Type </h6>
+				</div>
+				
+				<div class="field">
+                                
+                     <select wicket:id="containerChoice" class="form-control" tabindex="2">
+                             
+                      </select>
+                </div> <!-- /field -->
+			</div> <!-- /form-fields -->
+			<div class="login-actions">	
+				
+				<input wicket:id="submit" class="login-action btn btn-primary" type="submit" value="Start"/>	
+				
+			</div> <!-- .actions -->
+			
+		</form>
+		
+	</div> <!-- /content -->
+            
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+	</section>
+	<script>
+		showModal = function () {
+					document.getElementById("startInstanceButton").click();
+		}
+	</script>
  </wicket:panel>

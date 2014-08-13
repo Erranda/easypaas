@@ -37,10 +37,6 @@ public class Instance implements Serializable {
 	@URL
 	private String cpanelUrl;
 	
-	@Column(name="OSGI_CONTAINER_NAME", nullable=false)
-	@NotNull
-	private String osgiContainerName;
-	
 	@Column(name="CREATED", nullable=false)	
 	@Temporal(TemporalType.DATE)
 	private Date created;
@@ -65,19 +61,28 @@ public class Instance implements Serializable {
 	@NotNull
 	private String status;
 	
+	@Column(name="WORKING_DIRECTORY")
+	private String workingDirectory;
+	
+	@Column(name="LOG_FILE")
+	private String logFile;
+	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumn(name="OWNER_ADMIN_ID", referencedColumnName="ID", nullable=false) 
+	@NotNull
 	private User administrator;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
-	@JoinColumn(name="OWNER_ID", referencedColumnName="ID", nullable=false) 
+	@JoinColumn(name="OWNER_ID", referencedColumnName="ID", nullable=false)
+	@NotNull
 	private User owner;
 	
 	@ManyToOne(targetEntity=Project.class, fetch=FetchType.EAGER)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
 	@JoinColumns({ @JoinColumn(name="PROJECT_ID", referencedColumnName="ID", nullable=false) })	
+	@NotNull
 	private Project project;
 	
 	public Long getId() {
@@ -144,14 +149,6 @@ public class Instance implements Serializable {
 		this.cpanelUrl = cpanelUrl;
 	}
 
-	public String getOsgiContainerName() {
-		return osgiContainerName;
-	}
-
-	public void setOsgiContainerName(String osgiContainerName) {
-		this.osgiContainerName = osgiContainerName;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -182,6 +179,22 @@ public class Instance implements Serializable {
 
 	public String getProjectName() {
 		return this.projectName;
+	}
+
+	public String getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = workingDirectory;
+	}
+
+	public String getLogFile() {
+		return logFile;
+	}
+
+	public void setLogFile(String logFile) {
+		this.logFile = logFile;
 	}
 	
 }

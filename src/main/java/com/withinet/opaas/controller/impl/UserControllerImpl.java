@@ -49,7 +49,7 @@ public class UserControllerImpl implements UserController {
 		if (userRepo.findByEmail(account.getEmail()) != null) throw new AccountConflictException (account.getEmail() + " is already registered on our system");
 		account.setCreated(new Date());
 		account.setStatus("Active");
-		account = userRepo.save(account);
+		account = userRepo.saveAndFlush (account);
 		logger.info("create user " + account.getEmail () + ", with " + account.getPassword ());
 		return account;
 	}
@@ -122,8 +122,8 @@ public class UserControllerImpl implements UserController {
 			throw new CollaboratorNotFoundException ("Please save collaborator first");
 		user.getCollaborators().add(collaborator);
 		collaborator.setAdministrator(user);
-		userRepo.save(user);
-		userRepo.save(collaborator);
+		userRepo.saveAndFlush (user);
+		userRepo.saveAndFlush (collaborator);
 		List<User> collaborators = new ArrayList<User> ();
 		collaborators.addAll(user.getCollaborators());
 		return collaborators;
