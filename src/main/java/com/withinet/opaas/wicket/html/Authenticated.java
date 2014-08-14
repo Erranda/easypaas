@@ -23,7 +23,7 @@ public abstract class Authenticated extends WebPage {
 	 * 
 	 */
 	public Authenticated() {
-		add (new FeedbackPanel ("feedback"));
+		add (new FeedbackPanel ("feedback").setEscapeModelStrings(false));
 		BookmarkablePageLink homeLink = new BookmarkablePageLink ("appNameLink", Application.get().getHomePage(), null);
 		homeLink.add(new Label ("appName", "Withinet OSGi Cloud"));
 		add (homeLink);

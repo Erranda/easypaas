@@ -35,7 +35,7 @@ public class Bundle implements Serializable {
 	
 	@Column(name="BUNDLE_SYMBOLIC_NAME", nullable=false, length=255)	
 	@NotNull
-	@Size (min = 2, max = 30)
+	@Size (min = 2, max = 255)
 	private String symbolicName;
 	
 	@Column(name="BUNDLE_LOCATION", nullable=false, length=255)	

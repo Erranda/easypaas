@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -90,6 +91,7 @@ public class Pipe {
 					wis = new BufferedWriter(new FileWriter(file.getAbsoluteFile(), true));
 					while (true) {
 						if ((line = bis.readLine()) != null) {
+							line = "<br/><hr/><p style=\"color:#FF0\">[" + new Date () + "]</p>" + line;
 							wis.write(line);
 						}
 					}

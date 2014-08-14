@@ -16,9 +16,16 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FilenameUtils;
 //import org.apache.maven.cli.MavenCli;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.*;
@@ -30,7 +37,7 @@ import com.withinet.opaas.model.domain.Bundle;
 public class BundleFileInstallerImpl implements BundleInstaller {
 	
 	@Override
-	public List<Bundle> installBundles(List<String> pomJarZipPath, String destPath) throws IOException {
+	public List<Bundle> installBundles(List<String> pomJarZipPath, String destPath) throws IOException, ParserConfigurationException {
 		List<Bundle> bundles = new ArrayList<Bundle> ();
 		for (String fileName : pomJarZipPath) {
 			fileName = fileName.toLowerCase().trim();
@@ -51,41 +58,44 @@ public class BundleFileInstallerImpl implements BundleInstaller {
 	}
 	
 	@Override
-	public List<Bundle> installPom (String pomPath, String destPath) throws IOException {
+	public List<Bundle> installPom (String pomPath, String destPath) throws IOException, ParserConfigurationException {
 		File pomFile = new File (pomPath);
 		if (!pomFile.exists() || 
 				pomFile.isDirectory() || !pomFile.getAbsolutePath().endsWith(".xml"))
 			throw new IOException ("Destination path not pom file");
 		try {
 			validatePom (pomFile);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(pomFile);
+			doc.getDocumentElement().normalize();
+			NodeList dependencies = doc.getElementsByTagName("dependency");
+			List<Bundle> bundles = new ArrayList <Bundle> ();
+			for (int i = 0; i < dependencies.getLength(); i++) {
+				Bundle bundle = new Bundle ();
+				Node dependency = dependencies.item(i);
+				Element e = (Element) dependency;
+				StringBuffer buffer = new StringBuffer ();
+				buffer.append("mvn:");
+				String gid = ((Element) e.getElementsByTagName("groupId").item(0)).getTextContent();
+				String aid = ((Element) e.getElementsByTagName("artifactId").item(0)).getTextContent();
+				String version =((Element) e.getElementsByTagName("version").item(0)).getTextContent();
+				buffer.append(gid + "/");
+				buffer.append(aid + "/");
+				buffer.append(version);
+				bundle.setLocation(buffer.toString());
+				bundle.setSymbolicName(gid + "-" + aid + "-" + version);
+				bundles.add(bundle);
+			}
+			return bundles;
 		} catch (SAXException e) {
 			throw new IOException ("File not a valid maven pom file");
 		}
-		File destDir = new File (destPath);
-		if (!destDir.exists())destDir.mkdirs();
-		if (!destDir.isDirectory()) throw new IOException ("Destination path not directory");
-		if (!new File(destPath).isDirectory()) throw new IOException ("Destination path not directory");
 		
-		//MavenCli cli = new MavenCli();
-		//cli.doMain(new String[]{"-f" + pomFile.getAbsolutePath(), "dependency:copy-dependencies", "-DoutputDirectory=" + destDir.getAbsolutePath()},null, System.out, System.out);
-		File[] files = new File(destPath).listFiles();
-		List<Bundle> bundles = new ArrayList <Bundle> ();
-		for (File file : files) {
-			Bundle bundle; 
-			if (!file.getName().endsWith(".jar")) {
-				file.delete();
-			} else {
-				bundle = new Bundle ();
-				bundle.setLocation(file.getCanonicalPath());
-				bundle.setSymbolicName(file.getName());
-				bundles.add(bundle);
-			}
-		}
-		return bundles;
 	}
 	
 	@Override
-	public List<Bundle> installZip (String zipPath, String destPath) throws IOException {
+	public List<Bundle> installZip (String zipPath, String destPath) throws IOException, ParserConfigurationException {
 		File zipFile = new File (zipPath);
 		File destPathDir = new File (destPath);
 		if (!zipFile.exists()) throw new IOException ("File not found");

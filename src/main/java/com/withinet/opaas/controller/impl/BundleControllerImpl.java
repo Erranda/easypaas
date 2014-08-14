@@ -3,6 +3,7 @@
  */
 package com.withinet.opaas.controller.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,7 +113,11 @@ public class BundleControllerImpl implements BundleController {
 		projectBundleRepository.delete(projects);
 		bundleRepository.delete(forDelete);
 		bundleRepository.findOne(forDelete.getID());
-		return fileService.deleteFile(forDelete.getLocation());
+		try {
+			return fileService.deleteFile(forDelete.getLocation());
+		} catch (IOException e) {
+			throw new BundleControllerException (e.getMessage());
+		}
 	}
 
 	/* (non-Javadoc)

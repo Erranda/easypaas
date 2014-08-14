@@ -65,7 +65,7 @@ public class ProjectTableWidget extends Panel {
 	private InstanceController instanceController;
 	
 	@SpringBean
-	private static ProjectController projectController;
+	private ProjectController projectController;
 	/**
 	 * @param id
 	 */

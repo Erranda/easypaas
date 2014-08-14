@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.Test;
 
@@ -29,7 +31,7 @@ public class BundleFileInstallerTest {
 	}
 	
 	@Test
-	public void testZip() throws IOException {
+	public void testZip() throws IOException, ParserConfigurationException {
 		String filePath = "src/test/resources/test2.zip";
 		List<String> bundles = new ArrayList<String> ();
 		bundles.add(filePath);
@@ -41,7 +43,7 @@ public class BundleFileInstallerTest {
 	}
 	
 	@Test
-	public void testPom() throws IOException {
+	public void testPom() throws IOException, ParserConfigurationException {
 		String filePath = "src/test/resources/pom.xml";
 		List<String> bundles = new ArrayList<String> ();
 		bundles.add(filePath);
@@ -53,7 +55,7 @@ public class BundleFileInstallerTest {
 	}
 	
 	@Test
-	public void testAll () throws IOException {
+	public void testAll () throws IOException, ParserConfigurationException {
 		String filePath0 = "src/test/resources/test1.jar";
 		String filePath1 = "src/test/resources/test2.zip";
 		String filePath2 = "src/test/resources/pom.xml";

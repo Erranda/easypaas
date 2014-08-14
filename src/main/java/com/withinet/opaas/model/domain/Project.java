@@ -58,16 +58,15 @@ public class Project implements Serializable {
 	private User owner;
 	
 	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
 	
 	@OneToMany (mappedBy="project", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectTeam> projectTeam = new HashSet <ProjectTeam> ();
 	
 	@OneToMany(mappedBy="project",  fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
-	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<Instance> instances = new HashSet<Instance> ();
 	
 	public User getOwner() {

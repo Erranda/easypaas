@@ -16,6 +16,8 @@ public interface InstanceController {
 	
 	public Instance createInstance (Instance instance, Long projectId, Long userId, Long requesterId) throws InstanceControllerException;
 	
+	public void stopInstance (Long id, Long requesterId) throws InstanceControllerException;
+	
 	public boolean deleteInstance (Long id, Long requesterId) throws InstanceControllerException;
 	
 	public Instance updateInstance (Instance instance, Long requesterId) throws InstanceControllerException;
@@ -27,6 +29,9 @@ public interface InstanceController {
 	public List<Instance> listInstancesByProject (Long projectId, Long requesterId) throws InstanceControllerException;
 	
 	public List<Instance> listInstancesByAdministrator (Long adminId, Long requesterId) throws InstanceControllerException;
+
+	public void startInstance(Long id, Long requesterId)
+			throws InstanceControllerException;
 	
 }
 

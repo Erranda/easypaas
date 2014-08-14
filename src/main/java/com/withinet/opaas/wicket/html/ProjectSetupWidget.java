@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RestartResponseException;
@@ -62,8 +64,6 @@ public class ProjectSetupWidget extends Panel {
 
 	private List<User> projectTeamSelected = new ArrayList<User>();
 
-	private Long userId = UserSession.get().getUser().getID();
-
 	private ArrayList<String> projectFileBundlesSelected = new ArrayList<String>();
 
 	private HashMap<String, Bundle> thisBundleModel = new HashMap<String, Bundle>();
@@ -72,11 +72,7 @@ public class ProjectSetupWidget extends Panel {
 
 	private Boolean active = true;
 
-	private User thisUser = UserSession.get().getUser();
-
 	private Project thisProject = null;
-
-	private boolean noError = true;
 
 	private List<Bundle> projectFileBundles = new ArrayList<Bundle>();
 
@@ -97,9 +93,6 @@ public class ProjectSetupWidget extends Panel {
 
 	public ProjectSetupWidget(String id) throws UserControllerException {
 		super (id);
-		// Set the user
-		thisUser = accountController.readAccount(userId, userId);
-		
 		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
 
@@ -138,6 +131,9 @@ public class ProjectSetupWidget extends Panel {
 				Long start = System.currentTimeMillis();
 				Double startD = start.doubleValue();
 				upload = wicketFileUploadField.getFileUpload();
+
+				User thisUser = UserSession.get().getUser();
+				Long userId = UserSession.get().getUser().getID();
 				try {
 					if (upload != null) {
 						String fileName = upload.getClientFileName().toLowerCase()
@@ -195,6 +191,7 @@ public class ProjectSetupWidget extends Panel {
 		// If project creation succeeds, check for file upload
 		File thisFile = new File((fileMan.getTempDirectory ()).getAbsolutePath() + "/"
 				+ upload.getClientFileName());
+		Long userId = UserSession.get().getUser().getID();
 		try {
 			if (thisFile.createNewFile()){
 			upload.writeTo(thisFile);
@@ -227,6 +224,9 @@ public class ProjectSetupWidget extends Panel {
 		} catch (IOException e) {
 			e.printStackTrace();
 			error(e.getMessage());
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			error(e.getMessage());
 		}
 		return projectFileBundles;
 	}
@@ -242,6 +242,7 @@ public class ProjectSetupWidget extends Panel {
 
 	private ArrayList<String> listBundles() {
 		ArrayList<String> bundles = new ArrayList<String>();
+		User thisUser = UserSession.get().getUser();
 		Set<Bundle> bundlesRaw = thisUser.getBundles();
 		for (Bundle bundle : bundlesRaw) {
 			bundles.add(bundle.getSymbolicName());
@@ -253,6 +254,7 @@ public class ProjectSetupWidget extends Panel {
 	}
 
 	private ArrayList<String> listTeam() {
+		User thisUser = UserSession.get().getUser();
 		Set<User> collaborators = thisUser.getCollaborators();
 		ArrayList<String> formList = new ArrayList<String>();
 		for (User user : collaborators) {
@@ -267,6 +269,7 @@ public class ProjectSetupWidget extends Panel {
 	}
 
 	private void deleteProject() {
+		Long userId = UserSession.get().getUser().getID();
 		try {
 			projectController.deleteProject(thisProject.getID(), userId);
 		} catch (ProjectControllerException e) {
@@ -279,8 +282,10 @@ public class ProjectSetupWidget extends Panel {
 		Project thisProject = new Project();
 		thisProject.setName(name);
 		thisProject.setStatus(active ? "Active" : "Disabled");
+		User thisUser = UserSession.get().getUser();
+		Long userId = UserSession.get().getUser().getID();
 		thisProject.setOwner(thisUser);
-		thisProject = projectController.createProject(thisProject, userId);
+		thisProject = projectController.createProject(thisProject, thisUser.getID());
 		// Add project team
 
 		for (Bundle bundle : processSelectedBundles()) {

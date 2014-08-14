@@ -5,12 +5,8 @@ package com.withinet.opaas.controller.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +21,7 @@ import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.system.FileLocationGenerator;
+import com.withinet.opaas.controller.system.FileService;
 import com.withinet.opaas.controller.system.ProcessService;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.InstanceRepository;
@@ -55,6 +52,9 @@ public class InstanceControllerImpl implements InstanceController {
 	
 	@Autowired
 	FileLocationGenerator fileLocationGenerator;
+	
+	@Autowired
+	FileService fileService;
 	
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.InstanceController#createInstance(java.lang.Long, java.lang.Long, java.lang.Long)
@@ -97,6 +97,7 @@ public class InstanceControllerImpl implements InstanceController {
 			processService.startProcess(instance);
 			//There should be a cron like service monitoring instances
 			instance.setStatus("Live");
+			instanceRepository.saveAndFlush(instance);
 		} catch (ProjectControllerException e) {
 			throw new InstanceControllerException (e.getMessage());
 		} catch (UserControllerException e) {
@@ -128,7 +129,13 @@ public class InstanceControllerImpl implements InstanceController {
 	public boolean deleteInstance(Long id, Long requesterId)
 			throws InstanceControllerException {
 		Instance instance = getWithBasicAuth (id, requesterId);
-		// processService.stopProcess(requesterId);
+		if (instance.getStatus().equals("Live"));
+			processService.stopProcess(id);
+		try {
+			fileService.deleteFile(instance.getWorkingDirectory());
+		} catch (IOException e) {
+			throw new InstanceControllerException (e.getMessage());
+		}
 		instanceRepository.delete(instance);
 		return true;
 	}
@@ -216,6 +223,24 @@ public class InstanceControllerImpl implements InstanceController {
 			 	!= instance.getAdministrator().getID())
 			throw new ControllerSecurityException ("You are not authorized to perform this action");
 		return instance;
+	}
+
+	@Override
+	public void stopInstance(Long id, Long requesterId) throws InstanceControllerException {
+		Instance instance = getWithBasicAuth (id, requesterId);
+		processService.stopProcess(instance.getId());
+		// Important this comes after process call
+		instance.setStatus("Dead");
+		instanceRepository.saveAndFlush(instance);
+	}
+	
+	@Override
+	public void startInstance (Long id, Long requesterId) throws InstanceControllerException {
+		Instance instance = getWithBasicAuth (id, requesterId);
+		processService.startProcess(instance);
+		//Important this comes after process call
+		instance.setStatus("Live");
+		instanceRepository.saveAndFlush (instance);
 	}
 
 }

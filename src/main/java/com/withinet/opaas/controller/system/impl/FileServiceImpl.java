@@ -6,6 +6,7 @@ package com.withinet.opaas.controller.system.impl;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 import com.withinet.opaas.controller.system.FileService;
@@ -48,17 +49,20 @@ public class FileServiceImpl implements FileService {
 	 * @see com.withinet.opaas.controller.system.FileService#deleteFile(java.lang.String)
 	 */
 	@Override
-	public boolean deleteFile(String fileLocation) {
+	public boolean deleteFile(String fileLocation) throws IOException {
 		Validation.assertNotNull(fileLocation);
 		File forDelete = new File (fileLocation);
-		if (forDelete.exists())
-			return forDelete.delete();
-		else 
-			return true;
+		if (forDelete.exists()) {
+			if (forDelete.isDirectory())
+				FileUtils.deleteDirectory(forDelete);
+			else
+				return forDelete.delete();
+		}
+		return true;
 	}
 
 	@Override
-	public boolean updateFile(String fileLocation, File file) {
+	public boolean updateFile(String fileLocation, File file) throws IOException {
 		if (deleteFile (fileLocation)) {
 			file.renameTo(new File (fileLocation));
 			return true;

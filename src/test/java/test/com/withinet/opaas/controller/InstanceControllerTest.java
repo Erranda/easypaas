@@ -101,7 +101,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setStatus("Active");
 		instance.setOwnerName(web.getFullName());
 		instance.setProject(p);
@@ -117,7 +117,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setOwnerName(web.getFullName());
 		instance.setPort(9090);
 		instance.setStatus("Active");
@@ -134,7 +134,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setOwnerName(web.getFullName());
 		instance.setPort(9090);
 		instance.setStatus("Active");
@@ -155,7 +155,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setOwnerName(web.getFullName());
 		instance.setPort(9090);
 		instance.setStatus("Active");
@@ -172,7 +172,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setOwnerName(web.getFullName());
 		instance.setPort(9090);
 		instance.setStatus("Active");
@@ -189,7 +189,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setOwnerName(web.getFullName());
 		instance.setPort(9090);
 		instance.setStatus("Active");
@@ -206,7 +206,7 @@ public class InstanceControllerTest {
 		instance.setCpanelUrl("http://cloud.withinet.com");
 		instance.setCreated(new Date());
 		instance.setHostName("live-1");
-		instance.setOsgiContainerName("felix");
+		instance.setContainerType("felix");
 		instance.setOwnerName(web.getFullName());
 		instance.setPort(9090);
 		instance.setStatus("Active");
@@ -219,7 +219,7 @@ public class InstanceControllerTest {
 		instance1.setCpanelUrl("http://cloud.withinet.com");
 		instance1.setCreated(new Date());
 		instance1.setHostName("live-1");
-		instance1.setOsgiContainerName("felix");
+		instance1.setContainerType("felix");
 		instance1.setOwnerName(web.getFullName());
 		instance1.setPort(9090);
 		instance1.setStatus("Active");

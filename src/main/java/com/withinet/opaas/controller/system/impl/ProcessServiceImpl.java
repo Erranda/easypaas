@@ -3,8 +3,11 @@
  */
 package com.withinet.opaas.controller.system.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,18 +64,27 @@ public class ProcessServiceImpl implements ProcessService {
 			for (Bundle bundle : bundles) {
 				config.add(bundle.getLocation());
 			}
-			config.add("C:/Users/Folarin/SoftwareDevelopmentKit/Java/pax-runner-1.8.5/pax-runner-1.8.5/hello.bundles");
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");
-			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort());
-			//config.addAll(Profiles.getInstance().getWeb());
+			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort() +
+					" -Dfelix.webconsole.username=" + instance.getOwner().getEmail() +
+					" -Dfelix.webconsole.password=" + instance.getOwner().getPassword()
+					);
+			config.add("--noBundleValidation");
+			config.add("--keepOriginalUrls");
+			config.add("--snapshot");
+			if (instance.getStatus().equals("Dead"))
+				config.add("--usePersistedState=true");
+			config.addAll(Profiles.getInstance().getWeb());
 			String[] configs = config.toArray(new String[config.size()]);
 			Process thisProcess = PaxRunner.startContainer(configs);
 			liveProcesses.put(iid, thisProcess);
-			//beginLogging (thisProcess, iid, logLocation);
+			beginLogging (thisProcess, iid, logLocation);
 			return true;
 		} catch (BundleControllerException e) {
+			throw new ProcessServiceException (e.getMessage());
+		} catch (IOException e) {
 			throw new ProcessServiceException (e.getMessage());
 		}
 	}
