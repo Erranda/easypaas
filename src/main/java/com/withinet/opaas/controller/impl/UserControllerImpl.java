@@ -108,7 +108,7 @@ public class UserControllerImpl implements UserController {
 		User requester = userRepo.findOne(requesterId);
 		authorizeAssetAccess (user, requester);
 		List<User> collaborators = new ArrayList<User> ();
-		collaborators.addAll(user.getCollaborators());
+		//collaborators.addAll(user.getCollaborators());
 		return collaborators;
 	}
 
@@ -120,12 +120,12 @@ public class UserControllerImpl implements UserController {
 		authorizeAssetAccess (user, requester);
 		if (collaborator.getID() == 0)
 			throw new CollaboratorNotFoundException ("Please save collaborator first");
-		user.getCollaborators().add(collaborator);
+		//user.getCollaborators().add(collaborator);
 		collaborator.setAdministrator(user);
 		userRepo.saveAndFlush (user);
 		userRepo.saveAndFlush (collaborator);
 		List<User> collaborators = new ArrayList<User> ();
-		collaborators.addAll(user.getCollaborators());
+		//collaborators.addAll(user.getCollaborators());
 		return collaborators;
 	}
 	

@@ -16,5 +16,7 @@ public interface FileService {
 	
 	public boolean deleteFile (String fileLocation) throws IOException;
 	
-	public boolean updateFile (String fileLocation, File file) throws IOException; 
+	public boolean updateFile (String fileLocation, File file) throws IOException;
+
+	public void copyFile(String dest, String src) throws IOException; 
 }

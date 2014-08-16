@@ -176,7 +176,7 @@ public class ControllerIntegrationTests {
 		accountController.createAccount(conflict);
 	}
 	
-	@Test
+/*	@Test
 	public void listCollaborators () throws UserControllerException {
 		User collab = new User ();
 		collab.setCreated(new Date ());
@@ -201,7 +201,7 @@ public class ControllerIntegrationTests {
 		System.out.println (accountController.addCollaborator(collado, collab.getID(), collab.getID()).size());
 		System.out.println (collado.getCollaborators().size());
 		assertTrue (collado.getAdministrator().equals(collab));
-	}
+	}*/
 		
 }
 	

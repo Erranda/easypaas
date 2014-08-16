@@ -53,7 +53,7 @@ public class Project implements Serializable {
 	
 	@NotNull (message = "Sorry, we need to know who owns this project")
 	@ManyToOne (targetEntity=User.class)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})	
 	@JoinColumns({ @JoinColumn(name="ADMINISTRATOR_ID", referencedColumnName="ID", nullable=false) })	
 	private User owner;
 	
@@ -98,10 +98,6 @@ public class Project implements Serializable {
 
 	public Set<ProjectBundle> getProjectBundles() {
 		return projectBundles;
-	}
-
-	public Set<Instance> getInstances() {
-		return instances;
 	}
 
 	public String getDetails() {

@@ -96,7 +96,6 @@ public class BundleControllerImpl implements BundleController {
 			throw new BundleConflictException ("Bundle with name " + bundle.getSymbolicName() + " already exists");
 		bundle.setUpdated(new Date());
 		bundle.setOwner(user);
-		user.getBundles().add(bundle);
 		return bundleRepository.saveAndFlush(bundle);
 	}
 

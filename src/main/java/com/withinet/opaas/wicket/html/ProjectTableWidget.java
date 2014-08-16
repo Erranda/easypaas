@@ -55,7 +55,6 @@ public class ProjectTableWidget extends Panel {
 	private SortableDataProvider<Project, String> provider = new ProjectTableDataProvider ();
 	private final List<IColumn<Project, String>> columns = Collections.synchronizedList(new ArrayList<IColumn<Project, String>>());
 	private int resultSize = 20;
-	private User currentUser = UserSession.get().getUser();
 	private Long selected = null;
 	
 	private String projectName = null;
@@ -77,40 +76,6 @@ public class ProjectTableWidget extends Panel {
 	public ProjectTableWidget(String id, Long iid) {
 		super(id);
 		
-	}
-	
-	private class ProjectTableDataProvider extends SortableDataProvider<Project, String> {
-		
-		
-		private final long USER_ID = UserSession.get().getUser().getID();
-		
-		public ProjectTableDataProvider () {
-			
-		}
-		
-		private List<Project> userProjects = new ArrayList<Project> ();
-		
-		@Override
-		public Iterator<? extends Project> iterator(long arg0, long arg1) {
-			return userProjects.subList((int) arg0, Math.min((int) userProjects.size(), (int) arg1)).iterator();
-		}
-
-		@Override
-		public IModel<Project> model(Project arg0) {
-			return Model.of(arg0);
-		}
-
-		@Override
-		public long size() {
-			try {
-				userProjects = projectController.listCreatedProjectsByOwner(USER_ID, USER_ID);
-			} catch (ProjectControllerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			return userProjects.size();
-		}
-
 	}
 	
 	@Override
@@ -144,7 +109,24 @@ public class ProjectTableWidget extends Panel {
 				};
 				BookmarkablePageLink<ProjectIndex> viewProject = new BookmarkablePageLink<ProjectIndex> ("view-project", ProjectIndex.class, setViewProjectLinkParameters (model.getObject()));
 				viewProject.setVisible(false);
-				BookmarkablePageLink<ProjectIndex> deleteProject = new BookmarkablePageLink<ProjectIndex> ("delete-project", ProjectIndex.class, setDeleteProjectLinkParameters (model.getObject()));
+				ConfirmationLink<String>  deleteProject = new ConfirmationLink<String> ("delete-project", "All instances will be deleted as well. Continue?") {
+
+					@Override
+					public void onClick(AjaxRequestTarget arg0) {
+						try {
+							projectController.deleteProject(model.getObject().getID(), UserSession.get().getUser().getID());
+							getPage().info (model.getObject().getName() + " deleted");
+							setResponsePage (getPage());
+						} catch (ProjectControllerException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							error (e.getMessage());
+						}
+					}
+				};
+				
+				//BookmarkablePageLink<ProjectIndex> deleteProject = new BookmarkablePageLink<ProjectIndex> ("delete-project", ProjectIndex.class, setDeleteProjectLinkParameters (model.getObject()));
+				deleteProject.add(new JavascriptEventConfirmation ("onClick", "All instances will be deleted as well. Continue?"));
 				BookmarkablePageLink<ProjectIndex> viewBundles = new BookmarkablePageLink<ProjectIndex> ("view-bundles", BundleIndex.class, setBundlesLinkParameters (model.getObject()));
 				BookmarkablePageLink<ProjectIndex> viewInstances = new BookmarkablePageLink<ProjectIndex> ("view-instances", InstanceIndex.class, setInstancesLinkParameters (model.getObject()));
 				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, viewProject, deleteProject, viewBundles, viewInstances);
@@ -171,12 +153,6 @@ public class ProjectTableWidget extends Panel {
 				PageParameters linkParameters = new PageParameters();
 				linkParameters.add("pid", project.getID());
 				return linkParameters;
-			}
-			
-			private PageParameters setDeleteProjectLinkParameters(Project project) {
-					PageParameters linkParameters = new PageParameters();
-					linkParameters.add("pid", project.getID());
-					return linkParameters;
 			}
 		});
 		DataTable<Project, String> dataTable = new DefaultDataTable <Project, String> ("project-view-table", columns, provider, resultSize);
@@ -218,7 +194,7 @@ public class ProjectTableWidget extends Panel {
 
 					Instance instance = new Instance ();
 					try {
-						Long uid = currentUser.getID();
+						Long uid = UserSession.get().getUser().getID();
 						instance.setContainerType(containerChoice);
 						instanceController.createInstance(instance, selected, uid, uid);
 					} catch (InstanceControllerException e) {
@@ -226,7 +202,7 @@ public class ProjectTableWidget extends Panel {
 						e.printStackTrace();
 						setResponsePage (getPage());
 					}
-					info("Your instance is ready <a href=\"" + instance.getCpanelUrl() + "\">Go to Cpanel</a>");
+					info("Your instance is ready <a style=\"color:#fff\" href=\"" + instance.getCpanelUrl() + "\">Go to Cpanel</a>");
 					setResponsePage (getPage());
 	            }
 
@@ -236,5 +212,38 @@ public class ProjectTableWidget extends Panel {
 	            	target.add(feedback);
 	            }
 	        });
+	}
+	private class ProjectTableDataProvider extends SortableDataProvider<Project, String> {
+		
+		
+		private final long USER_ID = UserSession.get().getUser().getID();
+		
+		public ProjectTableDataProvider () {
+			
+		}
+		
+		private List<Project> userProjects = new ArrayList<Project> ();
+		
+		@Override
+		public Iterator<? extends Project> iterator(long arg0, long arg1) {
+			return userProjects.subList((int) arg0, Math.min((int) userProjects.size(), (int) arg1)).iterator();
+		}
+
+		@Override
+		public IModel<Project> model(Project arg0) {
+			return Model.of(arg0);
+		}
+
+		@Override
+		public long size() {
+			try {
+				userProjects = projectController.listCreatedProjectsByOwner(USER_ID, USER_ID);
+			} catch (ProjectControllerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			return userProjects.size();
+		}
+
 	}
 }

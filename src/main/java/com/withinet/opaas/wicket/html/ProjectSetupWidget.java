@@ -91,7 +91,7 @@ public class ProjectSetupWidget extends Panel {
 	@SpringBean
 	private UserController accountController;
 
-	public ProjectSetupWidget(String id) throws UserControllerException {
+	public ProjectSetupWidget(String id) throws UserControllerException, BundleControllerException {
 		super (id);
 		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
@@ -147,9 +147,7 @@ public class ProjectSetupWidget extends Panel {
 								Project project = createProject();
 								Long end = System.currentTimeMillis();
 								Double endD = end.doubleValue();
-								info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds \n"
-								+ "Cached bundles: " + projectController.listProjectBundlesByProject(project.getID(), userId).size() + "\n" +
-								"Team Size: " + project.getProjectTeam().size() + "\n");
+								info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds \n");
 								setResponsePage (this.getPage());
 							} catch (ProjectControllerException e) {
 								e.printStackTrace();
@@ -163,9 +161,7 @@ public class ProjectSetupWidget extends Panel {
 						Project project = createProject();
 						Long end = System.currentTimeMillis();
 						Double endD = end.doubleValue();
-						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds with "
-								+ projectController.listProjectBundlesByProject(project.getID(), userId).size() + " bundles: " + "and " +
-								project.getProjectTeam().size()+ " team members");
+						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds with ");
 						setResponsePage (this.getPage());
 					}
 				} catch (ProjectControllerException e) {
@@ -240,10 +236,11 @@ public class ProjectSetupWidget extends Panel {
 
 	}
 
-	private ArrayList<String> listBundles() {
-		ArrayList<String> bundles = new ArrayList<String>();
-		User thisUser = UserSession.get().getUser();
-		Set<Bundle> bundlesRaw = thisUser.getBundles();
+	private List<String> listBundles() throws BundleControllerException {
+		List<String> bundles = new ArrayList<String>();
+		Long uid = UserSession.get().getUser().getID();
+		
+		List<Bundle> bundlesRaw = bundleController.listBundlesByOwner(uid, uid);
 		for (Bundle bundle : bundlesRaw) {
 			bundles.add(bundle.getSymbolicName());
 			thisBundleModel.put(bundle.getSymbolicName(), bundle);
@@ -253,9 +250,10 @@ public class ProjectSetupWidget extends Panel {
 		return bundles;
 	}
 
-	private ArrayList<String> listTeam() {
-		User thisUser = UserSession.get().getUser();
-		Set<User> collaborators = thisUser.getCollaborators();
+	private List<String> listTeam() throws UserControllerException {
+		Long uid = UserSession.get().getUser().getID();
+		
+		List<User> collaborators = accountController.listCollaborators(uid, uid);
 		ArrayList<String> formList = new ArrayList<String>();
 		for (User user : collaborators) {
 			String formKey = user.getFullName() + " [" + user.getEmail() + "]";
@@ -282,10 +280,8 @@ public class ProjectSetupWidget extends Panel {
 		Project thisProject = new Project();
 		thisProject.setName(name);
 		thisProject.setStatus(active ? "Active" : "Disabled");
-		User thisUser = UserSession.get().getUser();
 		Long userId = UserSession.get().getUser().getID();
-		thisProject.setOwner(thisUser);
-		thisProject = projectController.createProject(thisProject, thisUser.getID());
+		thisProject = projectController.createProject(thisProject, userId);
 		// Add project team
 
 		for (Bundle bundle : processSelectedBundles()) {

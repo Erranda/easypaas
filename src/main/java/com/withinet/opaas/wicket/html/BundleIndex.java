@@ -28,25 +28,7 @@ public class BundleIndex extends Authenticated
     	if (!pageParameters.get("pid").isNull()) {
     		Long pid = pageParameters.get("pid").toLong();
     		add (new BundleTableWidget ("bundle-table-widget", pid));
-    	}
-    	if (!pageParameters.get("action").isNull() && !pageParameters.get("bid").isNull()) {
-    		String val = pageParameters.get("action").toString();
-    		try {
-    			Long bid = pageParameters.get("bid").toLong();
-    			val = val.toLowerCase().trim();
-    			if (val.equals("delete")) {
-    				bundleController.deleteBundle(bid, userId);
-    				info ("Bundle deleted from your cache");
-    			}
-    			add (new BundleTableWidget ("bundle-table-widget"));
-    		} catch (RuntimeException e) {
-    			e.printStackTrace();
-    			error (e.getMessage());
-    		} catch (BundleControllerException e) {
-				error (e.getMessage());
-			}
-    	}
-    	
+    	}    	
     }
     
     @Override

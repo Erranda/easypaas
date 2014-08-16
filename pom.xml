@@ -73,7 +73,7 @@
 		<dependency>
 	<groupId>org.ops4j.pax.runner</groupId>
 	<artifactId>pax-runner</artifactId>
-	<version>1.8.6</version>
+	<version>1.8.5</version>
 </dependency>
  	
   </dependencies>

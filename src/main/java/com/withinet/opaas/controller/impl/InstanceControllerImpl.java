@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -70,9 +72,9 @@ public class InstanceControllerImpl implements InstanceController {
 		
 		try {
 			User user = userController.readAccount(userId, requesterId);
-			user.getInstances().add(instance);
 			Project project = projectController.readProjectById(projectId, requesterId);
-			project.getInstances().add(instance);
+			if (project.getStatus().equals("Disabled"))
+				throw new ProjectControllerException ("Oops, look like this project has not been activated");
 			instance.setProject(project);
 			instance.setProjectName(project.getName());
 			instance.setOwner(user);
@@ -91,9 +93,11 @@ public class InstanceControllerImpl implements InstanceController {
 			//Step two
 			Long iid = instance.getId();
 			File workingDir = fileLocationGenerator.getInstanceDirectory(userId, iid);
+			FileUtils.cleanDirectory(workingDir);
 			instance.setWorkingDirectory(workingDir.getAbsolutePath());
 			File logFile = fileLocationGenerator.getInstanceLogFile(userId, iid);
 			instance.setLogFile(logFile.getAbsolutePath());
+			instanceRepository.saveAndFlush(instance);
 			processService.startProcess(instance);
 			//There should be a cron like service monitoring instances
 			instance.setStatus("Live");
@@ -129,8 +133,11 @@ public class InstanceControllerImpl implements InstanceController {
 	public boolean deleteInstance(Long id, Long requesterId)
 			throws InstanceControllerException {
 		Instance instance = getWithBasicAuth (id, requesterId);
-		if (instance.getStatus().equals("Live"));
-			processService.stopProcess(id);
+		
+		if (instance.getStatus().equals("Live")){
+			stopInstance (id, requesterId);
+		}
+			
 		try {
 			fileService.deleteFile(instance.getWorkingDirectory());
 		} catch (IOException e) {
@@ -237,6 +244,11 @@ public class InstanceControllerImpl implements InstanceController {
 	@Override
 	public void startInstance (Long id, Long requesterId) throws InstanceControllerException {
 		Instance instance = getWithBasicAuth (id, requesterId);
+		try {
+			fileService.deleteFile(instance.getLogFile());
+		} catch (IOException e) {
+			throw new InstanceControllerException ("Could not delete previous log file");
+		}
 		processService.startProcess(instance);
 		//Important this comes after process call
 		instance.setStatus("Live");

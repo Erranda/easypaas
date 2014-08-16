@@ -197,4 +197,15 @@ public class Instance implements Serializable {
 		this.logFile = logFile;
 	}
 	
+	@Override
+	public boolean equals (Object o) {
+		if (!(o instanceof Instance))
+			return false;
+		else if (((Instance) o).getId() == getId ()){
+			return false;
+		}
+		return true;
+		
+	}
+	
 }

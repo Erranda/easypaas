@@ -35,6 +35,9 @@ public class InstanceIndex extends Authenticated
     }
     
     public InstanceIndex (PageParameters pageParameters) {
-    	
+    	if (!pageParameters.get("pid").isNull()) {
+    		Long pid = pageParameters.get("pid").toLong();
+    		add (new InstanceTableWidget ("instance-table-widget", pid));
+    	}
     }
 }

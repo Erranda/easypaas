@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
+import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.ProjectMemberNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
@@ -20,6 +22,7 @@ import com.withinet.opaas.model.ProjectRepository;
 import com.withinet.opaas.model.ProjectTeamRepository;
 import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Instance;
 import com.withinet.opaas.model.domain.Project;
 import com.withinet.opaas.model.domain.ProjectBundle;
 import com.withinet.opaas.model.domain.ProjectTeam;
@@ -39,27 +42,52 @@ public class ProjectControllerImpl implements ProjectController {
 	
 	@Autowired
 	ProjectBundleRepository projectBundleRepo;
+	
+	@Autowired
+	InstanceController instanceController;
 
 	@Override
 	public Project createProject(Project project, Long requesterId)
 			throws ProjectControllerException {
 		DomainConstraintValidator<Project> dcv = new  DomainConstraintValidator<Project> ();
-		if (!dcv.isValid(project)) throw new IllegalArgumentException ("Bad request");
 		User user = userRepository.findOne(requesterId);
 		if (user == null) 
 			throw new ProjectOwnerNotFoundException ("Project owner not found");
 		//Check if it already exists
 		if (projectRepository.findByOwnerAndName(user, project.getName()).size() > 0)
 			throw new ProjectConflictException ("You already have a project with this name.");	
+		project.setOwner(user);
 		project.setCreated(new Date ());
 		project.setUpdated(new Date ());
+		if (!dcv.isValid(project)) throw new IllegalArgumentException ("Bad request");
 		return projectRepository.saveAndFlush(project);
 	}
 
 	@Override
 	public boolean deleteProject(Long id, Long requesterId)
 			throws ProjectControllerException {
-		projectRepository.delete(id);
+		Project project = getWithAdminAuth (id, requesterId);
+		try {
+			List<Instance> instances = instanceController.listInstancesByProject(project.getID(), requesterId);
+			if (instances != null && instances.size() > 0) {
+				for (Instance instance : instances) {
+					instanceController.deleteInstance(instance.getId(), requesterId);
+				}
+			}
+		projectRepository.delete(project);
+			
+		} catch (InstanceControllerException e) {
+			throw new ProjectControllerException (e.getMessage());
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean disableProject(Long id, Long requesterId)
+			throws ProjectControllerException {
+		Project project = getWithAdminAuth (id, requesterId);
+		project.setStatus("Disabled");
+		projectRepository.saveAndFlush(project);
 		return true;
 	}
 
@@ -94,6 +122,30 @@ public class ProjectControllerImpl implements ProjectController {
 		User thisUser = userRepository.findOne(requesterId);
 		if (thisUser == null) throw new ControllerSecurityException ("Authenticated request malformed");
 		if ((thisProject.getOwner().getID() != requesterId) && !isTeamMember (thisProject, thisUser))
+			throw new ControllerSecurityException ("This action is not authorized");
+		return thisProject;
+	}
+	
+	public Project getWithBasicAuth(Long id, Long requesterId)
+			throws ProjectControllerException {
+		// You have to be a team member or owner to see details
+		Project thisProject = projectRepository.findOne(id);
+		if (thisProject == null) throw new ProjectNotFoundException ("Project requested not found");
+		User thisUser = userRepository.findOne(requesterId);
+		if (thisUser == null) throw new ControllerSecurityException ("Requester unidentifiable");
+		if ((thisProject.getOwner().getID() != requesterId) && !isTeamMember (thisProject, thisUser))
+			throw new ControllerSecurityException ("This action is not authorized");
+		return thisProject;
+	}
+	
+	public Project getWithAdminAuth(Long id, Long requesterId)
+			throws ProjectControllerException {
+		// You have to be a team member or owner to see details
+		Project thisProject = projectRepository.findOne(id);
+		if (thisProject == null) throw new ProjectNotFoundException ("Project requested not found");
+		User thisUser = userRepository.findOne(requesterId);
+		if (thisUser == null) throw new ControllerSecurityException ("Requester unidentifiable");
+		if ((thisProject.getOwner().getID() != requesterId) && (thisProject.getOwner().getAdministrator().getID() != requesterId))
 			throw new ControllerSecurityException ("This action is not authorized");
 		return thisProject;
 	}
@@ -134,7 +186,7 @@ public class ProjectControllerImpl implements ProjectController {
 		if (target == null)
 			throw new ControllerSecurityException ("Unauthenticated");
 		return projectTeamRepo.findByUser(target);
-	}
+	} 
 
 	@Override
 	public List<ProjectTeam> listProjectTeamMembersByProject(Long projectId,

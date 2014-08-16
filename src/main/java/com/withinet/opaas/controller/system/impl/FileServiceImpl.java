@@ -63,13 +63,11 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public boolean updateFile(String fileLocation, File file) throws IOException {
-		if (deleteFile (fileLocation)) {
-			file.renameTo(new File (fileLocation));
-			return true;
-		}
-		return false;
+		return file.renameTo(new File (fileLocation));
 	}
 	
-	
-
+	@Override
+	public void copyFile(String dest, String src) throws IOException {
+		FileUtils.copyFile(new File (src), new File (dest));
+	}
 }

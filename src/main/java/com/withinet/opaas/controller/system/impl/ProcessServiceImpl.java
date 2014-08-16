@@ -67,13 +67,10 @@ public class ProcessServiceImpl implements ProcessService {
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");
-			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort() +
-					" -Dfelix.webconsole.username=" + instance.getOwner().getEmail() +
-					" -Dfelix.webconsole.password=" + instance.getOwner().getPassword()
+			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort()
 					);
-			config.add("--noBundleValidation");
-			config.add("--keepOriginalUrls");
-			config.add("--snapshot");
+			//config.add("--noBundleValidation");
+			config.add("--platform="+instance.getContainerType().toLowerCase().trim());
 			if (instance.getStatus().equals("Dead"))
 				config.add("--usePersistedState=true");
 			config.addAll(Profiles.getInstance().getWeb());
@@ -98,13 +95,15 @@ public class ProcessServiceImpl implements ProcessService {
 			liveProcesses.get(id).destroy();
 			if (logPipes.containsKey(id)) {
 				logPipes.get(id).killMonitors();
-				return true;
+				
 			} else { 
-				throw new ProcessServiceException ("Process not found in registry");
+				//throw new ProcessServiceException ("Process not found in registry");
 			}	
 		} else {
-			throw new ProcessServiceException ("Process not found in registry");
+			
+			//throw new ProcessServiceException ("Process not found in registry");
 		}
+		return true;
 	}
 	
 	/**

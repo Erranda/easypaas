@@ -41,5 +41,8 @@ public interface ProjectController {
 	public Project addBundle (Bundle bundles, Long projectId, Long requesterId) throws ProjectControllerException;
 	
 	public Project addCollaborator (User user, Long projectId, Long requesterId) throws ProjectControllerException;
+
+	public boolean disableProject(Long id, Long requesterId)
+			throws ProjectControllerException;
 	
 }

@@ -13,6 +13,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
+import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.wicket.services.UserSession;
@@ -41,6 +42,9 @@ public class ProjectIndex extends Authenticated
 			add (new ProjectSetupWidget ("project-setup-widget"));
 		} catch (UserControllerException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+			error (e.getMessage());
+		} catch (BundleControllerException e) {
 			e.printStackTrace();
 			error (e.getMessage());
 		}

@@ -5,12 +5,13 @@ import java.io.IOException;
 
 import org.springframework.stereotype.Service;
 
+import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.system.FileLocationGenerator;
 
 @Service
 public class FileLocationGeneratorImpl implements FileLocationGenerator {
 	
-	public static final String systemHome = "C:/Users/Folarin/Desktop/opaas";
+	public static final String systemHome = ServiceProperties.HOME;
 	
 	public final String userHome = systemHome + "/users";
 	

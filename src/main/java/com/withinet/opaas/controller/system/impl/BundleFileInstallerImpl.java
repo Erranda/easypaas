@@ -79,12 +79,22 @@ public class BundleFileInstallerImpl implements BundleInstaller {
 				buffer.append("mvn:");
 				String gid = ((Element) e.getElementsByTagName("groupId").item(0)).getTextContent();
 				String aid = ((Element) e.getElementsByTagName("artifactId").item(0)).getTextContent();
-				String version =((Element) e.getElementsByTagName("version").item(0)).getTextContent();
+				String version = null;
 				buffer.append(gid + "/");
-				buffer.append(aid + "/");
-				buffer.append(version);
+				buffer.append(aid);
+				if (e.getElementsByTagName("version").item(0) instanceof Element && ((Element) e.getElementsByTagName("version").item(0)) != null) {
+					version =((Element) e.getElementsByTagName("version").item(0)).getTextContent();
+					buffer.append("/" + version);
+				}
+						
+				
 				bundle.setLocation(buffer.toString());
-				bundle.setSymbolicName(gid + "-" + aid + "-" + version);
+				
+				if (version != null)
+					bundle.setSymbolicName(gid + "-" + aid + "-" + version);
+				else 
+					bundle.setSymbolicName(gid + "-" + aid);
+				
 				bundles.add(bundle);
 			}
 			return bundles;

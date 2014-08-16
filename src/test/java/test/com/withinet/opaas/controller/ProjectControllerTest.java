@@ -94,10 +94,9 @@ public class ProjectControllerTest {
 		p.setCreated(new Date ());
 		p.setDetails("Hello world");
 		p.setName("Hello world");
-		p.setOwner(web);
+		p.setOwner(web); web.getProjects().add(p);
 		p.setStatus("Active");
 		p.setUpdated(new Date());
-		web.getProjects().add(p);
 		assertTrue (projectController.createProject(p, web.getID()).getID() > 0);
 		
 		//projectRepository.delete(p);
@@ -109,10 +108,9 @@ public class ProjectControllerTest {
 		p.setCreated(new Date ());
 		p.setDetails("Hello world");
 		p.setName("Hello world");
-		p.setOwner(web);
+		p.setOwner(web); web.getProjects().add(p);
 		p.setStatus("Active");
 		p.setUpdated(new Date());
-		web.getProjects().add(p);
 		projectController.createProject(p, web.getID());
 		projectController.createProject(p, web.getID());
 		//projectRepository.delete(p);
@@ -129,9 +127,8 @@ public class ProjectControllerTest {
 		p.setDetails("Hello world");
 		p.setName("Hello world");
 		p.setStatus("Active");
-		p.setOwner(web);
+		p.setOwner(web); web.getProjects().add(p);
 		p.setUpdated(new Date());
-		web.getProjects().add(p);
 		projectController.createProject(p, web.getID());
 		p.setName("Nice project");
 		Project  p1 = projectController.updateProject(p, p.getID(), web.getID());
@@ -146,9 +143,8 @@ public class ProjectControllerTest {
 		p.setDetails("Hello world");
 		p.setName("Hello world");
 		p.setStatus("Active");
-		p.setOwner(web);
+		p.setOwner(web); web.getProjects().add(p);
 		p.setUpdated(new Date());
-		web.getProjects().add(p);
 		projectController.createProject(p, web.getID());
 		
 		Project p1 = new Project ();
@@ -157,8 +153,8 @@ public class ProjectControllerTest {
 		p1.setName("Hello");
 		p1.setStatus("Active");
 		p1.setOwner(web);
-		p1.setUpdated(new Date());
 		web.getProjects().add(p1);
+		p1.setUpdated(new Date());
 		projectController.createProject(p1, web.getID());
 		
 		assertTrue (projectController.listCreatedProjectsByOwner(web.getID(), web.getID ()).size()  == 2);
@@ -173,9 +169,8 @@ public class ProjectControllerTest {
 		p.setDetails("Hello m");
 		p.setName("Hello world");
 		p.setStatus("Active");
-		p.setOwner(web);
+		p.setOwner(web); web.getProjects().add(p);
 		p.setUpdated(new Date());
-		web.getProjects().add(p);
 		projectController.createProject(p, web.getID());
 		
 		User mem = new User ();
@@ -186,7 +181,6 @@ public class ProjectControllerTest {
 		mem.setStatus("active");
 		mem.setEmail("mem@xyz.com");
 		mem.setLocation("Somewhere");
-		web.getCollaborators().add(mem);
 		userRepository.save(mem);
 		
 		projectController.addCollaborator(mem, p.getID(), web.getID());
@@ -202,17 +196,16 @@ public class ProjectControllerTest {
 		p.setDetails("Hello world");
 		p.setName("Hello world");
 		p.setStatus("Active");
-		p.setOwner(web);
+		p.setOwner(web); web.getProjects().add(p);
 		p.setUpdated(new Date());
-		web.getProjects().add(p);
 		projectController.createProject(p, web.getID());
 		
 		Bundle b = new Bundle ();
 		b.setLocation("http://dadiddiadaid.com/adja.jar");
 		b.setOwner(web);
+		web.getBundles().add(b);
 		b.setSymbolicName("Bundle");
 		b.setUpdated(new Date ());
-		web.getBundles().add(b);
 		bundleRepository.save(b);
 		
 		projectController.addBundle(b, p.getID(), web.getID());

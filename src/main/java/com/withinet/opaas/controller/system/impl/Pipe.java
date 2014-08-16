@@ -91,7 +91,7 @@ public class Pipe {
 					wis = new BufferedWriter(new FileWriter(file.getAbsoluteFile(), true));
 					while (true) {
 						if ((line = bis.readLine()) != null) {
-							line = "<br/><hr/><p style=\"color:#FF0\">[" + new Date () + "]</p>" + line;
+							line = "<br/><hr/><p style=\"color:#FF0\">[" + new Date () + "]</p>" + line + "\n";
 							wis.write(line);
 						}
 					}

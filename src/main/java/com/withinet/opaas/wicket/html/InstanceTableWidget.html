@@ -18,7 +18,7 @@
 			</div> <!-- /widget -->
 								
 	      </div>
-	          <a style="display:none" id="viewLogButton" class="btn btn-danger btn-large" data-toggle="modal" href="#viewLog" hidden>Update</a>
+	          <a style="display:none" id="viewLogButton" class="btn btn-danger btn-large" data-toggle="modal" href="#viewLog" hidden></a>
 	      <section id="modals">
 		<div id="viewLog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
       <div class="modal-dialog">
@@ -35,20 +35,25 @@ span.scroll
 {
 background-color:#000;
 color:#fff;
-height:500px;
+height:420px;
 width:99%;
 FLOAT: left;
 overflow-y:scroll;
 word-wrap:break-word;
 }
 </style>
-<wicket:link>
-<img src="../img/ajax-loader-large.gif" id="loader"/>
-</wicket:link>
-				<span class="scroll" wicket:id="log"></span>		
+
+				<span id="log" class="scroll">
+				</span>
+				<span id="moreLog" style="display:none" wicket:id="moreLog">
+				</span>	
+					
 	</div> <!-- /content -->
             
           </div>
+          
+            <a style="display:none" id="moreBtn" wicket:id="more-log-button" class="btn btn-danger btn-large moreBtn">More</a>
+          
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div>
@@ -56,10 +61,28 @@ word-wrap:break-word;
 	
 	<script>
 		showModal = function () {
+					$('#log').html("");
 					document.getElementById("viewLogButton").click();
+					$("span.scroll").scroll( function() {
+  						if($(this)[0].scrollHeight - $(this).scrollTop() == $(this).outerHeight()) {
+   						$('.moreBtn').first().trigger ("click");
+ 					} 
+ 					addContent ();
+		});
 		}
 		removeLoader = function () {
 					$( "#loader" ).attr ("style", "display: none");
 		}
+		
+		addContent = function () {
+						if (!$('#moreLog').is(':empty')){
+							$('#log').append($('#moreLog').html ());
+							$('#moreLog').html("");
+						}
+		}	
+	
 	</script>
  </wicket:panel>
+ <wicket:link>
+<img src="../img/ajax-loader-large.gif" id="loader"/>
+</wicket:link>

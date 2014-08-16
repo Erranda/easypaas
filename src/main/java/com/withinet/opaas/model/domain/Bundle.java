@@ -28,8 +28,8 @@ public class Bundle implements Serializable {
 	@GeneratedValue( strategy = GenerationType.IDENTITY )
 	private Long ID;
 	
-	@ManyToOne (targetEntity=User.class, fetch=FetchType.LAZY)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
+	@ManyToOne (targetEntity=User.class, fetch=FetchType.EAGER)
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK, org.hibernate.annotations.CascadeType.SAVE_UPDATE})	
 	@JoinColumn(name="OWNER_ID", referencedColumnName="ID", nullable=false)	
 	private User owner;
 	
@@ -47,7 +47,7 @@ public class Bundle implements Serializable {
 	private java.util.Date updated;
 	
 	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
 
 	public String getSymbolicName() {
@@ -59,11 +59,11 @@ public class Bundle implements Serializable {
 	}
 
 	public String getLocation() {
-		return location;
+		return location.trim();
 	}
 
 	public void setLocation(String location) {
-		this.location = location;
+		this.location = location.trim();
 	}
 
 	public Long getID() {

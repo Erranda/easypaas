@@ -85,10 +85,15 @@ public class BundleTableWidget extends Panel {
 	}
 	
 	public void initialize () {
+		
 		columns.add(new PropertyColumn<Bundle, String>(
 				new Model<String>("Name"), "symbolicName"));
 		columns.add(new PropertyColumn<Bundle, String>(
 				new Model<String>("Updated"), "updated"));
+		
+		final DataTable<Bundle, String> dataTable = new DefaultDataTable <Bundle, String> ("bundle-table", columns, provider, resultSize);
+		dataTable.setOutputMarkupId(true);
+		add (dataTable);
 		columns.add(new AbstractColumn<Bundle, String>(
 				new Model<String>("Quick Action")) {
 
@@ -97,7 +102,26 @@ public class BundleTableWidget extends Panel {
 			@Override
 			public void populateItem(Item<ICellPopulator<Bundle>> item,
 					String componentId, final IModel<Bundle> model) {
-				BookmarkablePageLink<BundleIndex> deleteBundle = new BookmarkablePageLink<BundleIndex> ("delete-link", BundleIndex.class, setDeleteBundleLinkParameters (model.getObject()));
+				//BookmarkablePageLink<BundleIndex> deleteBundle = new BookmarkablePageLink<BundleIndex> ("delete-link", BundleIndex.class, setDeleteBundleLinkParameters (model.getObject()));
+				AjaxLink deleteBundle = new AjaxLink("delete-link"){                                                                                                                                                                                                                                                                                                  
+					private static final long serialVersionUID = 1L;                                                                                                       
+
+					@Override                                                                                                                                              
+					public void onClick(AjaxRequestTarget target) {                                                                                                        
+						 Long bid  = model.getObject().getID();
+						 try {
+							bundleController.deleteBundle(bid, userId);
+							getPage().info ("Bundle deleted from your cache");
+							target.add(dataTable);
+							target.add(((Authenticated) getPage ()).getFeedbackPanel());
+						} catch (BundleControllerException e) {
+							getPage().error(e.getMessage());
+							setResponsePage (getPage ());
+						}
+						
+					}                                                                                                                                                      
+				};
+				
 				//BookmarkablePageLink<BundleIndex> updateBundle = new BookmarkablePageLink<BundleIndex> ("update-link", BundleIndex.class, setUpdateBundleLinkParameters (model.getObject()));
 				AjaxLink updateBundle = new AjaxLink("update-link"){                                                                                                                                                                                                                                                                                                  
 					private static final long serialVersionUID = 1L;                                                                                                       
@@ -108,6 +132,8 @@ public class BundleTableWidget extends Panel {
 						 target.appendJavaScript("showModal ()");
 					}                                                                                                                                                      
 				};
+				add (dataTable);
+				
 				updateBundle.add(AttributeModifier.replace("data-toggle", "modal"));
 				updateBundle.add(AttributeModifier.replace("href", "#bundleUpdate"));
 				BundleTableQuickAction button = new BundleTableQuickAction (componentId, updateBundle, deleteBundle);
@@ -121,8 +147,7 @@ public class BundleTableWidget extends Panel {
 			}
 		});
 		
-		DataTable<Bundle, String> dataTable = new DefaultDataTable <Bundle, String> ("bundle-table", columns, provider, resultSize);
-		add (dataTable);
+		
 		
 		Form<Void> setupForm = new Form<Void>("update");
 		add(setupForm);

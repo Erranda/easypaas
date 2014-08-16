@@ -91,10 +91,6 @@ public class ProjectTeam implements Serializable {
         // Set identifier values
         this.id.projectId = project.getID();
         this.id.userId = user.getID();
-
-        // Guarantee referential integrity if made bidirectional
-        project.getProjectTeam().add(this);
-        user.getProjectTeam().add(this);
     }
 
     public Id getId() {

@@ -66,12 +66,14 @@ public class ProjectBundle implements Serializable {
     @JoinColumn(
         name = "PROJECT_ID",
         insertable = false, updatable = false)
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     private Project project;
 
     @ManyToOne
     @JoinColumn(
         name = "BUNDLE_ID",
         insertable = false, updatable = false)
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     private Bundle bundle;
 
 
@@ -85,7 +87,9 @@ public class ProjectBundle implements Serializable {
         // Set fields
         this.addedBy = addedByUsername;
         this.project = project;
+        project.getProjectBundles().add(this);
         this.bundle = bundle;
+        bundle.getProjectBundles().add(this);
         this.addedOn = new Date ();
         // Set identifier values
         this.id.projectId = project.getID();
