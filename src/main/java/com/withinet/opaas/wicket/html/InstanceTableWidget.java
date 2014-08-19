@@ -274,9 +274,12 @@ public class InstanceTableWidget extends Panel {
 				}
 			} else {
 				try {
-					userInstances = instanceController.listInstancesByUser(
+					if (UserSession.get().getUser().getRole().equals("ADMIN") || UserSession.get().getUser().getRole().equals("SUPER ADMINISTRATOR"))
+						userInstances.addAll(instanceController.listInstancesByAdministrator(USER_ID, USER_ID));
+					else	
+						userInstances = instanceController.listInstancesByUser(
 							USER_ID, USER_ID);
-					userInstances.addAll(instanceController.listInstancesByAdministrator(USER_ID, USER_ID));
+					
 				} catch (InstanceControllerException e) {
 					error(e.getMessage());
 				}

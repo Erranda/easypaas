@@ -31,6 +31,7 @@ public class WebInitializer implements ServletContextInitializer {
 		// This line is the only surprise when comparing to the equivalent
 		// web.xml. Without some initialization seems to be missing.
 		filter.setInitParameter(WicketFilter.FILTER_MAPPING_PARAM, "/*");
+		filter.setInitParameter("configuration", "deployment");
 		filter.addMappingForUrlPatterns(null, false, "/*");
 	}
 

@@ -12,6 +12,7 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.lang.Bytes;
 import org.slf4j.Logger;
@@ -87,6 +88,12 @@ public class Application extends WebApplication {
 	protected void init() {
 		super.init();
 		if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
+			getMarkupSettings().setStripWicketTags(true);
+	        getMarkupSettings().setStripComments(true);
+	        getMarkupSettings().setCompressWhitespace(true);
+			getApplicationSettings().setUploadProgressUpdatesEnabled(true);
+			getRequestCycleSettings().setRenderStrategy(
+		            IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER); 
 			getMarkupSettings().setStripWicketTags(true);
 			getMarkupSettings().setStripComments(true);
 			getMarkupSettings().setCompressWhitespace(true);

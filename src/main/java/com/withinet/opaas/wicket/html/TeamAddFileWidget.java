@@ -90,6 +90,8 @@ public class TeamAddFileWidget extends Panel {
 								for (User user : users) {
 									try {
 										userController.addTeamMember (user, uid, uid);
+										info ("Added");
+										target.add(feedback);
 									} catch (UserControllerException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();

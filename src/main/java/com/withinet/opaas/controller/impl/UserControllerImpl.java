@@ -261,6 +261,7 @@ public class UserControllerImpl implements UserController {
 		collaborator.setPassword(PasswordGenerator.getRandomPassword());
 		collaborator.setLocation(user.getLocation());
 		collaborator.setPlatformName(user.getPlatformName());
+		collaborator.setIntroduction("I was added by an administrator");
 		collaborator = createAccount (collaborator);
 		collaborator.setAdministrator(user);
 		user.getTeamMembers().add(collaborator);

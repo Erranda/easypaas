@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -184,7 +185,7 @@ public class ProjectTableWidget extends Panel {
 		DropDownChoice<String> wicketContainerChoices = new DropDownChoice<String>("containerChoice" ,new PropertyModel<String>(this,"containerChoice"), containerChoices);
 		setupForm.add (wicketContainerChoices);
 		
-		setupForm.add(new AjaxButton("submit", setupForm)
+		setupForm.add(new IndicatingAjaxButton("submit", setupForm)
 	        {
 	            /**
 				 * 

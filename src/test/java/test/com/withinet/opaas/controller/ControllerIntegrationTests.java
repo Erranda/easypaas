@@ -92,6 +92,8 @@ public class ControllerIntegrationTests {
 		web.setQuota(-1);
 		web.setRole("ADMIN");
 		web.setLocation("Somewhere");
+		web.setWorkingDirectory("");
+		web.setIntroduction("");
 		userRepository.save(web);
 		/*UserRole webRole = new UserRole ();
 		webRole.setDescription("A way of authenticating clients");
@@ -222,6 +224,7 @@ public class ControllerIntegrationTests {
 		web.setAdministrator(web);
 		web.setQuota(-1);
 		web.setRole("ADMINISTRATOR");
+		
 		accountController.createAccount(web);
 
 		User pao = new User();
