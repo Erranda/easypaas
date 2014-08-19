@@ -50,7 +50,7 @@ public class InstanceSetupWidget extends Panel {
 	 */
 	private static final long serialVersionUID = 2258781378426675695L;
 
-	private String projectName = "Hello World";
+	private String projectName = "";
 
 	private String containerChoice = "Felix";
 	
@@ -97,10 +97,12 @@ public class InstanceSetupWidget extends Panel {
 		DropDownChoice<String> userProject = new DropDownChoice<String>(
 				"userProjects", new PropertyModel<String>(this,
 						"projectName"), listProjects (uid));
+		userProject.setRequired(true);
 		setupForm.add(userProject);
 		
 		ListMultipleChoice<String> teamMembers = new ListMultipleChoice<String>(
 				"team", new Model(selectedTeam), listTeam(uid));
+		teamMembers.setRequired(true);
 		setupForm.add(teamMembers);
 
 		setupForm.add(new IndicatingAjaxButton("submit", setupForm) {

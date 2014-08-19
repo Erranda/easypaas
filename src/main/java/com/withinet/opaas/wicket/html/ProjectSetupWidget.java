@@ -36,10 +36,12 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.validation.validator.StringValidator;
 
+import com.withinet.opaas.controller.FileController;
 import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.common.BundleConflictException;
+import com.withinet.opaas.controller.common.FileControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
@@ -90,6 +92,9 @@ public class ProjectSetupWidget extends Panel {
 
 	@SpringBean
 	private UserController accountController;
+	
+	@SpringBean
+	private FileController fileController;
 
 	public ProjectSetupWidget(String id) throws UserControllerException, BundleControllerException {
 		super (id);
@@ -170,6 +175,15 @@ public class ProjectSetupWidget extends Panel {
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 					error (e.getMessage());
+				} catch (FileControllerException e) {
+					e.printStackTrace();
+					error (e.getMessage());
+				} catch (IOException e) {
+					e.printStackTrace();
+					error (e.getMessage());
+				} catch (ParserConfigurationException e) {
+					e.printStackTrace();
+					error (e.getMessage());
 				}
 				target.add(feedback);
 			}
@@ -180,18 +194,14 @@ public class ProjectSetupWidget extends Panel {
             	target.add(feedback);
             }
 			
-			private List<Bundle> processUpload() {
+			private List<Bundle> processUpload() throws FileControllerException, IOException, ParserConfigurationException {
 				Long uid = UserSession.get().getUser().getID();
+				String filePath = fileController.uploadTempFile(uid, upload).getAbsolutePath();
 				// If project creation succeeds, check for file upload
-				File thisFile = new File((fileMan.getConcurrentTempDirectory (uid)).getAbsolutePath() + "/"
-						+ upload.getClientFileName());
 				Long userId = UserSession.get().getUser().getID();
-				try {
-					if (thisFile.createNewFile()){
-					upload.writeTo(thisFile);
 					File userLibDirectory = fileMan.getUserLibrary(userId);
 					List<String> list = new ArrayList<String>();
-					list.add(thisFile.getAbsolutePath());
+					list.add(filePath);
 					projectFileBundles = bundleInstaller.installBundles(list,
 							userLibDirectory.getAbsolutePath());
 						for (int i = 0; i < projectFileBundles.size(); i++) {
@@ -211,16 +221,6 @@ public class ProjectSetupWidget extends Panel {
 								}
 							}
 						}
-					} else {
-						error("Could not process your file at this time");
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					error(e.getMessage());
-				} catch (ParserConfigurationException e) {
-					e.printStackTrace();
-					error(e.getMessage());
-				}
 				return projectFileBundles;
 			}
 		});
@@ -245,8 +245,6 @@ public class ProjectSetupWidget extends Panel {
 			bundles.add(bundle.getSymbolicName());
 			thisBundleModel.put(bundle.getSymbolicName(), bundle);
 		}
-		if (bundles.size() == 0)
-			bundles.add("Bundle Library Empty");
 		return bundles;
 	}
 
@@ -260,8 +258,6 @@ public class ProjectSetupWidget extends Panel {
 			formList.add(formKey);
 			thisTeamModel.put(formKey, user);
 		}
-		if (formList.size () == 0)
-			formList.add("Your team list is empty");
 		Collections.sort(formList);
 		return formList;
 	}

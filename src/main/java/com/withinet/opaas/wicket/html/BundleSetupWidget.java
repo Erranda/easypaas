@@ -259,8 +259,6 @@ public class BundleSetupWidget extends Panel {
 			bundles.add(bundle.getSymbolicName());
 			thisBundleModel.put(bundle.getSymbolicName(), bundle);
 		}
-		if (bundles.size() == 0)
-			bundles.add("Bundle Library Empty");
 		return bundles;
 	}
 
@@ -274,8 +272,6 @@ public class BundleSetupWidget extends Panel {
 			formList.add(formKey);
 			thisProjectModel.put(formKey, project);
 		}
-		if (formList.size () == 0)
-			formList.add("Your project list is empty");
 		Collections.sort(formList);
 		return formList;
 	}

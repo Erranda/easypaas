@@ -111,6 +111,7 @@ public class UserControllerImpl implements UserController {
 			mailer.sendMessage("Registeration Withinet Cloud OSGi Platform", account.getEmail(), buffer.toString());
 			mailer.sendMessage("New user Withinet Cloud OSGi Platform", superAdmin.getEmail(), bufferAdmin.toString());
 		} catch (MessagingException e) {
+			e.printStackTrace();
 			throw new UserControllerException ("Email system error: " + e.getMessage());
 		}
 		logger.info("create user " + account.getEmail () + ", with " + account.getPassword ());
@@ -170,31 +171,31 @@ public class UserControllerImpl implements UserController {
 		buffer.append("**********************************************************<br/>");
 		boolean sendEmail = false;
 		if (account.getFullName() != null && !account.getFullName().equals(user.getFullName())) {
-			buffer.append("<br/>Name: " + user.getFullName() + " now " + account.getFullName());
+			buffer.append("<br/>Name: " + account.getFullName());
 			user.setFullName(account.getFullName());
 			//Detect and update
 			sendEmail = true;
 		}
 		if (account.getPassword() != null && !account.getPassword().equals(user.getPassword())) {
-			buffer.append("<br/>Password: " + user.getPassword() + " now " + account.getPassword());
+			buffer.append("<br/>Password: " + account.getPassword());
 			user.setPassword(account.getPassword());
 			sendEmail = true;
 		}
 			
 		if (account.getStatus() != null && !account.getStatus().equals(user.getStatus())) {
-			buffer.append("<br/>Status: " + user.getStatus() + " now " + account.getStatus());
+			buffer.append("<br/>Status: " + account.getStatus());
 			user.setStatus(account.getStatus());
 			sendEmail = true;
 		}
 			
 		if (account.getRole() != null && !account.getRole().equals(user.getRole())) {
-			buffer.append("<br/>Role: " + user.getRole() + " now " + account.getRole());
+			buffer.append("<br/>Role: " + account.getRole());
 			user.setRole(account.getRole());
 			sendEmail = true;
 		}
 			
 		if (account.getQuota() != null && !account.getQuota().equals(user.getQuota())) {
-			buffer.append("<br/>Instance Quota Limit: " + user.getQuota() + " now " + account.getQuota());
+			buffer.append("<br/>Instance Quota Limit: " + account.getQuota());
 			user.setQuota(account.getQuota());
 		}
 			

@@ -68,7 +68,7 @@ public class TeamAddMemberWidget extends Panel {
 	    		Long uid = UserSession.get().getUser().getID();
 	    		try {
 					userController.addTeamMember(user, uid, uid);
-					info ("Member added");
+					getPage().info ("Member added");
 					setResponsePage (getPage ());
 				} catch (UserControllerException e) {
 					error (e.getMessage());

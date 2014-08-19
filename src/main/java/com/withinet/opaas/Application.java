@@ -87,8 +87,7 @@ public class Application extends WebApplication {
 	@Override
 	protected void init() {
 		super.init();
-		if (getConfigurationType().equals(RuntimeConfigurationType.DEPLOYMENT)) {
-			getMarkupSettings().setStripWicketTags(true);
+		getMarkupSettings().setStripWicketTags(true);
 	        getMarkupSettings().setStripComments(true);
 	        getMarkupSettings().setCompressWhitespace(true);
 			getApplicationSettings().setUploadProgressUpdatesEnabled(true);
@@ -97,7 +96,6 @@ public class Application extends WebApplication {
 			getMarkupSettings().setStripWicketTags(true);
 			getMarkupSettings().setStripComments(true);
 			getMarkupSettings().setCompressWhitespace(true);
-		}
 		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 		getStoreSettings().setMaxSizePerSession(Bytes.kilobytes(5000));
 		getStoreSettings().setInmemoryCacheSize(500);

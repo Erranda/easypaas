@@ -154,6 +154,7 @@ public class BundleFileInstallerImpl implements BundleInstaller {
 	@Override
 	public Bundle installBundle (String bundleDest, String fileDest) throws IOException {
 		if (!bundleDest.endsWith(".jar")) throw new IOException ("The file is not a valid bundle");
+		
 		File thisFile = new File (bundleDest);
 		if (!thisFile.exists()) throw new IOException ("File does not exist");
 		String newFileName = fileDest  + "/" + thisFile.getName();
