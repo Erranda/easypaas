@@ -75,6 +75,18 @@
 	<artifactId>pax-runner</artifactId>
 	<version>1.8.5</version>
 </dependency>
+<!--  Excel parser -->
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi</artifactId>
+    <version>3.8</version>
+</dependency>
+ 	<!-- Javax Mail -->
+ 	<dependency>
+	<groupId>javax.mail</groupId>
+	<artifactId>mail</artifactId>
+	<version>1.4</version>
+</dependency>
  	
   </dependencies>
   <build>

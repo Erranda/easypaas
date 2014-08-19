@@ -33,7 +33,6 @@ import com.withinet.opaas.controller.common.AccountNotFoundException;
 import com.withinet.opaas.controller.common.BundleAlreadyExistsException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.BundleNotFoundException;
-import com.withinet.opaas.controller.common.CollaboratorControllerException;
 import com.withinet.opaas.controller.common.ControllerException;
 import com.withinet.opaas.controller.common.InstanceAlreadyExistsException;
 import com.withinet.opaas.controller.common.InstanceControllerException;
@@ -89,6 +88,9 @@ public class ControllerIntegrationTests {
 		web.setPlatformName("Web");
 		web.setStatus("active");
 		web.setEmail("web@xyz.com");
+		web.setAdministrator(web);
+		web.setQuota(-1);
+		web.setRole("ADMIN");
 		web.setLocation("Somewhere");
 		userRepository.save(web);
 		/*UserRole webRole = new UserRole ();
@@ -135,8 +137,11 @@ public class ControllerIntegrationTests {
 		object.setEmail("folarinomotoriogun1@gmail.com");
 		object.setPassword("Password");
 		object.setStatus("registered");
+		object.setAdministrator(null);
 		object.setPlatformName("TEST PLATFORM");
 		object.setLocation("Somewhere");
+		object.setQuota(-1);
+		object.setRole("");
 		object.setCreated(new Date ());
 		accountController.createAccount(object);
 		
@@ -157,6 +162,8 @@ public class ControllerIntegrationTests {
 		object.setStatus("active");
 		object.setEmail("oweb@xyz.com");
 		object.setLocation("Somewhere");
+		object.setQuota(-1);
+		object.setRole("ADMIN");
 		accountController.createAccount(object);
 		assertTrue (object.getID() > 0);
 	}
@@ -171,13 +178,82 @@ public class ControllerIntegrationTests {
 		conflict.setStatus("active");
 		conflict.setEmail("ino@xyz.com");
 		conflict.setLocation("Somewhere");
+		conflict.setQuota(-1);
+		conflict.setRole("ADMIN");
 		accountController.createAccount(conflict);
 		
 		accountController.createAccount(conflict);
 	}
 	
+	@Test 
+	public void updateUserOk () throws UserControllerException {
+		User conflict = new User ();
+		conflict.setCreated(new Date ());
+		conflict.setFullName("Web");
+		conflict.setPassword("Webber@123");
+		conflict.setPlatformName("Web");
+		conflict.setStatus("active");
+		conflict.setEmail("ino@xyz.com");
+		conflict.setLocation("Somewhere");
+		conflict.setAdministrator(web);
+		conflict.setQuota(-1);
+		conflict.setRole("ADMIN");
+		web.getTeamMembers().add(conflict);
+		accountController.createAccount(conflict);
+		
+		User user = new User ();
+		user.setFullName("Master Yo");
+		user.setPassword("NewPassword");
+		
+		accountController.updateAccount(user, conflict.getID(),conflict.getID());
+		assertTrue (accountController.readAccount(conflict.getID(), web.getID()).getFullName().equals("Master Yo"));
+	}
+	
+	@Test
+	public void addTeamMemberOk() throws UserControllerException {
+		User web = new User();
+		web.setCreated(new Date());
+		web.setFullName("Web Dev");
+		web.setPassword("abc@xyz.com");
+		web.setPlatformName("Web");
+		web.setStatus("active");
+		web.setEmail("abcd@xyz.com");
+		web.setLocation("United Kingdom");
+		web.setAdministrator(web);
+		web.setQuota(-1);
+		web.setRole("ADMINISTRATOR");
+		accountController.createAccount(web);
+
+		User pao = new User();
+		pao.setCreated(new Date());
+		pao.setFullName("Pao");
+		pao.setPassword("Pao@123");
+		pao.setPlatformName("Yes man");
+		pao.setStatus("active");
+		pao.setEmail("paod@xyz.com");
+		pao.setLocation("United Kingdom");
+		pao.setQuota(-1);
+		pao.setRole("ADMINISTRATOR");
+
+		User ming = new User();
+		ming.setCreated(new Date());
+		ming.setFullName("Ming");
+		ming.setPassword("Ming@123");
+		ming.setPlatformName("Web");
+		ming.setStatus("active");
+		ming.setEmail("mingd@xyz.com");
+		ming.setLocation("United Kingdom");
+		ming.setQuota(-1);
+		ming.setRole("ADMININSTRATOR");
+
+		accountController.addTeamMember(pao, web.getID(), web.getID());
+		accountController.addTeamMember(ming, web.getID(), web.getID());
+		System.out.println (accountController.listTeamMembers(web.getID(), web.getID()).size());
+		assertTrue (accountController.listTeamMembers(web.getID(), web.getID()).size() == 2);
+	}
+	
 /*	@Test
-	public void listCollaborators () throws UserControllerException {
+	public void listTeamMembers () throws UserControllerException {
 		User collab = new User ();
 		collab.setCreated(new Date ());
 		collab.setFullName("Web");
@@ -198,8 +274,8 @@ public class ControllerIntegrationTests {
 		collado.setLocation("Somewhere");
 		accountController.createAccount(collado);
 		
-		System.out.println (accountController.addCollaborator(collado, collab.getID(), collab.getID()).size());
-		System.out.println (collado.getCollaborators().size());
+		System.out.println (accountController.addTeamMember(collado, collab.getID(), collab.getID()).size());
+		System.out.println (collado.getTeamMembers().size());
 		assertTrue (collado.getAdministrator().equals(collab));
 	}*/
 		

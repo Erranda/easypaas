@@ -69,10 +69,9 @@ public class ProcessServiceImpl implements ProcessService {
 				throw new ProcessServiceException ("Port number cannot be null");
 			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort()
 					);
-			//config.add("--noBundleValidation");
-			config.add("--platform="+instance.getContainerType().toLowerCase().trim());
-			if (instance.getStatus().equals("Dead"))
-				config.add("--usePersistedState=true");
+			config.add("--skipInvalidBundles");
+			config.add("--platform="+instance.getContainerType().toLowerCase().trim());	
+			config.add("--usePersistedState="+ !instance.isDirty());
 			config.addAll(Profiles.getInstance().getWeb());
 			String[] configs = config.toArray(new String[config.size()]);
 			Process thisProcess = PaxRunner.startContainer(configs);
@@ -82,6 +81,9 @@ public class ProcessServiceImpl implements ProcessService {
 		} catch (BundleControllerException e) {
 			throw new ProcessServiceException (e.getMessage());
 		} catch (IOException e) {
+			throw new ProcessServiceException (e.getMessage());
+		} catch (RuntimeException e) {
+			e.printStackTrace();
 			throw new ProcessServiceException (e.getMessage());
 		}
 	}

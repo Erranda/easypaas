@@ -48,7 +48,7 @@ public abstract class Stateless extends WebPage {
         
         StatelessLink cpanel = new StatelessLink("cpanel") {
             public void onClick() {
-                setResponsePage(Application.get().getHomePage());
+            	setResponsePage(ProjectIndex.class);
             }
         };
         add (cpanel);

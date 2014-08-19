@@ -22,12 +22,19 @@
 				<div class="field">
 					<input wicket:id="email" type="email" id="email" name="email" value="" placeholder="Email" class="form-control"/>
 				</div> <!-- /field -->
-				
+				<br/>
+				<div class="field">
+					<input wicket:id="quota" type="text" id="quota" name="quota" value="" placeholder="Instance Bag Limit" class="form-control"/>
+				</div> <!-- /field -->
+				<br/>
+				<div class="field">
+					<input wicket:id="role" type="text" id="role" name="role" value="" placeholder="Role" class="form-control"/>
+				</div> <!-- /field -->
 							
 			</div> <!-- /login-fields -->
 			<br/>
 			<div class="login-actions">	
-				<button class="login-action btn btn-primary">Add</button>
+				<button wicket:id="submit" class="login-action btn btn-primary">Add</button>
 			</div> <!-- .actions -->
 			
 		</form>

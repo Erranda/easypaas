@@ -1,13 +1,16 @@
 package com.withinet.opaas.controller.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
+import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.ProjectMemberNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
@@ -45,6 +48,9 @@ public class ProjectControllerImpl implements ProjectController {
 	
 	@Autowired
 	InstanceController instanceController;
+	
+	@Autowired
+	BundleController bundleController;
 
 	@Override
 	public Project createProject(Project project, Long requesterId)
@@ -249,6 +255,55 @@ public class ProjectControllerImpl implements ProjectController {
 		ProjectTeam thisProjectMember = new ProjectTeam (owner.getEmail(), thisProject, user);
 		projectTeamRepo.saveAndFlush(thisProjectMember);
 		return thisProject;
+	}
+
+	@Override
+	public void refreshProjectInstances(Long id, Long requesterId) throws ProjectControllerException {
+		getWithBasicAuth(id, requesterId);
+		List<Instance> instances;
+		try {
+			instances = instanceController.listInstancesByProject(id, requesterId);
+			for (Instance instance : instances) {
+				instanceController.stopInstance(instance.getId(), requesterId);
+				instanceController.startInstance(instance.getId(), requesterId, false);
+			}
+		} catch (InstanceControllerException e) {
+			e.printStackTrace();
+			throw new ProjectControllerException (e.getMessage());
+		}
+	}
+	
+	@Override
+	public void refreshProjectInstancesDirty(Long id, Long requesterId) throws ProjectControllerException {
+		getWithBasicAuth(id, requesterId);
+		List<Instance> instances;
+		try {
+			instances = instanceController.listInstancesByProject(id, requesterId);
+			for (Instance instance : instances) {
+				instanceController.stopInstance(instance.getId(), requesterId);
+				instanceController.startInstance(instance.getId(), requesterId, false);
+			}
+		} catch (InstanceControllerException e) {
+			e.printStackTrace();
+			throw new ProjectControllerException (e.getMessage());
+		}
+	}
+
+	@Override
+	public List<Project> listProjectsByBundle(Long bid, Long requesterId) throws ProjectControllerException {
+		
+		List<Project> projects = new ArrayList<Project> ();
+		try {
+			Bundle bundle = bundleController.readBundle(bid, requesterId);
+			List<ProjectBundle> pbs = projectBundleRepo.findByBundle(bundle);
+			
+			for (ProjectBundle pb : pbs) {
+				projects.add(pb.getProject());
+			}
+		} catch (BundleControllerException e) {
+			throw new ProjectControllerException (e.getMessage ());
+		}		
+		return projects;
 	}
 
 }

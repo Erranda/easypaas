@@ -8,6 +8,7 @@ import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -20,6 +21,7 @@ import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -27,6 +29,10 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
+
+import com.withinet.opaas.controller.UserController;
+import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.model.domain.User;
 
 
 
@@ -43,8 +49,12 @@ public class Register extends Stateless {
 	private String password;
 	private String location = "";
 	private String platformName;
+	private String message;
 	
 	private boolean terms;
+	
+	@SpringBean
+	private UserController userController;
 	
 
 	public Register () {
@@ -67,6 +77,7 @@ public class Register extends Stateless {
 	    PasswordTextField wicketPassword = new PasswordTextField("password", new PropertyModel<String>(this, "password"));
 	    wicketPassword.setLabel(new ResourceModel ("label.password"));
 	    wicketPassword.add(StringValidator.minimumLength(6));
+	    wicketPassword.setRequired(true);
 	    signupStatelessForm.add(wicketPassword);
 	    
 	    RequiredTextField wicketPlatformName = new RequiredTextField("platformName", new PropertyModel<String>(this, "platformName"));
@@ -74,6 +85,12 @@ public class Register extends Stateless {
 	    wicketPlatformName.add(StringValidator.maximumLength(20));
 	    wicketPlatformName.setLabel(new ResourceModel ("label.platformName"));
 	    signupStatelessForm.add(wicketPlatformName);
+	    
+	    TextArea wicketMessage = new TextArea("message", new PropertyModel<String>(this, "message"));
+	    wicketMessage.add(StringValidator.maximumLength(255));
+	    wicketMessage.setLabel(new ResourceModel ("label.message"));
+	    wicketMessage.setRequired(true);
+	    signupStatelessForm.add(wicketMessage);
 		
 		List<String> countries = new ArrayList<String>();
 	    
@@ -96,7 +113,7 @@ public class Register extends Stateless {
     	
     	signupStatelessForm.add(new CheckBox("terms", new PropertyModel<Boolean>(this, "terms"))); // this line
 	    
-	    signupStatelessForm.add(new AjaxButton("submit", signupStatelessForm)
+	    signupStatelessForm.add(new IndicatingAjaxButton("submit", signupStatelessForm)
         {
             /**
 			 * 
@@ -106,7 +123,31 @@ public class Register extends Stateless {
 			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-              
+				if (terms) {
+				User user = new User ();
+				user.setRole("ADMIN");
+				user.setEmail(email);
+				user.setFullName(fullName);
+				user.setLocation(location);
+				user.setPassword(password);
+				user.setPlatformName(platformName);
+				user.setQuota(-1);
+				user.setStatus("Disabled");
+				user.setIntroduction(message);
+				
+				try {
+					userController.createAccount(user);
+					info ("A confirmation email has been sent to your email account");
+					target.add(feedback);
+				} catch (UserControllerException e) {
+					error (e.getMessage());
+					target.add(feedback);
+				}
+				} else {
+					error ("Platform in Beta, we need some Wittiness");
+					target.add(feedback);
+				}
+					
             }
 
             @Override

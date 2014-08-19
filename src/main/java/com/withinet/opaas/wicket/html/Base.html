@@ -3,7 +3,7 @@
 
    <head>
     <meta charset="utf-8">
-    <title>Login :: Base Admin</title>
+    <title><wicket:message key="applicationName"></wicket:message></title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes"> 
@@ -38,21 +38,21 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="./index.html">Base Admin 3.0</a>
+    <a class="navbar-brand" href="/"><wicket:message key="applicationName"></wicket:message></a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse navbar-ex1-collapse">
     <ul class="nav navbar-nav navbar-right">
       <li class="">						
-			<a href="./signup">
+			<a wicket:id="register" href="">
 				Create an Account
 			</a>			
 		</li>
 
 		<li class="">
 						
-			<a href="#">
+			<a href="/">
 				<i class="icon-chevron-left"></i>&nbsp;&nbsp; 
 				Back to Homepage
 			</a>

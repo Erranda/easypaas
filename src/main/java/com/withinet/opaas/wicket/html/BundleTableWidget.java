@@ -14,8 +14,8 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -38,183 +38,222 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
 
 import com.withinet.opaas.controller.BundleController;
+import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.system.FileService;
 import com.withinet.opaas.model.domain.Bundle;
+import com.withinet.opaas.model.domain.Project;
 import com.withinet.opaas.wicket.services.UserSession;
 
 /**
  * @author Folarin
- *
+ * 
  */
 public class BundleTableWidget extends Panel {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6426148890485840838L;
-	private transient SortableDataProvider<Bundle, String> provider = new BundleTableDataProvider ();
-	private final List<IColumn<Bundle, String>> columns = Collections.synchronizedList(new ArrayList<IColumn<Bundle, String>>());
+	private transient SortableDataProvider<Bundle, String> provider = new BundleTableDataProvider();
+	private final List<IColumn<Bundle, String>> columns = Collections
+			.synchronizedList(new ArrayList<IColumn<Bundle, String>>());
 	private int resultSize = 5;
 	private Long selected = null;
-	
-	
+
 	@SpringBean
 	private BundleController bundleController;
-	
+
 	@SpringBean
 	private FileService fileService;
-	
+
+	@SpringBean
+	private ProjectController projectController;
+
 	private FileUpload upload;
-	
+
 	private Long userId = UserSession.get().getUser().getID();
-	
+
 	private Long pid = null;
+
 	/**
 	 * @param id
 	 */
 	public BundleTableWidget(String id) {
 		super(id);
-		initialize ();
+		initialize();
 	}
 
 	public BundleTableWidget(String id, Long pid) {
 		super(id);
 		this.pid = pid;
-		initialize ();
+		initialize();
 	}
-	
-	public void initialize () {
-		
+
+	public void initialize() {
+
 		columns.add(new PropertyColumn<Bundle, String>(
 				new Model<String>("Name"), "symbolicName"));
-		columns.add(new PropertyColumn<Bundle, String>(
-				new Model<String>("Updated"), "updated"));
-		
-		final DataTable<Bundle, String> dataTable = new DefaultDataTable <Bundle, String> ("bundle-table", columns, provider, resultSize);
+		columns.add(new PropertyColumn<Bundle, String>(new Model<String>(
+				"Updated"), "updated"));
+
+		final DataTable<Bundle, String> dataTable = new DefaultDataTable<Bundle, String>(
+				"bundle-table", columns, provider, resultSize);
 		dataTable.setOutputMarkupId(true);
-		add (dataTable);
-		columns.add(new AbstractColumn<Bundle, String>(
-				new Model<String>("Quick Action")) {
+		add(dataTable);
+		columns.add(new AbstractColumn<Bundle, String>(new Model<String>(
+				"Quick Action")) {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void populateItem(Item<ICellPopulator<Bundle>> item,
 					String componentId, final IModel<Bundle> model) {
-				//BookmarkablePageLink<BundleIndex> deleteBundle = new BookmarkablePageLink<BundleIndex> ("delete-link", BundleIndex.class, setDeleteBundleLinkParameters (model.getObject()));
-				AjaxLink deleteBundle = new AjaxLink("delete-link"){                                                                                                                                                                                                                                                                                                  
-					private static final long serialVersionUID = 1L;                                                                                                       
+				// BookmarkablePageLink<BundleIndex> deleteBundle = new
+				// BookmarkablePageLink<BundleIndex> ("delete-link",
+				// BundleIndex.class, setDeleteBundleLinkParameters
+				// (model.getObject()));
+				final ConfirmationLink<String> deleteBundle = new ConfirmationLink<String>(
+						"update-instances-delete",
+						"Projects and instances with bundle will be updated as well. Continue?") {
 
-					@Override                                                                                                                                              
-					public void onClick(AjaxRequestTarget target) {                                                                                                        
-						 Long bid  = model.getObject().getID();
-						 try {
-							bundleController.deleteBundle(bid, userId);
-							getPage().info ("Bundle deleted from your cache");
-							target.add(dataTable);
-							target.add(((Authenticated) getPage ()).getFeedbackPanel());
-						} catch (BundleControllerException e) {
+					@Override
+					public void onClick(AjaxRequestTarget target) {
+						try {
+							Long uid = UserSession.get().getUser().getID();
+							List<Project> projects = projectController
+									.listProjectsByBundle(model.getObject()
+											.getID(), uid);
+
+							Long bid = model.getObject().getID();
+							try {
+								bundleController.deleteBundle(bid, userId);
+							} catch (BundleControllerException e) {
+								getPage().error(e.getMessage());
+								setResponsePage(getPage());
+							}
+							for (Project project : projects)
+								projectController.refreshProjectInstancesDirty(
+										project.getID(), uid);
+							getPage()
+									.info("Bundle deleted from library. All targets with bundle updated");
+							target.add(((Authenticated) getPage())
+									.getFeedbackPanel());
+							setResponsePage(getPage());
+
+						} catch (ProjectControllerException e) {
+							e.printStackTrace();
 							getPage().error(e.getMessage());
-							setResponsePage (getPage ());
+							target.add(((Authenticated) getPage())
+									.getFeedbackPanel());
 						}
-						
-					}                                                                                                                                                      
+					}
 				};
-				
-				//BookmarkablePageLink<BundleIndex> updateBundle = new BookmarkablePageLink<BundleIndex> ("update-link", BundleIndex.class, setUpdateBundleLinkParameters (model.getObject()));
-				AjaxLink updateBundle = new AjaxLink("update-link"){                                                                                                                                                                                                                                                                                                  
-					private static final long serialVersionUID = 1L;                                                                                                       
 
-					@Override                                                                                                                                              
-					public void onClick(AjaxRequestTarget target) {                                                                                                        
-						 selected = model.getObject().getID();
-						 target.appendJavaScript("showModal ()");
-					}                                                                                                                                                      
+				// BookmarkablePageLink<BundleIndex> updateBundle = new
+				// BookmarkablePageLink<BundleIndex> ("update-link",
+				// BundleIndex.class, setUpdateBundleLinkParameters
+				// (model.getObject()));
+				IndicatingAjaxLink updateBundle = new IndicatingAjaxLink("update-link") {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClick(AjaxRequestTarget target) {
+						selected = model.getObject().getID();
+						target.appendJavaScript("showModal ()");
+					}
 				};
-				add (dataTable);
-				
-				updateBundle.add(AttributeModifier.replace("data-toggle", "modal"));
-				updateBundle.add(AttributeModifier.replace("href", "#bundleUpdate"));
-				BundleTableQuickAction button = new BundleTableQuickAction (componentId, updateBundle, deleteBundle);
+				add(dataTable);
+
+				updateBundle.add(AttributeModifier.replace("data-toggle",
+						"modal"));
+				updateBundle.add(AttributeModifier.replace("href",
+						"#bundleUpdate"));
+				BundleTableQuickAction button = new BundleTableQuickAction(
+						componentId, updateBundle, deleteBundle);
 				item.add(button);
 			}
-			private PageParameters setDeleteBundleLinkParameters (Bundle bundle) {
+
+			private PageParameters setDeleteBundleLinkParameters(Bundle bundle) {
 				PageParameters linkParameters = new PageParameters();
 				linkParameters.add("bid", bundle.getID());
 				linkParameters.add("action", "delete");
 				return linkParameters;
 			}
 		});
-		
-		
-		
+
 		Form<Void> setupForm = new Form<Void>("update");
 		add(setupForm);
 
 		final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
 		feedback.setOutputMarkupPlaceholderTag(true);
 		setupForm.add(feedback);
-		
-		final FileUploadField wicketFileUploadField = new FileUploadField("file");
+
+		final FileUploadField wicketFileUploadField = new FileUploadField(
+				"file");
 		wicketFileUploadField.setRequired(true);
 		setupForm.add(wicketFileUploadField);
-		
+
 		setupForm.setMaxSize(Bytes.megabytes(10000));
 		UploadProgressBar progress = new UploadProgressBar("progress",
 				setupForm, wicketFileUploadField);
 		setupForm.add(progress);
-		
-		setupForm.add(new IndicatingAjaxButton ("submit", setupForm){
-			
+
+		setupForm.add(new IndicatingAjaxButton("submit", setupForm) {
+
 			@Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form)
-			{
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				if (selected == null)
-					throw new RuntimeException ();
+					throw new RuntimeException();
 				FileUpload upload = wicketFileUploadField.getFileUpload();
 				if (upload != null) {
 					String fileName = upload.getClientFileName().toLowerCase()
 							.trim();
 					String extension = FilenameUtils.getExtension(fileName);
 					extension = extension.toLowerCase().trim();
-					
+
 					if (extension.equals("jar")) {
 						try {
 							processUpload(upload);
 						} catch (BundleControllerException e) {
 							e.printStackTrace();
-							error (e.getMessage());
+							error(e.getMessage());
 						} catch (IOException e) {
 							e.printStackTrace();
-							error (e.getMessage());
+							error(e.getMessage());
 						}
 					} else {
-						error (extension + " not jar" );
+						error(extension + " not jar");
 					}
 				}
 			}
 		});
 	}
-	protected void processUpload(FileUpload upload) throws BundleControllerException, IOException {
+
+	protected void processUpload(FileUpload upload)
+			throws BundleControllerException, IOException {
 		Bundle bundle = bundleController.readBundle(selected, userId);
 		String location = bundle.getLocation();
 		fileService.deleteFile(location);
 		upload.writeTo(fileService.createFile(location));
-		info (bundle.getSymbolicName() + " updated.");
-		info ("Projects using this bundle will need to be restarted");
-		setResponsePage (this.getPage());
+		info(bundle.getSymbolicName() + " updated.");
+		info("Projects using this bundle will need to be restarted");
+		setResponsePage(this.getPage());
 	}
 
-	private class BundleTableDataProvider extends SortableDataProvider<Bundle, String> {
-		
+	private class BundleTableDataProvider extends
+			SortableDataProvider<Bundle, String> {
+
 		private final long USER_ID = UserSession.get().getUser().getID();
-		
+
 		private List<Bundle> userBundles = null;
-		
+
 		@Override
 		public Iterator<? extends Bundle> iterator(long arg0, long arg1) {
-			return userBundles.subList((int) arg0, Math.min((int) userBundles.size(), (int) (arg0 + arg1))).iterator();
+			return userBundles.subList((int) arg0,
+					Math.min((int) userBundles.size(), (int) (arg0 + arg1)))
+					.iterator();
 		}
 
 		@Override
@@ -226,12 +265,14 @@ public class BundleTableWidget extends Panel {
 		public long size() {
 			if (pid != null) {
 				try {
-					userBundles = bundleController.listBundlesByProject(pid, USER_ID);
-					//pid = null;
+					userBundles = bundleController.listBundlesByProject(pid,
+							USER_ID);
+					// pid = null;
 				} catch (BundleControllerException e1) {
-					//error (e1.getMessage ());
+					// error (e1.getMessage ());
 					try {
-						userBundles = bundleController.listBundlesByOwner(USER_ID, USER_ID);
+						userBundles = bundleController.listBundlesByOwner(
+								USER_ID, USER_ID);
 					} catch (BundleControllerException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -240,9 +281,10 @@ public class BundleTableWidget extends Panel {
 				}
 			} else {
 				try {
-					userBundles = bundleController.listBundlesByOwner(USER_ID, USER_ID);
+					userBundles = bundleController.listBundlesByOwner(USER_ID,
+							USER_ID);
 				} catch (BundleControllerException e) {
-					error (e.getMessage ());
+					error(e.getMessage());
 				}
 			}
 			return userBundles.size();

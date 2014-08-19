@@ -66,6 +66,9 @@ public class Instance implements Serializable {
 	
 	@Column(name="LOG_FILE")
 	private String logFile;
+
+	@Column(name="DIRTY")
+	private boolean dirty;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
@@ -206,6 +209,14 @@ public class Instance implements Serializable {
 		}
 		return true;
 		
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 	
 }

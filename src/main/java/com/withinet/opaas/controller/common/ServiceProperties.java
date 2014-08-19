@@ -1,13 +1,10 @@
 package com.withinet.opaas.controller.common;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 public class ServiceProperties {
 
 	public final String name = "Opaas";
 	
-    public static final int REMEMBER_ME_DURATION_IN_DAYS = 30;
+    public static final int REMEMBER_ME_DURATION_IN_SECONDS = 1 * 24 * 60 * 60;
     
     public static final String REMEMBER_ME_EMAIL_COOKIE = "opaasEmailCookie";
     
@@ -20,6 +17,24 @@ public class ServiceProperties {
     public static final int MINPORT = 9000;
     
     public static final int MAXPORT = 65535;
+    
+    public static final String EMAILER_USERNAME = "withinetsolutions@gmail.com";
+    
+    public static final String EMAILER_PASSWORD = "Xda3txyn";
+    
+  public static final String  EMAILER_SMTP_AUTH = "true";
+    
+    public static final String EMAILER_STARTTLS_ENABLE =  "true";
+    
+    public static final String EMAILER_SMTP_HOST = "smtp.gmail.com";
+    
+    public static final String EMAILER_SMTP_PORT = "587";
+
+	public static final String SUPER_ADMIN_PASSWORD = "ieO8UD5j60";
+
+	public static final String SUPER_ADMIN_EMAIL = "folarinomotoriogun@gmail.com";
+    
+    
 
 	public final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 	

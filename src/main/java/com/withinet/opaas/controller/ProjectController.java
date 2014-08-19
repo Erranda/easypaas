@@ -38,11 +38,18 @@ public interface ProjectController {
 	
 	public List<ProjectBundle> listProjectBundlesByProject (Long projectId, Long requesterId);
 	
+	public List<Project> listProjectsByBundle (Long projectId, Long requesterId) throws ProjectControllerException;
+	
 	public Project addBundle (Bundle bundles, Long projectId, Long requesterId) throws ProjectControllerException;
 	
 	public Project addCollaborator (User user, Long projectId, Long requesterId) throws ProjectControllerException;
 
 	public boolean disableProject(Long id, Long requesterId)
+			throws ProjectControllerException;
+	
+	public void refreshProjectInstances (Long id, Long requesterId) throws ProjectControllerException;
+
+	public void refreshProjectInstancesDirty(Long id, Long requesterId)
 			throws ProjectControllerException;
 	
 }

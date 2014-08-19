@@ -118,7 +118,7 @@ public class BundleFileInstallerImpl implements BundleInstaller {
 		ZipInputStream zin = new ZipInputStream(bin);
 		ZipEntry ze = null;
 		while ((ze = zin.getNextEntry()) != null) {
-		    if (ze.getName().endsWith(".jar")) {
+		    if (ze.getName().endsWith(".jar") || ze.getName().endsWith(".war")) {
 		    	String fileLocation = new File (destPath + "/" + ze.getName()).getAbsolutePath();
 		    	OutputStream out = new FileOutputStream(fileLocation);
 		    	byte[] buffer = new byte[8192];
@@ -153,7 +153,7 @@ public class BundleFileInstallerImpl implements BundleInstaller {
 	
 	@Override
 	public Bundle installBundle (String bundleDest, String fileDest) throws IOException {
-		if (!bundleDest.endsWith(".jar")) throw new IOException ("The file is not a valid file");
+		if (!bundleDest.endsWith(".jar")) throw new IOException ("The file is not a valid bundle");
 		File thisFile = new File (bundleDest);
 		if (!thisFile.exists()) throw new IOException ("File does not exist");
 		String newFileName = fileDest  + "/" + thisFile.getName();

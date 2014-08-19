@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -60,6 +60,8 @@ public class ProjectTableWidget extends Panel {
 	private String projectName = null;
 	private String containerChoice = "Felix";
 	
+	Form<Void> setupForm = null;
+	
 	@SpringBean
 	private InstanceController instanceController;
 	
@@ -97,14 +99,15 @@ public class ProjectTableWidget extends Panel {
 			public void populateItem(Item<ICellPopulator<Project>> item,
 					String componentId, final IModel<Project> model) {
 				// TODO Auto-generated method stub
-				AjaxLink startInstance = new AjaxLink("start-instance"){                                                                                                                                                                                                                                                                                                  
+				IndicatingAjaxLink startInstance = new IndicatingAjaxLink("start-instance"){                                                                                                                                                                                                                                                                                                  
 					private static final long serialVersionUID = 1L;                                                                                                       
 
 					@Override                                                                                                                                              
 					public void onClick(AjaxRequestTarget target) {                                                                                                        
 						 selected = model.getObject().getID();
 						 projectName = model.getObject().getName();
-						 target.appendJavaScript("showModal ()");
+						 target.add(setupForm);
+						 target.appendJavaScript("showModal ()"); 
 					}                                                                                                                                                      
 				};
 				BookmarkablePageLink<ProjectIndex> viewProject = new BookmarkablePageLink<ProjectIndex> ("view-project", ProjectIndex.class, setViewProjectLinkParameters (model.getObject()));
@@ -161,7 +164,7 @@ public class ProjectTableWidget extends Panel {
 	}
 	
 	private void addStartInstanceForm () {
-		Form<Void> setupForm = new Form<Void>("startInstance");
+		setupForm = new Form<Void>("startInstance");
 		add(setupForm);
 
 		final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
@@ -197,12 +200,13 @@ public class ProjectTableWidget extends Panel {
 						Long uid = UserSession.get().getUser().getID();
 						instance.setContainerType(containerChoice);
 						instanceController.createInstance(instance, selected, uid, uid);
+						info("Your instance is ready <a style=\"color:#fff\" href=\"" + instance.getCpanelUrl() + "\">Go to Cpanel</a>");
 					} catch (InstanceControllerException e) {
 						error (e.getMessage());
 						e.printStackTrace();
 						setResponsePage (getPage());
 					}
-					info("Your instance is ready <a style=\"color:#fff\" href=\"" + instance.getCpanelUrl() + "\">Go to Cpanel</a>");
+					
 					setResponsePage (getPage());
 	            }
 
@@ -215,8 +219,7 @@ public class ProjectTableWidget extends Panel {
 	}
 	private class ProjectTableDataProvider extends SortableDataProvider<Project, String> {
 		
-		
-		private final long USER_ID = UserSession.get().getUser().getID();
+	
 		
 		public ProjectTableDataProvider () {
 			
@@ -237,6 +240,7 @@ public class ProjectTableWidget extends Panel {
 		@Override
 		public long size() {
 			try {
+				long USER_ID = UserSession.get().getUser().getID();
 				userProjects = projectController.listCreatedProjectsByOwner(USER_ID, USER_ID);
 			} catch (ProjectControllerException e) {
 				// TODO Auto-generated catch block

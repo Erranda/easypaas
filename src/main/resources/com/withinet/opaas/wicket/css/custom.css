@@ -72,11 +72,24 @@ li.feedbackPanelINFO:before {
     margin-bottom: 1em;
     padding: 0;
 }
+@media (max-width: 768px) {
+	.table-responsive {
+    	padding-bottom: 100px !important;
+    }
+}
+@media (min-width: 1200px) {
+	.container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+		width: 1170px;
+		padding: 0px !important ;
+	} 
+}
 
-.container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
-	width: 1170px;
-	padding: 0px !important ;
-} 
+.btn {
+	z-index: 1 !important;
+}
+table {
+	z-index: -1 !important;
+}
 
 .chosen-container {
 	width : 100% !important;

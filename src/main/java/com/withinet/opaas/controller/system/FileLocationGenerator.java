@@ -10,11 +10,9 @@ public interface FileLocationGenerator {
 	
 	public File getInstanceDirectory (Long uuid, Long iiid);
 	
-	public File getTempDirectory ();
+	public File getConcurrentTempDirectory (Long uid);
 	
 	public File getResourcesDirectory ();
-
-	public String getTempDirectoryPath();
 
 	public String getUserDrirectoryPath(Long uuid);
 

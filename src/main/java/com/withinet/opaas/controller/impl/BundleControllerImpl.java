@@ -108,10 +108,7 @@ public class BundleControllerImpl implements BundleController {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
 		Bundle forDelete = getWithBasicAuth (id, requesterId);
-		List<ProjectBundle> projects = projectBundleRepository.findByBundle(forDelete);
-		projectBundleRepository.delete(projects);
 		bundleRepository.delete(forDelete);
-		bundleRepository.findOne(forDelete.getID());
 		try {
 			return fileService.deleteFile(forDelete.getLocation());
 		} catch (IOException e) {

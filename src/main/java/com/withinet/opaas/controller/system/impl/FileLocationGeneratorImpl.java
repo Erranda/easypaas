@@ -65,23 +65,18 @@ public class FileLocationGeneratorImpl implements FileLocationGenerator {
 		return logFile;
 	}
 
-
-	@Override
-	public synchronized File getTempDirectory() {
-		File home = new File (tempHome + "/" + System.currentTimeMillis());
-		if (!home.exists()) home.mkdirs();
-		return home;
-	}
-	
-	@Override
-	public synchronized String getTempDirectoryPath () {
-		return tempHome + "/"+ System.currentTimeMillis();
-	}
 	
 	@Override
 	public File getResourcesDirectory() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public File getConcurrentTempDirectory(Long uid) {
+		File home = new File (tempHome + "/" + uid + "/" + System.currentTimeMillis());
+		if (!home.exists()) home.mkdirs();
+		return home;
 	}
 	
 }

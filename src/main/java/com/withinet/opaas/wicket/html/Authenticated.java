@@ -5,6 +5,7 @@ package com.withinet.opaas.wicket.html;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -27,7 +28,9 @@ public abstract class Authenticated extends WebPage {
 	private Component feedback = null;
 	
 	public Authenticated() {
-		String userName = UserSession.get().getUser().getFullName();
+		if(UserSession.get().userNotLoggedIn()) throw new RestartResponseAtInterceptPageException(
+				Login.class);
+		
 		feedback = new FeedbackPanel ("feedback");
 		feedback.setEscapeModelStrings(false);
 		feedback.setOutputMarkupId(true);
@@ -44,7 +47,7 @@ public abstract class Authenticated extends WebPage {
 		add (new BookmarkablePageLink <BundleIndex> ("bundles", BundleIndex.class, null));
 		add (new BookmarkablePageLink <TeamIndex> ("team", TeamIndex.class, null));
 		add (new BookmarkablePageLink <AccountIndex> ("account", AccountIndex.class, null));
-		add (new Label ("name", userName));
+		add (new Label ("name", UserSession.get().getUser().getFullName()));
 		add (new BookmarkablePageLink <Logout> ("logout", Logout.class, null));
 	}
 

@@ -25,11 +25,16 @@ public interface UserController {
 	
 	public User readAccount (Long id, Long requesterId) throws UserControllerException;
 	
-	public List<User> listCollaborators (Long userId, Long requesterId) throws UserControllerException;
+	public List<User> listTeamMembers (Long userId, Long requesterId) throws UserControllerException;
 	
-	public List<User> addCollaborator (User collaborator, Long id, Long requesterId) throws UserControllerException;
+	public void addTeamMember (User collaborator, Long id, Long requesterId) throws UserControllerException;
+	
+	public List<User> addTeamMemberFromExcel (String fileName, Long requesterId) throws UserControllerException;
 	
 	//Web access only
 	public User login (String userId, String password) throws AccountLoginException;
+
+	public void resetAccount(Long id, Long requesterId) throws UserControllerException;
 	
+	public void passwordReset (Long id, Long requesterId) throws UserControllerException;
 }

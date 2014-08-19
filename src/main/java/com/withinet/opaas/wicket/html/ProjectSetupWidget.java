@@ -154,7 +154,7 @@ public class ProjectSetupWidget extends Panel {
 								error (e.getMessage());
 							}
 						} else {
-							error("Only .zip, .xml, and .jar extensions allowed");
+							error("Only zip, maven xml, and jar extensions allowed");
 							//deleteProject();
 						}
 					} else {
@@ -179,54 +179,54 @@ public class ProjectSetupWidget extends Panel {
             {
             	target.add(feedback);
             }
+			
+			private List<Bundle> processUpload() {
+				Long uid = UserSession.get().getUser().getID();
+				// If project creation succeeds, check for file upload
+				File thisFile = new File((fileMan.getConcurrentTempDirectory (uid)).getAbsolutePath() + "/"
+						+ upload.getClientFileName());
+				Long userId = UserSession.get().getUser().getID();
+				try {
+					if (thisFile.createNewFile()){
+					upload.writeTo(thisFile);
+					File userLibDirectory = fileMan.getUserLibrary(userId);
+					List<String> list = new ArrayList<String>();
+					list.add(thisFile.getAbsolutePath());
+					projectFileBundles = bundleInstaller.installBundles(list,
+							userLibDirectory.getAbsolutePath());
+						for (int i = 0; i < projectFileBundles.size(); i++) {
+							try {
+								Bundle bundle = bundleController.createBundle(projectFileBundles.get(i), userId);
+								if (bundle != null) 
+									projectFileBundles.set(i, bundle);
+							}  catch (BundleControllerException e) {
+								if (e instanceof BundleConflictException) {
+									try {
+										projectFileBundles.set(i, bundleController.readBundleByName(projectFileBundles.get(i).getSymbolicName(), userId));
+										info ("Some bundles have been reused from your library due to name conflict");
+										info (e.getMessage());
+									} catch (BundleControllerException e1) {
+										throw new RuntimeException (e1.getMessage());
+									}
+								}
+							}
+						}
+					} else {
+						error("Could not process your file at this time");
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					error(e.getMessage());
+				} catch (ParserConfigurationException e) {
+					e.printStackTrace();
+					error(e.getMessage());
+				}
+				return projectFileBundles;
+			}
 		});
 
 	}
 	
-	private List<Bundle> processUpload() {
-		// If project creation succeeds, check for file upload
-		File thisFile = new File((fileMan.getTempDirectory ()).getAbsolutePath() + "/"
-				+ upload.getClientFileName());
-		Long userId = UserSession.get().getUser().getID();
-		try {
-			if (thisFile.createNewFile()){
-			upload.writeTo(thisFile);
-			File userLibDirectory = fileMan.getUserLibrary(userId);
-			System.out.println (userLibDirectory.getAbsolutePath());
-			List<String> list = new ArrayList<String>();
-			list.add(thisFile.getAbsolutePath());
-			projectFileBundles = bundleInstaller.installBundles(list,
-					userLibDirectory.getAbsolutePath());
-				for (int i = 0; i < projectFileBundles.size(); i++) {
-					try {
-						Bundle bundle = bundleController.createBundle(projectFileBundles.get(i), userId);
-						if (bundle != null) 
-							projectFileBundles.set(i, bundle);
-					}  catch (BundleControllerException e) {
-						if (e instanceof BundleConflictException) {
-							try {
-								projectFileBundles.set(i, bundleController.readBundleByName(projectFileBundles.get(i).getSymbolicName(), userId));
-								info ("Some bundles have been reused from your library due to name conflict");
-								info (e.getMessage());
-							} catch (BundleControllerException e1) {
-								throw new RuntimeException (e1.getMessage());
-							}
-						}
-					}
-				}
-			} else {
-				error("Could not process your file at this time");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			error(e.getMessage());
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			error(e.getMessage());
-		}
-		return projectFileBundles;
-	}
-
 	private List<Bundle> processSelectedBundles() {
 		List<Bundle> bundles = new ArrayList<Bundle>();
 		for (String bundle : projectFileBundlesSelected)
@@ -253,7 +253,7 @@ public class ProjectSetupWidget extends Panel {
 	private List<String> listTeam() throws UserControllerException {
 		Long uid = UserSession.get().getUser().getID();
 		
-		List<User> collaborators = accountController.listCollaborators(uid, uid);
+		List<User> collaborators = accountController.listTeamMembers(uid, uid);
 		ArrayList<String> formList = new ArrayList<String>();
 		for (User user : collaborators) {
 			String formKey = user.getFullName() + " [" + user.getEmail() + "]";

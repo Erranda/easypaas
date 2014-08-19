@@ -39,7 +39,7 @@ public class User implements Serializable {
 	private String email;
 	
 	@NotNull
-	@Size (min = 2, max = 20)
+	@Size (min = 2, max = 100)
 	@Column(name="USER_PLATFORM_NAME", nullable=false, length=255)	
 	private String platformName;
 	
@@ -58,6 +58,23 @@ public class User implements Serializable {
 	
 	@Column(name="USER_STATUS", nullable=false)
 	private String status;
+	
+	@Column(name="USER_QUOTA", nullable=false)
+	@NotNull
+	private Integer quota;
+	
+	@Column(name="USER_ROLE", nullable=false)
+	@NotNull
+	private String role;
+	
+	@Column(name="USER_DIR", nullable=false)
+	@NotNull
+	private String workingDirectory;
+	
+	@Column(name="MESSAGE", nullable=false, length = 255)
+	@NotNull
+	@Size (max = 255)
+	private String introduction;
 	
 	@ManyToOne(targetEntity=User.class, fetch=FetchType.EAGER)	
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
@@ -143,11 +160,11 @@ public class User implements Serializable {
 		this.projects = projects;
 	}
 
-	public Set<User> getCollaborators() {
+	public Set<User> getTeamMembers() {
 		return collaborators;
 	}
 
-	public void setCollaborators(Set<User> collaborators) {
+	public void setTeamMembers(Set<User> collaborators) {
 		this.collaborators = collaborators;
 	}
 
@@ -229,5 +246,37 @@ public class User implements Serializable {
 		else if (((User) o).getID() == this.getID())
 			return true;
 		return false;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public Integer getQuota() {
+		return quota;
+	}
+
+	public void setQuota(Integer quota) {
+		this.quota = quota;
+	}
+
+	public String getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = workingDirectory;
+	}
+
+	public String getIntroduction() {
+		return introduction;
+	}
+
+	public void setIntroduction(String introduction) {
+		this.introduction = introduction;
 	}
 }

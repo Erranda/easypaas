@@ -4,6 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -56,7 +57,7 @@ public class LoginWidget extends Panel {
 	    
 	    loginForm.add(new CheckBox("rememberMe", new PropertyModel<Boolean>(this, "rememberMe"))); // this line
 	    
-	    loginForm.add(new AjaxButton("submit", loginForm)
+	    loginForm.add(new IndicatingAjaxButton("submit", loginForm)
         {
             /**
 			 * 

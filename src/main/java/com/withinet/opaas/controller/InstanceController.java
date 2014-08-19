@@ -30,7 +30,7 @@ public interface InstanceController {
 	
 	public List<Instance> listInstancesByAdministrator (Long adminId, Long requesterId) throws InstanceControllerException;
 
-	public void startInstance(Long id, Long requesterId)
+	public void startInstance(Long id, Long requesterId, boolean b)
 			throws InstanceControllerException;
 	
 }

@@ -17,6 +17,8 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.withinet.opaas.controller.InstanceController;
+import com.withinet.opaas.controller.common.ProjectControllerException;
+import com.withinet.opaas.controller.common.UserControllerException;
 
 
 /**
@@ -31,7 +33,16 @@ public class InstanceIndex extends Authenticated
      */
     public InstanceIndex ()
     {
-        add (new InstanceTableWidget ("instance-table-widget"));
+    	try {
+			add (new InstanceSetupWidget ("instance-setup-widget"));
+		} catch (ProjectControllerException e) {
+			error (e.getMessage());
+			setResponsePage (getPage());
+		} catch (UserControllerException e) {
+			error (e.getMessage());
+			setResponsePage (getPage());
+		}
+    	add (new InstanceTableWidget ("instance-table-widget"));
     }
     
     public InstanceIndex (PageParameters pageParameters) {
@@ -39,5 +50,14 @@ public class InstanceIndex extends Authenticated
     		Long pid = pageParameters.get("pid").toLong();
     		add (new InstanceTableWidget ("instance-table-widget", pid));
     	}
+    	try {
+			add (new InstanceSetupWidget ("instance-setup-widget"));
+		} catch (ProjectControllerException e) {
+			error (e.getMessage());
+			setResponsePage (getPage());
+		} catch (UserControllerException e) {
+			error (e.getMessage());
+			setResponsePage (getPage());
+		}
     }
 }

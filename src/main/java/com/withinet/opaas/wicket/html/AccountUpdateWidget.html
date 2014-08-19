@@ -9,11 +9,10 @@
 				<div class="widget-content">
 					<form wicket:id="form" id="edit-profile" class="form-horizontal col-md-8">
 								<fieldset>
-									<span wicket:id="feedback"></span>
 									<div class="form-group">											
 										<label for="email" class="col-md-4">Email</label>
 										<div class="col-md-8">
-											<input wicket:id="email" type="email" class="form-control" id="email" value="email@xyz.com" disabled="">
+											<input wicket:id="email" type="email" class="form-control" id="email" value="email@xyz.com" readonly>
 											<p class="help-block">Your email is for logging in and cannot be changed.</p>
 										</div> <!-- /controls -->				
 									</div> <!-- /control-group -->
@@ -40,7 +39,7 @@
 									<div class="form-group">											
 										<label class="col-md-4" for="password2">Confirm</label>
 										<div class="col-md-8">
-											<input type="password" class="form-control" id="password2" value="password">
+											<input wicket:id="confirm-password" type="password" class="form-control" id="password2" value="password">
 										</div> <!-- /controls -->				
 									</div> <!-- /control-group -->
 									
@@ -53,7 +52,6 @@
 
 										<div class="col-md-offset-4 col-md-8">
 											<button type="submit" class="btn btn-primary">Save</button> 
-											<button class="btn btn-default">Cancel</button>
 										</div>
 									</div> <!-- /form-actions -->
 								</fieldset>

@@ -72,6 +72,9 @@ public class InstanceControllerImpl implements InstanceController {
 		
 		try {
 			User user = userController.readAccount(userId, requesterId);
+			List<Instance> instances = instanceRepository.findByOwner(user);
+			if (instances.size() == user.getQuota())
+				throw new InstanceControllerException ("You have reached your limit");
 			Project project = projectController.readProjectById(projectId, requesterId);
 			if (project.getStatus().equals("Disabled"))
 				throw new ProjectControllerException ("Oops, look like this project has not been activated");
@@ -103,14 +106,22 @@ public class InstanceControllerImpl implements InstanceController {
 			instance.setStatus("Live");
 			instanceRepository.saveAndFlush(instance);
 		} catch (ProjectControllerException e) {
+			rollBack (instance);
 			throw new InstanceControllerException (e.getMessage());
 		} catch (UserControllerException e) {
+			rollBack (instance);
 			throw new InstanceControllerException (e.getMessage());
 		} catch (IOException e) {
+			rollBack (instance);
 			throw new InstanceControllerException (e.getMessage());
 		}
 		
 		return instance;
+	}
+	
+	public void rollBack (Instance instance) {
+		if (instance.getId() != null || instance.getId () != 0)
+			instanceRepository.delete(instance);
 	}
 	
 	private int getOpenPort () {
@@ -135,6 +146,11 @@ public class InstanceControllerImpl implements InstanceController {
 		Instance instance = getWithBasicAuth (id, requesterId);
 		
 		if (instance.getStatus().equals("Live")){
+			stopInstance (id, requesterId);
+		}
+		
+		//Some instances may have launched but be  stuck in starting
+		if (instance.getStatus().equals("Starting")){
 			stopInstance (id, requesterId);
 		}
 			
@@ -242,13 +258,14 @@ public class InstanceControllerImpl implements InstanceController {
 	}
 	
 	@Override
-	public void startInstance (Long id, Long requesterId) throws InstanceControllerException {
+	public void startInstance (Long id, Long requesterId, boolean usecache) throws InstanceControllerException {
 		Instance instance = getWithBasicAuth (id, requesterId);
 		try {
 			fileService.deleteFile(instance.getLogFile());
 		} catch (IOException e) {
 			throw new InstanceControllerException ("Could not delete previous log file");
 		}
+		instance.setDirty(!usecache);
 		processService.startProcess(instance);
 		//Important this comes after process call
 		instance.setStatus("Live");

@@ -1,8 +1,19 @@
 <wicket:extend>
+<wicket:link>
+<link href="../js/plugins/chosen/chosen.min.css" rel="stylesheet" type="text/css" />
+<script src="../js/plugins/chosen/chosen.jquery.min.js"></script>
+<script src="../js/demo/formsInit.js"></script>
+<script>
+    $(function () { formInit(); });
+</script>
+</wicket:link>
+			<span wicket:id="bundle-setup-widget"></span>
 			<span wicket:id="bundle-table-widget"></span>
 <script>
 			$( document ).ready(function() {
   				$( "#bundleNav" ).addClass('active');
 			});
+			
 </script>
+
 </wicket:extend>
