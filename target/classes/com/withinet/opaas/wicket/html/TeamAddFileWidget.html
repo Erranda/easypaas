@@ -1,0 +1,39 @@
+<wicket:panel>
+	<a data-toggle="modal" href="#addByFile" class="shortcut">
+							<i class="shortcut-icon fa fa-file-excel-o"></i>
+							<span class="shortcut-label">Excel</span>								
+						</a>
+ <div id="addByFile" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title"> Excel Sheet (XLS Only)</h4>
+          </div>
+          <div class="modal-body">		
+		<form wicket:id="addMemberFileForm" class="form-horizontal">
+		<div wicket:id="feedback">
+            
+         </div>		
+			<div class="login-fields">
+				
+				<div class="form-group">
+                        <div class="col-lg-8"><input style="width:100%" class="form-control" type="file" wicket:id="file" /></div>
+                </div>	
+			</div> <!-- /form-fields -->
+			<div class="field">
+			<div wicket:id="progress">
+               
+            </div>
+            </div>
+			<div class="login-actions">	
+				<input wicket:id="upload" class="login-action btn btn-primary" type="submit" value="Upload"/>	
+			</div> <!-- .actions -->
+			
+		</form>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+</wicket:panel>

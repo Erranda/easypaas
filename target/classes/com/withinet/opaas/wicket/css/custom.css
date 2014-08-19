@@ -1,0 +1,122 @@
+/*------------------------------------------------------------------
+
+[Custom Stylesheet]
+
+
+Last change:	09/08/2013
+Assigned to:	Folarin Omotoriogun
+
+-------------------------------------------------------------------*/
+li.feedbackPanelERROR {
+	background-color: #c9342f;
+	background-repeat: no-repeat;
+	background: -webkit-linear-gradient(top, #dd5959 0%,#c15252 100%);
+	box-shadow: 0 0 0 1px #c15252,0 1px 2px rgba(0,0,0,0.45);
+	overflow: hidden;
+	display: block;
+	color: #fff;
+	font-size: 15px;
+	line-height: 20px;
+	position: relative;
+	padding: 10px 20px 10px 50px;
+}
+
+li.feedbackPanelERROR:before {
+	content: "\f057";
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: inherit;
+	font-size: 32px;
+	padding-right: 0.5em;
+	position: absolute;
+	left: 12px;
+	font-family: FontAwesome;
+	top: 10px;
+}
+
+li.feedbackPanelINFO {
+	background-color: #5b912d;
+	background-repeat: no-repeat;
+	background: -webkit-linear-gradient(top, #63ae55 0%,#5a994e 100%);
+	background: -moz-linear-gradient(top, #63ae55 0%,#5a994e 100%);
+	background: -o-linear-gradient(top, #63ae55 0%,#5a994e 100%);
+	background: linear-gradient(top, #63ae55 0%,#5a994e 100%);
+	-webkit-box-shadow: 0 0 0 1px #5b9b4e,0 1px 2px rgba(0,0,0,0.45);
+	-moz-box-shadow: 0 0 0 1px #5b9b4e,0 1px 2px rgba(0,0,0,0.45);
+	box-shadow: 0 0 0 1px #5b9b4e,0 1px 2px rgba(0,0,0,0.45);
+	overflow: hidden;
+	display: block;
+	color: #fff;
+	font-size: 15px;
+	line-height: 20px;
+	position: relative;
+	padding: 10px 20px 10px 50px;
+}
+
+li.feedbackPanelINFO:before {
+	content: "\f058";
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: inherit;
+	font-size: 32px;
+	padding-right: 0.5em;
+	position: absolute;
+	left: 12px;
+	font-family: FontAwesome;
+	top: 10px;
+}
+
+.feedbackPanel {
+    width: 100%;
+    display: block;
+    margin-bottom: 1em;
+    padding: 0;
+}
+@media (max-width: 768px) {
+	.table-responsive {
+    	padding-bottom: 100px !important;
+    }
+}
+@media (min-width: 1200px) {
+	.container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+		width: 1170px;
+		padding: 0px !important ;
+	} 
+}
+
+.btn {
+	z-index: 1 !important;
+}
+table {
+	z-index: -1 !important;
+}
+
+.chosen-container {
+	width : 100% !important;
+	height: 40px !important;
+}
+.modal-form-fields .field {
+	margin:15px 0px;
+}
+
+section {
+	margin-bottom: 10px;
+}
+
+a.project-setup {
+	position:relative;
+	padding-left: 30px;
+}
+
+a.project-setup:before {
+	content: "\f055";
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: inherit;
+	font-size: 22px;
+	padding-right: 0.5em;
+	position: absolute;
+	left: 5px;
+	font-family: FontAwesome;
+	top: 0px;
+}

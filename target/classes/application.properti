@@ -1,0 +1,16 @@
+# suppress inspection "UnusedProperty" for whole file
+
+# Spring
+spring.profiles.active=dev
+
+# Server
+server.port=80
+server.sessionTimeout=30
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+
+spring.datasource.url = jdbc:hsqldb:hsql://localhost:9001
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driverClassName = org.hsqldb.jdbcDriver

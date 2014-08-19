@@ -1,0 +1,19 @@
+<wicket:extend>
+<wicket:link>
+<link href="../js/plugins/chosen/chosen.min.css" rel="stylesheet" type="text/css" />
+</wicket:link>
+		<span wicket:id="project-setup-widget"></span>
+		<span wicket:id="project-table-widget"></span>
+		<wicket:link>
+		<script>
+			$( document ).ready(function() {
+  				$( "#projectNav" ).addClass('active');
+			});
+		</script>
+		<script src="../js/plugins/chosen/chosen.jquery.min.js"></script>
+<script src="../js/demo/formsInit.js"></script>
+<script>
+    $(function () { formInit(); });
+</script>
+		</wicket:link>
+</wicket:extend>

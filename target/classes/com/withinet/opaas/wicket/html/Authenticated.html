@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><wicket:message key="applicationCpanel"></wicket:message></title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">    
+    
+    <wicket:link>
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+    
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
+    <link href="../css/font-awxesome.min.css" rel="stylesheet"> 
+    <link href="../css/font-awesome.min.css" rel="stylesheet">        
+    
+    <link href="../css/ui-lightness/jquery-ui-1.10.0.custom.min.css" rel="stylesheet">
+    
+    <link href="../css/base-admin-3.css" rel="stylesheet">
+    <link href="../css/base-admin-3-responsive.css" rel="stylesheet">
+    
+    <link href="../css/pages/dashboard.css" rel="stylesheet">   
+
+    <link href="../css/custom.css" rel="stylesheet">
+    
+	<script src="../js/libs/jquery-1.9.1.min.js"></script>
+	</wicket:link>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+
+<nav class="navbar navbar-inverse" role="navigation">
+
+	<div class="container">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <i class="icon-cog"></i>
+    </button>
+    <a wicket:id="appNameLink" class="navbar-brand" href="#"><span wicket:id="appName"></span></a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav navbar-right">
+
+		<li class="dropdown">
+						
+			<a href="javscript:;" class="dropdown-toggle" data-toggle="dropdown">
+				<i class="icon-cog" style="padding-right: 10px;"></i> 
+				<span wicket:id="name"></span>
+				<b class="caret"></b>
+			</a>
+			
+			<ul class="dropdown-menu">
+				<li><a wicket:id="account" href="../account.html">Account</a></li>
+				<li class="divider"></li>
+				<li><a href="javascript:;">Support</a></li>
+				<li><a wicket:id="logout" href="javascript:;">Logout</a></li>
+			</ul>
+			
+		</li>
+    </ul>
+    
+    <form class="navbar-form navbar-right" role="search">
+      <div class="form-group">
+        <input style="display:none" type="text" class="form-control input-sm search-query" placeholder="Search">
+      </div>
+    </form>
+  </div><!-- /.navbar-collapse -->
+</div> <!-- /.container -->
+</nav>
+    
+
+
+
+    
+<div id="navTop" class="subnavbar" style>
+
+	<div class="subnavbar-inner">
+	
+		<div class="container">
+			
+			<a href="javascript:;" class="subnav-toggle" data-toggle="collapse" data-target=".subnav-collapse">
+		      <span class="sr-only">Toggle navigation</span>
+		      <i class="icon-reorder"></i>
+		      
+		    </a>
+
+			<div class="collapse subnav-collapse">
+				<ul class="mainnav">
+				
+					<li style="display:none">
+						<a wicket:id="home" href="#">
+							<i class="icon-home"></i>
+							<span>Home</span>
+						</a>	    				
+					</li>
+					
+					<li id="projectNav">					
+						<a wicket:id="projects" href="javascript:;">
+							<i class="fa fa-cubes fa-3"></i>
+							<span>Projects</span>
+						</a>	 				
+					</li>
+					<li id="instanceNav">					
+						<a wicket:id="instances" href="javascript:;">
+							<i class="icon-external-link"></i>
+							<span>Instances</span>
+						</a>	
+					   				
+					</li>
+					<li id="bundleNav">					
+						<a wicket:id="bundles" href="javascript:;">
+							<i class="icon-th"></i>
+							<span>Bundles</span>
+						</a>					
+					</li>
+					<li id="teamNav">					
+						<a wicket:id="team" href="javascript:;">
+							<i class="fa fa-users fa-lg"></i>
+							<span>Team</span>
+						</a>					
+					</li>
+				
+				</ul>
+			</div> <!-- /.subnav-collapse -->
+
+		</div> <!-- /container -->
+	
+	</div> <!-- /subnavbar-inner -->
+
+</div> <!-- /subnavbar -->
+    
+    
+<div class="main">
+	<div class="container">
+		<span wicket:id="feedback"></span>
+		<wicket:child/>
+	</div>
+</div> <!-- /extra -->
+
+
+
+    
+
+<!-- Le javascript
+================================================== -->
+<wicket:link>
+<!-- Placed at the end of the document so the pages load faster -->
+<script>
+			$( document ).ready(function() {
+  				var feedback = $( ".feedbackPanel" );
+  				if (feedback.length) {
+  					$( "#navTop" ).attr ("style", "margin-bottom: 1px !important");
+  					$( "ul.feedbackPanelINFO").addClass ("alert-dismissable");
+  					$( "li.feedbackPanelINFO").append("<button onClick=\"restore()\" style=\"color:#fff\" type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>");
+  					$( "ul.feedbackPanelERROR").addClass ("alert-dismissable");
+  					$( "li.feedbackPanelERROR").append("<button onClick=\"restore()\" style=\"color:#fff\" type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>");
+  				}
+  			});
+</script>
+
+<script>
+	restore = function () {
+		$( "#navTop" ).attr ("style", "margin-bottom: 1em !important");
+		$( ".feedbackPanel" ).remove ();
+	} 
+        
+</script>
+<script src="../js/libs/jquery-ui-1.10.0.custom.min.js"></script>
+<script src="../js/libs/bootstrap.min.js"></script>
+</wicket:link>
+  </body>
+</html>

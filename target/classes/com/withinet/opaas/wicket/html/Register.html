@@ -1,0 +1,70 @@
+<wicket:extend>
+<div class="account-container widget register stacked">
+	<div class="widget-header">
+	<i class="icon-cloud"></i>
+	    <h3>Register</h3>
+	</div>
+	<div class="content clearfix">
+		
+		<form wicket:id="form">
+		<div wicket:id="feedback">
+            
+         </div>		
+			<div class="login-fields">
+				
+				
+				
+				<div class="field">
+					<label for="name">Name:</label>
+					<input wicket:id="name" type="text" id="name" name="name" value="" required placeholder="Name" class="form-control" />
+				</div> <!-- /field -->
+				
+				
+				<div class="field">
+					<label for="email">Email Address</label>
+					<input wicket:id="email" type="email" id="email" name="email" value="" placeholder="Email" class="form-control"/>
+				</div> <!-- /field -->
+				
+				<div class="field">
+					<label for="password">Password:</label>
+					<input wicket:id="password" type="password" id="password" name="password" value="" placeholder="Password" class="form-control"/>
+				</div> <!-- /field -->
+				<div class="field">
+					<label for="platformName">Platform Name</label>	
+					<input wicket:id="platformName" type="text" id="platformName" name="platformName" value="" placeholder="Platform Name" class="form-control" />
+				</div> <!-- /field -->
+				
+				<div class="form-group ">
+				            <label>Location</label>
+				            <select wicket:id="location" id="select2" name="select2" class="form-control">
+				                <option value="">Select...</option>
+				                <option value="1">1</option>
+				                <option value="2">2</option>
+				                <option value="3">3</option>
+				                <option value="4">4</option>
+				                <option value="5">5</option>
+				            </select>
+				</div> <!-- Field -->
+				
+				<div class="form-group">
+						        <textarea wicket:id="message" placeholder="How do you intend to use the system?" class="form-control" name="message" id="message" rows="4"></textarea>
+						        </div>
+				
+			</div> <!-- /login-fields -->
+			
+			<div class="login-actions">	
+				<span class="login-checkbox">
+					<input wicket:id="terms" id="Field" name="Field" type="checkbox" class="field login-checkbox" value="First Choice" tabindex="4" />
+					<label class="choice" for="Field">I am a witty guy.</label>
+				</span>
+									
+				<button wicket:id="submit" class="login-action btn btn-primary">Register</button>
+				
+			</div> <!-- .actions -->
+			
+		</form>
+		
+	</div> <!-- /content -->
+	
+</div> <!-- /account-container -->
+</wicket:extend>

@@ -1,0 +1,84 @@
+<wicket:panel>
+	<section id="modals">
+		<a class="btn btn-danger btn-large project-setup" data-toggle="modal" href="#bigModal">New Project</a>
+		<div id="bigModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h4 class="modal-title">Create Project</h4>
+          </div>
+          <div class="modal-body">
+          <div class="content clearfix">
+		
+		<form wicket:id="form" class="form-horizontal">
+		<div wicket:id="feedback">
+            
+         </div>		
+			<div class="modal-form-fields">
+				
+				<div class="field">
+					<h6>1. Give the project a unique name identifier </h6>
+				</div>
+				
+				<div class="field">
+					<input style="padding:5px !important" wicket:id="name" type="text" id="name" name="name" value="" required placeholder="Project Name" class="form-control" />
+				</div> <!-- /field -->
+				
+				<div class="field">
+					<h6>2. Reuse bundles from your library and public. </h6>
+				</div>
+				
+				<div class="field">
+                                
+                     <select wicket:id="bundles" class="form-control chzn-select" multiple="multiple" tabindex="4" style="height:25px;">
+                             
+                                </select>
+
+                                </div>
+				
+				<div class="field">
+					<h6>3. Add project team members with launch permission. </h6>
+				</div>
+				
+				<div class="field">
+                                
+                     <select wicket:id="team" class="form-control chzn-select" multiple="multiple" tabindex="4" style="height:25px;">
+                             
+                                </select>
+                                </div> <!-- /field -->
+				<div class="field">
+					<h6>4. Add bundle from zip collection, .jar, and .pom </h6>
+				</div>
+				
+				<div class="form-group">
+                        
+                        <div class="col-lg-8"><input style="padding:5px !important" class="form-control" type="file" wicket:id="file" /></div>
+                </div>	
+			</div> <!-- /form-fields -->
+			<div class="field">
+			<div wicket:id="progress">
+               
+              </div>
+              </div>
+			<div class="login-actions">	
+				<span class="login-checkbox">
+					<input wicket:id="active" id="Field" name="Field" type="checkbox" class="field login-checkbox" value="First Choice" tabindex="4" />
+					<label class="choice" for="Field">Activate Immediately</label>
+				</span>	
+				<input wicket:id="submit" class="login-action btn btn-primary" type="submit" value="Install"/>	
+				
+			</div> <!-- .actions -->
+			
+		</form>
+		
+	</div> <!-- /content -->
+            
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+	</section>
+
+</wicket:panel>
