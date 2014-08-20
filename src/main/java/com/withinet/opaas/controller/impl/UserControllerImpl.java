@@ -270,8 +270,6 @@ public class UserControllerImpl implements UserController {
 		if (!dcv.isValid(collaborator)) throw new IllegalArgumentException ("Bad request");
 		if (userRepo.findByEmail(collaborator.getEmail()) != null) throw new AccountConflictException (collaborator.getEmail() + " is already registered on our system");
 		collaborator.setCreated(new Date());
-		collaborator.setQuota(0);
-		collaborator.setStatus("Disabled");
 		collaborator.setAdministrator(user);
 		user.getTeamMembers().add(collaborator);
 		userRepo.saveAndFlush (collaborator);
