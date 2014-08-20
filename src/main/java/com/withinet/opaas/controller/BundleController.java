@@ -27,7 +27,10 @@ public interface BundleController {
 	
 	public List<Bundle> listBundlesByProject (Long id, Long requesterId) throws BundleControllerException;
 
-	Bundle updateBundle(Bundle bundle, Long requesterId)
+	public Bundle updateBundle(Bundle bundle, Long requesterId)
+			throws BundleControllerException;
+
+	public void refreshBundleInstances(Long id, Long requesterId)
 			throws BundleControllerException;
 	
 }

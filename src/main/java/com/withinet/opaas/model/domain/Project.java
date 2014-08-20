@@ -140,4 +140,8 @@ public class Project implements Serializable {
 		return projectTeam;
 	}
 
+	public Set<Instance> getInstances() {
+		return instances;
+	}
+
 }

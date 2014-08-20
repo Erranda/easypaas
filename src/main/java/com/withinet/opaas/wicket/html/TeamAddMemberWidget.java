@@ -37,8 +37,11 @@ public class TeamAddMemberWidget extends Panel {
 	@SpringBean
 	private UserController userController;
 	
-	public TeamAddMemberWidget (String id) {
+	private final Panel target;
+	
+	public TeamAddMemberWidget (String id, Panel target) {
 		super (id);
+		this.target = target;
 	    Form<Void> addMemberForm = new Form<Void>("form");
 	    add(addMemberForm);
 	    final User user = new User ();
@@ -68,8 +71,9 @@ public class TeamAddMemberWidget extends Panel {
 	    		Long uid = UserSession.get().getUser().getID();
 	    		try {
 					userController.addTeamMember(user, uid, uid);
-					getPage().info ("Member added");
-					setResponsePage (getPage ());
+					info ("Member added");
+					target.add(feedback);
+					target.add(getTarget());
 				} catch (UserControllerException e) {
 					error (e.getMessage());
 					target.add(feedback);
@@ -83,5 +87,9 @@ public class TeamAddMemberWidget extends Panel {
 			}
 	    	
 	    });
+	}
+
+	public Panel getTarget() {
+		return target;
 	}
 }

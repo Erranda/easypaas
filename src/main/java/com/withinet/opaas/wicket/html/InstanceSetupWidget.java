@@ -78,6 +78,7 @@ public class InstanceSetupWidget extends Panel {
 	public InstanceSetupWidget(String id) throws ProjectControllerException, UserControllerException {
 		super (id);Long uid = UserSession.get().getUser ().getID();
 		
+		
 		containerTypes = new ArrayList<String>();
 		containerTypes.add("Felix");
 		containerTypes.add("Knopflerfish");
@@ -87,7 +88,10 @@ public class InstanceSetupWidget extends Panel {
 		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
 
-		setupForm.add(new FeedbackPanel("feedback"));
+		final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
+		feedback.setOutputMarkupPlaceholderTag(true);
+		setupForm.add(feedback);
+
 
 		DropDownChoice<String> containerType = new DropDownChoice<String>(
 				"containerChoice", new PropertyModel<String>(this,
@@ -98,11 +102,13 @@ public class InstanceSetupWidget extends Panel {
 				"userProjects", new PropertyModel<String>(this,
 						"projectName"), listProjects (uid));
 		userProject.setRequired(true);
+		userProject.setLabel(new ResourceModel ("label.projects"));
 		setupForm.add(userProject);
 		
 		ListMultipleChoice<String> teamMembers = new ListMultipleChoice<String>(
 				"team", new Model(selectedTeam), listTeam(uid));
 		teamMembers.setRequired(true);
+		teamMembers.setLabel(new ResourceModel ("label.team"));
 		setupForm.add(teamMembers);
 
 		setupForm.add(new IndicatingAjaxButton("submit", setupForm) {
@@ -119,11 +125,12 @@ public class InstanceSetupWidget extends Panel {
 							instance.setContainerType(containerChoice);
 							instanceController.createInstance(instance, projectsModel.get(projectName).getID(), thisUser.getID(), uid);
 							info("Instance is ready for " + thisUser.getFullName() + " <a style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
-							target.add(((Authenticated) getPage ()).getFeedbackPanel());
+							target.add(feedback);
 						} catch (InstanceControllerException e) {
 							error (e.getMessage());
 							e.printStackTrace();
 							setResponsePage (getPage());
+							target.add(feedback);
 						}
 						
 						setResponsePage (getPage());
@@ -134,7 +141,7 @@ public class InstanceSetupWidget extends Panel {
 
 			@Override
 			protected void onError(AjaxRequestTarget target, Form<?> form) {
-				target.add(((Authenticated) getPage ()).getFeedbackPanel());
+				target.add(feedback);
 			}
 		});
 	

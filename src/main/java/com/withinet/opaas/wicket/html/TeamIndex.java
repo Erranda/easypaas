@@ -30,7 +30,9 @@ public class TeamIndex extends Authenticated
      */
     public TeamIndex ()
     {
-        add (new TeamTableWidget ("team-table-widget"));
-        add (new TeamAddMemberSectionWidget ("team-add-member-section"));
+    	TeamTableWidget table = new TeamTableWidget ("team-table-widget");
+    	table.setOutputMarkupId(true);
+        add (table);
+        add (new TeamAddMemberSectionWidget ("team-add-member-section", table));
     }
 }

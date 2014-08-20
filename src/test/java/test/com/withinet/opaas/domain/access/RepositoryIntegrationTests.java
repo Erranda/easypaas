@@ -1,4 +1,4 @@
-package test.com.withinet.opaas.domain.access;
+/*package test.com.withinet.opaas.domain.access;
 
 import java.util.Date;
 import java.util.List;
@@ -35,11 +35,11 @@ import com.withinet.opaas.model.domain.UserRole;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-/**
+*//**
  * Integration tests for {@link CityRepository}.
  *
  * @author Folarin Omotoriogun
- */
+ *//*
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ActiveProfiles("test")
@@ -185,4 +185,4 @@ public class RepositoryIntegrationTests {
 		
 	}
 	
-}
+}*/

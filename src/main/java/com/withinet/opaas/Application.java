@@ -74,8 +74,10 @@ public class Application extends WebApplication {
 	public Class<? extends Page> getHomePage() {
 		return Index.class;
 	}
+
 	@Autowired
 	com.withinet.opaas.model.UserRepository userRepo;
+
 	/**
 	 * <ul>
 	 * <li>making the wicket components injectable by activating the
@@ -88,14 +90,14 @@ public class Application extends WebApplication {
 	protected void init() {
 		super.init();
 		getMarkupSettings().setStripWicketTags(true);
-	        getMarkupSettings().setStripComments(true);
-	        getMarkupSettings().setCompressWhitespace(true);
-			getApplicationSettings().setUploadProgressUpdatesEnabled(true);
-			getRequestCycleSettings().setRenderStrategy(
-		            IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER); 
-			getMarkupSettings().setStripWicketTags(true);
-			getMarkupSettings().setStripComments(true);
-			getMarkupSettings().setCompressWhitespace(true);
+		getMarkupSettings().setStripComments(true);
+		getMarkupSettings().setCompressWhitespace(true);
+		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
+		getRequestCycleSettings().setRenderStrategy(
+				IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
+		getMarkupSettings().setStripWicketTags(true);
+		getMarkupSettings().setStripComments(true);
+		getMarkupSettings().setCompressWhitespace(true);
 		getApplicationSettings().setUploadProgressUpdatesEnabled(true);
 		getStoreSettings().setMaxSizePerSession(Bytes.kilobytes(5000));
 		getStoreSettings().setInmemoryCacheSize(500);
@@ -108,11 +110,11 @@ public class Application extends WebApplication {
 		mountPage("/bundles", BundleIndex.class);
 		mountPage("/team", TeamIndex.class);
 		mountPage("/instances", InstanceIndex.class);
-		
+
 		User web = new User();
 		web.setCreated(new Date());
 		web.setFullName("Withinet System Team");
-		
+
 		web.setPlatformName("OSGi Cloud Platform as a Service");
 		web.setStatus("Active");
 		web.setEmail(ServiceProperties.SUPER_ADMIN_EMAIL);
@@ -125,12 +127,11 @@ public class Application extends WebApplication {
 		web.setIntroduction("I am the main adminitrator for this system");
 		userRepo.save(web);
 
-		
 	}
-	
+
 	@Autowired
 	UserController userController;
-	
+
 	@Override
 	public Session newSession(Request request, Response response) {
 		WebRequest webRequest = (WebRequest) RequestCycle.get().getRequest();

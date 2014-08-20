@@ -15,7 +15,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.EmailTextField;
-import org.apache.wicket.markup.html.form.StatelessForm;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -61,24 +61,24 @@ public class Login extends Base {
 		if(UserSession.get().userLoggedIn()) throw new RestartResponseAtInterceptPageException(
 				ProjectIndex.class);
 		
-		StatelessForm<Void> loginStatelessForm = new StatelessForm<Void>("form");
-	    add(loginStatelessForm);
+		Form<Void> loginForm = new Form<Void>("form");
+	    add(loginForm);
 	    final CSSFeedbackPanel feedback = new CSSFeedbackPanel ("feedback");
 	    feedback.setOutputMarkupId(true);
 	    
-	    loginStatelessForm.add(feedback);
+	    loginForm.add(feedback);
 	    EmailTextField wicketEmail = new EmailTextField("email", new PropertyModel<String>(this, "email"));
 	    wicketEmail.setLabel(new ResourceModel ("label.email"));
 	    wicketEmail.setRequired(true);
-	    loginStatelessForm.add(wicketEmail);
+	    loginForm.add(wicketEmail);
 	    PasswordTextField wicketPassword = new PasswordTextField("password", new PropertyModel<String>(this, "password"));
 	    wicketPassword.setLabel(new ResourceModel ("label.password"));
 	    wicketPassword.add(StringValidator.minimumLength(6));
-	    loginStatelessForm.add(wicketPassword);
+	    loginForm.add(wicketPassword);
 	    
-	    loginStatelessForm.add(new CheckBox("rememberMe", new PropertyModel<Boolean>(this, "rememberMe"))); // this line
+	    loginForm.add(new CheckBox("rememberMe", new PropertyModel<Boolean>(this, "rememberMe"))); // this line
 	    
-	    loginStatelessForm.add(new IndicatingAjaxButton("submit", loginStatelessForm)
+	    loginForm.add(new IndicatingAjaxButton("submit", loginForm)
         {
             /**
 			 * 
@@ -88,7 +88,6 @@ public class Login extends Base {
 			@Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form)
             {
-               target.add(feedback);
                User user;
 			try {
 				user = accountController.login(email, password);
@@ -101,12 +100,12 @@ public class Login extends Base {
                 }
                 setResponsePage(ProjectIndex.class);
 			} catch (AccountLoginException e) {
-				feedback.error(e.getMessage());
+				error(e.getMessage());
 			} catch (RuntimeException e) {
 				error ("We couldn't process your request at this time ");
 				e.printStackTrace();
 			}
-			
+			target.add(feedback);
             }
 
             @Override

@@ -259,25 +259,21 @@ public class InstanceTableWidget extends Panel {
 				try {
 					userInstances = instanceController.listInstancesByProject(
 							pid, USER_ID);
-					userInstances.addAll(instanceController.listInstancesByAdministrator(USER_ID, USER_ID));
 				} catch (InstanceControllerException e1) {
-					// error (e1.getMessage ());
+					error (e1.getMessage ());
 					try {
 						userInstances = instanceController.listInstancesByUser(
 								USER_ID, USER_ID);
-						userInstances.addAll(instanceController.listInstancesByAdministrator(USER_ID, USER_ID));
 					} catch (InstanceControllerException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						error (e.getMessage());
 					}
 					e1.printStackTrace();
 				}
 			} else {
 				try {
-					if (UserSession.get().getUser().getRole().equals("ADMIN") || UserSession.get().getUser().getRole().equals("SUPER ADMINISTRATOR"))
-						userInstances.addAll(instanceController.listInstancesByAdministrator(USER_ID, USER_ID));
-					else	
-						userInstances = instanceController.listInstancesByUser(
+					userInstances = instanceController.listInstancesByUser(
 							USER_ID, USER_ID);
 					
 				} catch (InstanceControllerException e) {

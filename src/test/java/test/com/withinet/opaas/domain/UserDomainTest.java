@@ -1,4 +1,4 @@
-package test.com.withinet.opaas.domain;
+/*package test.com.withinet.opaas.domain;
 
 import static org.junit.Assert.*;
 
@@ -34,3 +34,4 @@ public class UserDomainTest {
 	}
 
 }
+*/

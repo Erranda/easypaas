@@ -49,9 +49,12 @@ public class TeamAddFileWidget extends Panel {
 	
 	@SpringBean
 	private UserController userController;
+	
+	private Panel target;
 
-	public TeamAddFileWidget (String id) {
+	public TeamAddFileWidget (String id, Panel target) {
 		super (id);
+		this.setTarget(target);
 	    Form<Void> uploadForm = new Form<Void>("addMemberFileForm");
 	    add(uploadForm);
 	    final CSSFeedbackPanel feedback = new CSSFeedbackPanel ("feedback");
@@ -90,8 +93,7 @@ public class TeamAddFileWidget extends Panel {
 								for (User user : users) {
 									try {
 										userController.addTeamMember (user, uid, uid);
-										info ("Added");
-										target.add(feedback);
+										count++;
 									} catch (UserControllerException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -99,7 +101,9 @@ public class TeamAddFileWidget extends Panel {
 										target.add(feedback);
 									}
 								}
-							setResponsePage (getPage());
+								info (count + " members added");
+								target.add(feedback);
+								target.add(getTarget());
 						} catch (FileControllerException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -123,5 +127,13 @@ public class TeamAddFileWidget extends Panel {
 	    	
 	    });
 	    
+	}
+
+	public Panel getTarget() {
+		return target;
+	}
+
+	public void setTarget(Panel target) {
+		this.target = target;
 	}
 }

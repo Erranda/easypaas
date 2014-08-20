@@ -1,4 +1,4 @@
-package test.com.withinet.opaas.controller;
+/*package test.com.withinet.opaas.controller;
 
 import static org.junit.Assert.*;
 
@@ -63,7 +63,7 @@ public class ControllerIntegrationTests {
 	@Autowired
 	BundleController controller;
 	
-	/*@Autowired
+	@Autowired
 	RoleController roleController;
 	
 	@Autowired
@@ -76,7 +76,7 @@ public class ControllerIntegrationTests {
 	RolePermissionController rolePermissionController;
 	
 	@Autowired
-	InstanceController instanceController;*/
+	InstanceController instanceController;
 	User web = new User ();
 	
 	@Before
@@ -92,10 +92,8 @@ public class ControllerIntegrationTests {
 		web.setQuota(-1);
 		web.setRole("ADMIN");
 		web.setLocation("Somewhere");
-		web.setWorkingDirectory("");
-		web.setIntroduction("");
 		userRepository.save(web);
-		/*UserRole webRole = new UserRole ();
+		UserRole webRole = new UserRole ();
 		webRole.setDescription("A way of authenticating clients");
 		webRole.setName("WEB");
 		webRole.setOwner(web);
@@ -109,7 +107,7 @@ public class ControllerIntegrationTests {
 		RolePermission rolePerm = new RolePermission ("test", webRole, permission1);
 		
 		RolePermission rolePerm1 = new RolePermission ("test", webRole, permission2);
-	*/
+	
 		
 	}
 	
@@ -224,7 +222,6 @@ public class ControllerIntegrationTests {
 		web.setAdministrator(web);
 		web.setQuota(-1);
 		web.setRole("ADMINISTRATOR");
-		
 		accountController.createAccount(web);
 
 		User pao = new User();
@@ -255,7 +252,7 @@ public class ControllerIntegrationTests {
 		assertTrue (accountController.listTeamMembers(web.getID(), web.getID()).size() == 2);
 	}
 	
-/*	@Test
+	@Test
 	public void listTeamMembers () throws UserControllerException {
 		User collab = new User ();
 		collab.setCreated(new Date ());
@@ -280,8 +277,8 @@ public class ControllerIntegrationTests {
 		System.out.println (accountController.addTeamMember(collado, collab.getID(), collab.getID()).size());
 		System.out.println (collado.getTeamMembers().size());
 		assertTrue (collado.getAdministrator().equals(collab));
-	}*/
+	}
 		
 }
 	
-	
+	*/

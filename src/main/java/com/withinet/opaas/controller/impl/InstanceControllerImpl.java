@@ -159,6 +159,7 @@ public class InstanceControllerImpl implements InstanceController {
 		} catch (IOException e) {
 			throw new InstanceControllerException (e.getMessage());
 		}
+		instance.getProject().getInstances().remove(instance);
 		instanceRepository.delete(instance);
 		return true;
 	}
@@ -258,14 +259,14 @@ public class InstanceControllerImpl implements InstanceController {
 	}
 	
 	@Override
-	public void startInstance (Long id, Long requesterId, boolean usecache) throws InstanceControllerException {
+	public void startInstance (Long id, Long requesterId, boolean dirty) throws InstanceControllerException {
 		Instance instance = getWithBasicAuth (id, requesterId);
 		try {
 			fileService.deleteFile(instance.getLogFile());
 		} catch (IOException e) {
 			throw new InstanceControllerException ("Could not delete previous log file");
 		}
-		instance.setDirty(!usecache);
+		instance.setDirty(dirty);
 		processService.startProcess(instance);
 		//Important this comes after process call
 		instance.setStatus("Live");

@@ -73,7 +73,6 @@ public class BundleTableWidget extends Panel {
 
 	private FileUpload upload;
 
-	private Long userId = UserSession.get().getUser().getID();
 
 	private Long pid = null;
 
@@ -128,6 +127,7 @@ public class BundleTableWidget extends Panel {
 
 							Long bid = model.getObject().getID();
 							try {
+								Long userId = UserSession.get().getUser().getID();
 								bundleController.deleteBundle(bid, userId);
 							} catch (BundleControllerException e) {
 								getPage().error(e.getMessage());
@@ -174,13 +174,6 @@ public class BundleTableWidget extends Panel {
 						componentId, updateBundle, deleteBundle);
 				item.add(button);
 			}
-
-			private PageParameters setDeleteBundleLinkParameters(Bundle bundle) {
-				PageParameters linkParameters = new PageParameters();
-				linkParameters.add("bid", bundle.getID());
-				linkParameters.add("action", "delete");
-				return linkParameters;
-			}
 		});
 
 		Form<Void> setupForm = new Form<Void>("update");
@@ -200,7 +193,7 @@ public class BundleTableWidget extends Panel {
 				setupForm, wicketFileUploadField);
 		setupForm.add(progress);
 
-		setupForm.add(new IndicatingAjaxButton("submit", setupForm) {
+		setupForm.add(new ConfirmationButton("submit", "All instances will be updated?" , setupForm) {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -215,31 +208,41 @@ public class BundleTableWidget extends Panel {
 
 					if (extension.equals("jar")) {
 						try {
-							processUpload(upload);
+							Long userId = UserSession.get().getUser().getID();
+							Bundle bundle = bundleController.readBundle(selected, userId);
+							String location = bundle.getLocation();
+							fileService.deleteFile(location);
+							location = FilenameUtils.getFullPathNoEndSeparator(location) + "/" + upload.getClientFileName();
+							upload.writeTo(fileService.createFile(location));
+							bundle.setSymbolicName(upload.getClientFileName());
+							bundle.setLocation(location);
+							bundleController.updateBundle(bundle, userId);
+							info(bundle.getSymbolicName() + " updated.");
+							target.add(feedback);
+							bundleController.refreshBundleInstances(bundle.getID(), userId);
+							info("Targets updated");
+							target.add(feedback);
 						} catch (BundleControllerException e) {
 							e.printStackTrace();
 							error(e.getMessage());
+							target.add(feedback);
 						} catch (IOException e) {
 							e.printStackTrace();
 							error(e.getMessage());
+							target.add(feedback);
 						}
 					} else {
 						error(extension + " not jar");
+						target.add(feedback);
 					}
 				}
 			}
 		});
 	}
 
-	protected void processUpload(FileUpload upload)
+	protected void processUpload(FileUpload upload, AjaxRequestTarget target)
 			throws BundleControllerException, IOException {
-		Bundle bundle = bundleController.readBundle(selected, userId);
-		String location = bundle.getLocation();
-		fileService.deleteFile(location);
-		upload.writeTo(fileService.createFile(location));
-		info(bundle.getSymbolicName() + " updated.");
-		info("Projects using this bundle will need to be restarted");
-		setResponsePage(this.getPage());
+		
 	}
 
 	private class BundleTableDataProvider extends

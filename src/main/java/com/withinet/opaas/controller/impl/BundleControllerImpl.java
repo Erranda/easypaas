@@ -127,6 +127,18 @@ public class BundleControllerImpl implements BundleController {
 		Bundle forSave = getWithBasicAuth (bundle.getID(), requesterId);
 		if (bundle.getLocation() != null)
 			forSave.setLocation(bundle.getLocation());
+		if (bundle.getSymbolicName() != null){
+			try {
+				Bundle temp = bundleRepository.findByOwnerAndSymbolicName(userController.readAccount(requesterId, requesterId), bundle.getSymbolicName());
+				if  (temp != null)
+					throw new BundleControllerException ("A bundle exists with that name");
+				else
+					forSave.setSymbolicName(bundle.getSymbolicName());
+			} catch (UserControllerException e) {
+				throw new BundleControllerException (e.getMessage());
+			}
+		}
+			forSave.setLocation(bundle.getLocation());
 		bundleRepository.saveAndFlush(forSave);
 		return forSave;
 	}
@@ -196,5 +208,19 @@ public class BundleControllerImpl implements BundleController {
 			for (ProjectBundle pb: projectBundles)
 				bundles.add(pb.getBundle());
 		return bundles;
+	}
+	
+	@Override
+	public void refreshBundleInstances (Long id, Long requesterId) throws BundleControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		try {
+			List<Project> projects = projectController.listProjectsByBundle(id, requesterId);
+			for (Project project : projects) {
+				projectController.refreshProjectInstancesDirty(project.getID(), requesterId);
+			}
+		} catch (ProjectControllerException e) {
+			throw new BundleControllerException ("Could not refresh project bundles : "  + e.getMessage());
+		}
 	}
 }

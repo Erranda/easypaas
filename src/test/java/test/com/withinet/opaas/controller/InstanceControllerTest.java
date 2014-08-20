@@ -1,4 +1,4 @@
-package test.com.withinet.opaas.controller;
+/*package test.com.withinet.opaas.controller;
 
 import static org.junit.Assert.*;
 
@@ -232,3 +232,4 @@ public class InstanceControllerTest {
 	}
 
 }
+*/

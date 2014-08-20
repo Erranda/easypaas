@@ -47,7 +47,7 @@ public class Bundle implements Serializable {
 	private java.util.Date updated;
 	
 	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.LOCK})	
 	private final Set<ProjectBundle> projectBundles = new HashSet <ProjectBundle> ();
 
 	public String getSymbolicName() {

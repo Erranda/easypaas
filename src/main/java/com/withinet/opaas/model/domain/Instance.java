@@ -83,7 +83,7 @@ public class Instance implements Serializable {
 	private User owner;
 	
 	@ManyToOne(targetEntity=Project.class, fetch=FetchType.EAGER)	
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.LOCK,org.hibernate.annotations.CascadeType.SAVE_UPDATE})	
 	@JoinColumns({ @JoinColumn(name="PROJECT_ID", referencedColumnName="ID", nullable=false) })	
 	@NotNull
 	private Project project;
