@@ -262,8 +262,16 @@ public class UserControllerImpl implements UserController {
 		collaborator.setPassword(PasswordGenerator.getRandomPassword());
 		collaborator.setLocation(user.getLocation());
 		collaborator.setPlatformName(user.getPlatformName());
+		collaborator.setCreated(new Date());
+		collaborator.setStatus("Active");
 		collaborator.setIntroduction("I was added by an administrator");
-		collaborator = createAccount (collaborator);
+		collaborator.setWorkingDirectory("");
+		DomainConstraintValidator<User> dcv = new  DomainConstraintValidator<User> ();
+		if (!dcv.isValid(collaborator)) throw new IllegalArgumentException ("Bad request");
+		if (userRepo.findByEmail(collaborator.getEmail()) != null) throw new AccountConflictException (collaborator.getEmail() + " is already registered on our system");
+		collaborator.setCreated(new Date());
+		collaborator.setQuota(0);
+		collaborator.setStatus("Disabled");
 		collaborator.setAdministrator(user);
 		user.getTeamMembers().add(collaborator);
 		userRepo.saveAndFlush (collaborator);
