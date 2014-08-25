@@ -5,6 +5,7 @@ package com.withinet.opaas.controller.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -47,9 +48,18 @@ public class BundleControllerImpl implements BundleController {
 	
 	ProjectBundleRepository projectBundleRepository;
 	
-	@Autowired
+	Authorizer authorizer;
+	
 	private ProjectController projectController;
 	
+	@Autowired
+	public void setAuthorizer (Authorizer authorizer) {
+		this.authorizer = authorizer;
+	}
+	
+	public void setProjectController (ProjectController projectController) {
+		this.projectController = projectController;
+	}
 	@Autowired
 	public void setBundleRepository (BundleRepository bundleRepository) {
 		this.bundleRepository = bundleRepository;
@@ -82,16 +92,7 @@ public class BundleControllerImpl implements BundleController {
 		Validation.assertNotNull(requesterId);
 		DomainConstraintValidator<Bundle> dcv = new  DomainConstraintValidator<Bundle> ();
 		if (!dcv.isValid(bundle)) throw new IllegalArgumentException ("Bad request");
-		User user;
-		
-		try {
-			user = userController.readAccount(requesterId, requesterId);
-		} catch (UserControllerException e) {
-			throw new BundleControllerException (e.getMessage());
-		}
-		
-		if (user == null || user.getID() == 0)
-			throw new UnauthorizedException ("Unauthorized");
+		User user = authorizer.authorize(Arrays.asList("createBundle", "bundleAdmin"), requesterId);
 		if (bundleRepository.findByOwnerAndSymbolicName(user, bundle.getSymbolicName()) != null) 
 			throw new BundleConflictException ("Bundle with name " + bundle.getSymbolicName() + " already exists");
 		bundle.setUpdated(new Date());
@@ -107,6 +108,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("deleteBundle", "bundleAdmin"), requesterId);
 		Bundle forDelete = getWithBasicAuth (id, requesterId);
 		bundleRepository.delete(forDelete);
 		try {
@@ -124,6 +126,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(bundle);
 		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("updateBundle", "bundleAdmin"), requesterId);
 		Bundle forSave = getWithBasicAuth (bundle.getID(), requesterId);
 		if (bundle.getLocation() != null)
 			forSave.setLocation(bundle.getLocation());
@@ -151,6 +154,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("readBundle", "bundleAdmin"), requesterId);
 		return getWithBasicAuth (id, requesterId);
 	}
 
@@ -161,12 +165,8 @@ public class BundleControllerImpl implements BundleController {
 	public List<Bundle> listBundlesByOwner(Long id, Long requesterId) throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		try {
-			User user = userController.readAccount(id, requesterId);
-			return bundleRepository.findByOwner(user);
-		} catch (UserControllerException e) {
-			throw new BundleControllerException (e.getMessage());
-		}
+		User user = authorizer.authorize(Arrays.asList("createBundle", "bundleAdmin"), requesterId);			
+		return bundleRepository.findByOwner(user);
 	}
 
 	@Override
@@ -174,11 +174,38 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(name);
 		Validation.assertNotNull(requesterId);
+		User user = authorizer.authorize(Arrays.asList("createBundle", "readBundle", "bundleAdmin"), requesterId);
+		if (user == null || user.getID() == 0)
+			throw new UnauthorizedException ("Unauthorized");
+		return bundleRepository.findByOwnerAndSymbolicName(user, name);
+	}
+
+	@Override
+	public List<Bundle> listBundlesByProject(Long id, Long requesterId)
+			throws BundleControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("readBundle", "bundleAdmin"), requesterId);
+		List<ProjectBundle> projectBundles = projectController.listProjectBundlesByProject(id, requesterId);
+		List<Bundle> bundles = new ArrayList<Bundle> ();
+		if (projectBundles.size() > 0)
+			for (ProjectBundle pb: projectBundles)
+				bundles.add(pb.getBundle());
+		return bundles;
+	}
+	
+	@Override
+	public void refreshBundleInstances (Long id, Long requesterId) throws BundleControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createInstance", "adminInstance"), requesterId);
 		try {
-			User user = userController.readAccount(requesterId, requesterId);
-			return bundleRepository.findByOwnerAndSymbolicName(user, name);
-		} catch (UserControllerException e) {
-			throw new BundleControllerException (e.getMessage());
+			List<Project> projects = projectController.listProjectsByBundle(id, requesterId);
+			for (Project project : projects) {
+				projectController.refreshProjectInstancesDirty(project.getID(), requesterId);
+			}
+		} catch (ProjectControllerException e) {
+			throw new BundleControllerException ("Could not refresh project bundles : "  + e.getMessage());
 		}
 	}
 	
@@ -195,32 +222,5 @@ public class BundleControllerImpl implements BundleController {
 			 	!= bundle.getOwner().getAdministrator().getID())
 			throw new ControllerSecurityException ("You are not authorized to perform this action");
 		return bundle;
-	}
-
-	@Override
-	public List<Bundle> listBundlesByProject(Long id, Long requesterId)
-			throws BundleControllerException {
-		Validation.assertNotNull(id);
-		Validation.assertNotNull(requesterId);
-		List<ProjectBundle> projectBundles = projectController.listProjectBundlesByProject(id, requesterId);
-		List<Bundle> bundles = new ArrayList<Bundle> ();
-		if (projectBundles.size() > 0)
-			for (ProjectBundle pb: projectBundles)
-				bundles.add(pb.getBundle());
-		return bundles;
-	}
-	
-	@Override
-	public void refreshBundleInstances (Long id, Long requesterId) throws BundleControllerException {
-		Validation.assertNotNull(id);
-		Validation.assertNotNull(requesterId);
-		try {
-			List<Project> projects = projectController.listProjectsByBundle(id, requesterId);
-			for (Project project : projects) {
-				projectController.refreshProjectInstancesDirty(project.getID(), requesterId);
-			}
-		} catch (ProjectControllerException e) {
-			throw new BundleControllerException ("Could not refresh project bundles : "  + e.getMessage());
-		}
 	}
 }

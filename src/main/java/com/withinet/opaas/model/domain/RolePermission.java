@@ -7,14 +7,11 @@ import java.util.Date;
 
 @Entity
 @org.hibernate.annotations.Immutable
-public class RolePermission {
+public class RolePermission implements Serializable {
 
     @Embeddable
     public static class Id implements Serializable {
 
-        /**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		@Column(name = "ROLE_ID")
@@ -60,26 +57,26 @@ public class RolePermission {
     @JoinColumn(
         name = "ROLE_ID",
         insertable = false, updatable = false)
-    private UserRole userRole;
+    private Role role;
 
     @ManyToOne
     @JoinColumn(
         name = "PERMISSION_ID",
         insertable = false, updatable = false)
-    private UserPermission userPermission;
+    private Permission permission;
 
 
     public RolePermission() {
     }
 
     public RolePermission(String addedByUsername,
-                           UserRole role,
-                           UserPermission userPermission) {
+                           Role role,
+                           Permission userPermission) {
 
         // Set fields
         this.addedBy = addedByUsername;
-        this.userRole = role;
-        this.userPermission = userPermission;
+        this.role = role;
+        this.permission = userPermission;
 
         // Set identifier values
         this.id.roleId = role.getId();
@@ -101,12 +98,12 @@ public class RolePermission {
         return addedOn;
     }
 
-    public UserRole getRole() {
-        return this.userRole;
+    public Role getRole() {
+        return this.role;
     }
 
-    public UserPermission getPermission() {
-        return this.userPermission;
+    public Permission getPermission() {
+        return this.permission;
     }
 
 }

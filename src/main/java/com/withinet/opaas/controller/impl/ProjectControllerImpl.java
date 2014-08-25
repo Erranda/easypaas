@@ -1,6 +1,7 @@
 package com.withinet.opaas.controller.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import com.withinet.opaas.controller.common.ProjectControllerException;
 import com.withinet.opaas.controller.common.ProjectNotFoundException;
 import com.withinet.opaas.controller.common.ProjectOwnerNotFoundException;
 import com.withinet.opaas.controller.common.UnauthorizedException;
+import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.ProjectBundleRepository;
 import com.withinet.opaas.model.ProjectRepository;
 import com.withinet.opaas.model.ProjectTeamRepository;
@@ -51,12 +53,21 @@ public class ProjectControllerImpl implements ProjectController {
 
 	@Autowired
 	BundleController bundleController;
-
+	
+	private Authorizer authorizer;
+	
+	@Autowired
+	public void setAuthorizer (Authorizer authorizer) {
+		this.authorizer = authorizer;
+	}
+	
 	@Override
 	public Project createProject(Project project, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(project);
+		Validation.assertNotNull(requesterId);
 		DomainConstraintValidator<Project> dcv = new DomainConstraintValidator<Project>();
-		User user = userRepository.findOne(requesterId);
+		User user = authorizer.authorize(Arrays.asList("createProject", "projectAdmin"), requesterId);
 		if (user == null)
 			throw new ProjectOwnerNotFoundException("Project owner not found");
 		// Check if it already exists
@@ -75,6 +86,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public boolean deleteProject(Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("deleteProject", "projectAdmin"), requesterId);
 		Project project = getWithAdminAuth(id, requesterId);
 		try {
 			List<Instance> instances = instanceController
@@ -97,6 +111,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public boolean disableProject(Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "projectAdmin"), requesterId);
 		Project project = getWithAdminAuth(id, requesterId);
 		project.setStatus("Disabled");
 		projectRepository.saveAndFlush(project);
@@ -106,6 +123,10 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public Project updateProject(Project project, Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(project);
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("updateProject", "projectAdmin"), requesterId);
 		Project object = projectRepository.findOne(id);
 		if (object == null)
 			throw new ProjectNotFoundException("Project requested not found");
@@ -131,6 +152,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public Project readProjectById(Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("readProject", "projectAdmin"), requesterId);
 		// You have to be a team member or owner to see details
 		Project thisProject = projectRepository.findOne(id);
 		if (thisProject == null)
@@ -148,6 +172,8 @@ public class ProjectControllerImpl implements ProjectController {
 
 	public Project getWithBasicAuth(Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
 		// You have to be a team member or owner to see details
 		Project thisProject = projectRepository.findOne(id);
 		if (thisProject == null)
@@ -164,7 +190,6 @@ public class ProjectControllerImpl implements ProjectController {
 
 	public Project getWithAdminAuth(Long id, Long requesterId)
 			throws ProjectControllerException {
-		// You have to be a team member or owner to see details
 		Project thisProject = projectRepository.findOne(id);
 		if (thisProject == null)
 			throw new ProjectNotFoundException("Project requested not found");
@@ -185,6 +210,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public List<Project> listCreatedProjectsByOwner(Long userId,
 			Long requesterId) throws ProjectControllerException {
+		Validation.assertNotNull(userId);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "projectAdmin"), requesterId);
 		User target = approveAccessCascadeType(userId, requesterId);
 		if (target == null || target.getID() == 0)
 			throw new ControllerSecurityException("Unauthenticated");
@@ -192,6 +220,8 @@ public class ProjectControllerImpl implements ProjectController {
 	}
 
 	private User approveAccessCascadeType(Long userId, Long requesterId) {
+		Validation.assertNotNull(userId);
+		Validation.assertNotNull(requesterId);
 		User user = userRepository.findOne(userId);
 		if (user == null)
 			return null;
@@ -210,6 +240,8 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public List<ProjectTeam> listParticipatingProjectsByUser(Long userId,
 			Long requesterId) throws ProjectControllerException {
+		Validation.assertNotNull(userId);
+		Validation.assertNotNull(requesterId);
 		User target = approveAccessCascadeType(userId, requesterId);
 		if (target == null)
 			throw new ControllerSecurityException("Unauthenticated");
@@ -217,21 +249,32 @@ public class ProjectControllerImpl implements ProjectController {
 	}
 
 	@Override
-	public List<ProjectTeam> listProjectTeamMembersByProject(Long projectId,
+	public List<User> listProjectTeamMembersByProject(Long projectId,
 			Long requesterId) {
+		Validation.assertNotNull(projectId);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "listProjectTeamMembersByProject", "projectAdmin"), requesterId);
 		Project project = projectRepository.findOne(projectId);
 		User requester = userRepository.findOne(requesterId);
+		
 		if ((project.getOwner().getID() != requesterId)
 				&& isTeamMember(project, requester))
 			throw new ControllerSecurityException("Unauthenticated");
 		else {
-			return projectTeamRepo.findByProject(project);
+			List<User> teamMembers = new ArrayList<User> ();
+			for (ProjectTeam member : projectTeamRepo.findByProject(project)) {
+				teamMembers.add(member.getUser());
+			}
+			return teamMembers;
 		}
 	}
 
 	@Override
 	public List<ProjectBundle> listProjectBundlesByProject(Long projectId,
 			Long requesterId) {
+		Validation.assertNotNull(projectId);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject" , "listProjectBundlesByProject", "projectAdmin"), requesterId);
 		Project project = projectRepository.findOne(projectId);
 		User requester = userRepository.findOne(requesterId);
 		if ((project.getOwner().getID() != requesterId)
@@ -245,6 +288,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public Project addBundle(Bundle bundle, Long projectId, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(projectId);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "addBundle", "projectAdmin"), requesterId);
 		Project thisProject = projectRepository.findOne(projectId);
 		User user = userRepository.findOne(requesterId);
 		if (bundle == null)
@@ -265,6 +311,10 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public Project addCollaborator(User user, Long projectId, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(user);
+		Validation.assertNotNull(projectId);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "addCollaborator", "projectAdmin"), requesterId);
 		if (user.getID() == 0)
 			throw new ProjectMemberNotFoundException(
 					"Please create this collaborator first");
@@ -286,6 +336,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public void refreshProjectInstances(Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "refreshProjectInstances", "projectAdmin"), requesterId);
 		getWithBasicAuth(id, requesterId);
 		List<Instance> instances;
 		try {
@@ -305,6 +358,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public void refreshProjectInstancesDirty(Long id, Long requesterId)
 			throws ProjectControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "refreshProjectInstances", "projectAdmin"), requesterId);
 		getWithBasicAuth(id, requesterId);
 		List<Instance> instances;
 		try {
@@ -324,7 +380,9 @@ public class ProjectControllerImpl implements ProjectController {
 	@Override
 	public List<Project> listProjectsByBundle(Long bid, Long requesterId)
 			throws ProjectControllerException {
-
+		Validation.assertNotNull(bid);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "createBundle", "projectAdmin"), requesterId);
 		List<Project> projects = new ArrayList<Project>();
 		try {
 			Bundle bundle = bundleController.readBundle(bid, requesterId);

@@ -125,7 +125,7 @@ public class Instance implements Serializable {
 	}
 
 	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
+		this.ownerName = ownerName.toLowerCase().trim();
 	}
 
 	public String getHostName() {
@@ -133,7 +133,7 @@ public class Instance implements Serializable {
 	}
 
 	public void setHostName(String hostName) {
-		this.hostName = hostName;
+		this.hostName = hostName.toLowerCase().trim();
 	}
 
 	public Date getCreated() {
@@ -149,7 +149,7 @@ public class Instance implements Serializable {
 	}
 
 	public void setCpanelUrl(String cpanelUrl) {
-		this.cpanelUrl = cpanelUrl;
+		this.cpanelUrl = cpanelUrl.toLowerCase().trim();
 	}
 
 	public String getStatus() {

@@ -6,8 +6,10 @@ package com.withinet.opaas.wicket.html;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -34,9 +36,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 
+import com.withinet.opaas.controller.RoleController;
 import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.InstanceControllerException;
+import com.withinet.opaas.controller.common.RoleControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
 
@@ -60,7 +65,12 @@ public class TeamTableWidget extends Panel {
 	UserController userController;
 	
 	UpdateForm updateForm = null;
+	
+	@SpringBean
+	private RoleController roleController;
 
+	private Map<String, Role> rolesModel = new HashMap<String, Role> ();
+	
 	private User user;
 
 	/**
@@ -170,7 +180,7 @@ public class TeamTableWidget extends Panel {
 	}
 
 	private class UpdateForm extends Form<User> {
-
+		
 		public UpdateForm(String id) {
 			super(id);
 			final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
@@ -182,12 +192,15 @@ public class TeamTableWidget extends Panel {
 			this.add(wicketEmail);
 			
 			final RequiredTextField<Integer> wicketQuota = new RequiredTextField<Integer>(
-					"quota");
+					"quota", Integer.class);
 			this.add(wicketQuota);
 
-			final RequiredTextField<String> wicketRole = new RequiredTextField<String>(
-					"role");
-			this.add(wicketRole);
+			try {
+				DropDownChoice<String> wicketRole = new DropDownChoice<String>("role", initRoles ());
+				add (wicketRole);
+			} catch (RoleControllerException e1) {
+				throw new RuntimeException (e1.getMessage ());
+			}
 
 			List<String> statuses = Arrays.asList("Active", "Disabled");
 			final DropDownChoice wicketStatus = new DropDownChoice<String>("status",
@@ -200,6 +213,10 @@ public class TeamTableWidget extends Panel {
 					
 					Long uid = UserSession.get().getUser().getID();
 					try {
+						Role role = rolesModel.get(user.getRole());
+						if (role != null) {
+		    				user.setAssignedRole(role);
+						}
 						user.setEmail(wicketEmail.getValue());
 						user.setQuota(Integer.parseInt(wicketQuota.getValue()));
 						userController.updateAccount(user, user.getID(), uid);
@@ -218,7 +235,16 @@ public class TeamTableWidget extends Panel {
 
 			});
 		}
-
+		
+		public List<String> initRoles () throws RoleControllerException {
+			Long uid = UserSession.get().getUser().getID();
+			List<String> roles = new ArrayList<String> ();
+			for (Role role : roleController.readRolesByOwner(uid)) {
+				roles.add(role.getName());
+				rolesModel.put(role.getName(), role);
+			}
+			return roles;
+	    }
 	}
 
 	public class TeamTableDataProvider extends

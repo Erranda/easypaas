@@ -63,7 +63,7 @@ public class User implements Serializable {
 	@NotNull
 	private Integer quota;
 	
-	@Column(name="USER_ROLE", nullable=false)
+	@Column(name="USER_ROLE_NAME", nullable=false)
 	@NotNull
 	private String role;
 	
@@ -81,14 +81,14 @@ public class User implements Serializable {
 	@JoinColumns({ @JoinColumn(name="USER_ADMINISTRATOR_ID", referencedColumnName="ID", nullable=true) })	
 	private User administrator;
 	
-	@ManyToOne(targetEntity=UserRole.class, fetch=FetchType.LAZY)
-	@Cascade({org.hibernate.annotations.CascadeType.ALL})
+	@ManyToOne(targetEntity=Role.class, fetch=FetchType.EAGER)
+	@Cascade({org.hibernate.annotations.CascadeType.LOCK, org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@JoinColumns({ @JoinColumn(name="USER_ROLE_ID", referencedColumnName="ID", nullable=true) })	
-	private UserRole assignedRole;
+	private Role assignedRole;
 	
 	@OneToMany(mappedBy="owner",   fetch=FetchType.EAGER)
 	@Cascade({org.hibernate.annotations.CascadeType.DELETE})	
-	private final Set<UserRole> createdRoles = new HashSet <UserRole> ();
+	private final Set<Role> createdRoles = new HashSet <Role> ();
 	
 	@OneToMany(mappedBy="owner",  targetEntity=Bundle.class, fetch=FetchType.EAGER)
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})		
@@ -214,16 +214,16 @@ public class User implements Serializable {
 	}
 
 
-	public Set<UserRole> getCreatedRoles() {
+	public Set<Role> getCreatedRoles() {
 		return createdRoles;
 	}
 
 
-	public UserRole getAssignedRole() {
+	public Role getAssignedRole() {
 		return assignedRole;
 	}
 
-	public void setAssignedRole(UserRole assignedRole) {
+	public void setAssignedRole(Role assignedRole) {
 		this.assignedRole = assignedRole;
 	}
 

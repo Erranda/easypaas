@@ -5,6 +5,7 @@ package com.withinet.opaas.controller.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +59,13 @@ public class InstanceControllerImpl implements InstanceController {
 	@Autowired
 	FileService fileService;
 	
+	private Authorizer authorizer;
+	
+	@Autowired
+	public void setAuthorizer (Authorizer authorizer) {
+		this.authorizer = authorizer;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.withinet.opaas.controller.InstanceController#createInstance(java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
@@ -69,9 +77,8 @@ public class InstanceControllerImpl implements InstanceController {
 		Validation.assertNotNull(projectId);
 		Validation.assertNotNull(userId);
 		Validation.assertNotNull(requesterId);
-		
 		try {
-			User user = userController.readAccount(userId, requesterId);
+			User user = authorizer.authorize(Arrays.asList("createInstance", "instanceAdmin"), requesterId);
 			List<Instance> instances = instanceRepository.findByOwner(user);
 			if (instances.size() == user.getQuota())
 				throw new InstanceControllerException ("You have reached your limit");
@@ -108,14 +115,13 @@ public class InstanceControllerImpl implements InstanceController {
 		} catch (ProjectControllerException e) {
 			rollBack (instance);
 			throw new InstanceControllerException (e.getMessage());
-		} catch (UserControllerException e) {
-			rollBack (instance);
-			throw new InstanceControllerException (e.getMessage());
 		} catch (IOException e) {
 			rollBack (instance);
 			throw new InstanceControllerException (e.getMessage());
+		} catch (RuntimeException e) {
+			rollBack (instance);
+			throw e;
 		}
-		
 		return instance;
 	}
 	
@@ -143,6 +149,7 @@ public class InstanceControllerImpl implements InstanceController {
 	@Override
 	public boolean deleteInstance(Long id, Long requesterId)
 			throws InstanceControllerException {
+		authorizer.authorize(Arrays.asList("createInstance", "deleteInstance", "instanceAdmin"), requesterId);
 		Instance instance = getWithBasicAuth (id, requesterId);
 		
 		if (instance.getStatus().equals("Live")){
@@ -171,6 +178,7 @@ public class InstanceControllerImpl implements InstanceController {
 	public Instance updateInstance(Instance instance, Long requesterId)
 			throws InstanceControllerException {
 		Validation.assertNotNull(instance);
+		authorizer.authorize(Arrays.asList("updateInstance", "instanceAdmin"), requesterId);
 		Instance instancePersist = getWithBasicAuth (instance.getId(), requesterId);
 		if (instance.getStatus() != null)
 			instancePersist.setStatus(instance.getStatus());
@@ -183,7 +191,8 @@ public class InstanceControllerImpl implements InstanceController {
 	 */
 	@Override
 	public Instance readInstance(Long id, Long requesterId)
-			throws InstanceControllerException {	
+			throws InstanceControllerException {
+		authorizer.authorize(Arrays.asList("readInstance", "instanceAdmin"), requesterId);
 		return getWithBasicAuth (id, requesterId);
 	}
 
@@ -194,6 +203,7 @@ public class InstanceControllerImpl implements InstanceController {
 	public List<Instance> listInstancesByUser(Long userId, Long requesterId) throws InstanceControllerException {
 		Validation.assertNotNull(userId);
 		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createInstance", "instanceAdmin"), requesterId);
 		try {
 			User thisUser = userController.readAccount(userId, requesterId);
 			return instanceRepository.findByOwner(thisUser);
@@ -210,6 +220,7 @@ public class InstanceControllerImpl implements InstanceController {
 			Long requesterId) throws InstanceControllerException {
 		Validation.assertNotNull(projectId);
 		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createProject", "projectAdmin"), requesterId);
 		try {
 			Project project = projectController.readProjectById(projectId, requesterId);
 			return instanceRepository.findByProject(project);
@@ -226,12 +237,8 @@ public class InstanceControllerImpl implements InstanceController {
 			Long requesterId) throws InstanceControllerException {
 		Validation.assertNotNull(adminId);
 		Validation.assertNotNull(requesterId);
-		try {
-			User user = userController.readAccount(adminId, requesterId);	
-			return instanceRepository.findByAdministrator(user);
-		} catch (UserControllerException e) {
-			throw new InstanceControllerException (e.getMessage());
-		}
+		User user = authorizer.authorize(Arrays.asList("admin"), requesterId);
+		return instanceRepository.findByAdministrator(user);
 	}
 	
 	private Instance getWithBasicAuth (Long instanceId, Long requesterId) throws InstanceControllerException {
@@ -251,6 +258,9 @@ public class InstanceControllerImpl implements InstanceController {
 
 	@Override
 	public void stopInstance(Long id, Long requesterId) throws InstanceControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("stopInstance", "instanceAdmin"), requesterId);
 		Instance instance = getWithBasicAuth (id, requesterId);
 		processService.stopProcess(instance.getId());
 		// Important this comes after process call
@@ -260,6 +270,9 @@ public class InstanceControllerImpl implements InstanceController {
 	
 	@Override
 	public void startInstance (Long id, Long requesterId, boolean dirty) throws InstanceControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("createInstance", "instanceAdmin"), requesterId);
 		Instance instance = getWithBasicAuth (id, requesterId);
 		try {
 			fileService.deleteFile(instance.getLogFile());

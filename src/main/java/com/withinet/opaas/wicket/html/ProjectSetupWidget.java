@@ -166,7 +166,7 @@ public class ProjectSetupWidget extends Panel {
 						Project project = createProject();
 						Long end = System.currentTimeMillis();
 						Double endD = end.doubleValue();
-						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds with ");
+						info ("Project " + name + " created in " + (endD - startD)/1000 + " seconds");
 						setResponsePage (this.getPage());
 					}
 				} catch (ProjectControllerException e) {

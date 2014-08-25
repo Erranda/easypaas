@@ -8,7 +8,8 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.withinet.opaas.controller.common.RoleControllerException;
-import com.withinet.opaas.model.domain.UserRole;
+import com.withinet.opaas.model.domain.Permission;
+import com.withinet.opaas.model.domain.Role;
 
 /**
  * @author Folarin
@@ -17,14 +18,22 @@ import com.withinet.opaas.model.domain.UserRole;
 @RestController
 public interface RoleController {
 	
-	public UserRole createUserRole (UserRole userRole, Long requesterId) throws RoleControllerException;
+	public Role createRole (Role userRole, Long requesterId) throws RoleControllerException;
 	
-	public void deleteUserRole (Long id, Long requesterId) throws RoleControllerException;
+	public void deleteRole (Long id, Long requesterId) throws RoleControllerException;
 	
-	public UserRole updateUserRole (UserRole userRole, Long id, Long requesterId) throws RoleControllerException;
+	public Role updateRole (Role userRole, Long id, Long requesterId) throws RoleControllerException;
 	
-	public UserRole readUserRole (Long id, Long requesterId) throws RoleControllerException;
+	public Role readRole (Long id, Long requesterId) throws RoleControllerException;
 	
-	public List<UserRole> listRolesByUser (Long id, Long requesterId);
+	public List<Role> readRolesByOwner (Long requesterId) throws RoleControllerException;
+	
+	public Role addPermission (Long id, List<Permission> permissions, Long requesterId) throws RoleControllerException ;
+	
+	public Role addPermission (Long id, Permission permission, Long requesterId) throws RoleControllerException;
+	
+	public void removePermission (Long id, Long pid, Long requesterId) throws RoleControllerException;
+	
+	public List<Permission> readRolePermissions (Long id, Long requesterId) throws RoleControllerException;
 	
 }

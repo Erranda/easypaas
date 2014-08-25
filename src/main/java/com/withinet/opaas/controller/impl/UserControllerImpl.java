@@ -4,6 +4,7 @@
 package com.withinet.opaas.controller.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -65,6 +66,13 @@ public class UserControllerImpl implements UserController {
 	@Autowired
 	FileController fileController;
 	
+	private Authorizer authorizer;
+	
+	@Autowired
+	public void setAuthorizer (Authorizer authorizer) {
+		this.authorizer = authorizer;
+	}
+	
 	private final static Logger logger = LoggerFactory
 			.getLogger(Application.class);
 	
@@ -78,7 +86,8 @@ public class UserControllerImpl implements UserController {
 		account.setCreated(new Date());
 		account.setQuota(0);
 		account.setStatus("Disabled");
-		User superAdmin = userRepo.findByRole("SUPER ADMINISTRATOR");
+		List<User> superAdmins = userRepo.findByRole("SUPER ADMINISTRATOR");
+		User superAdmin = superAdmins.get(0);
 		account.setAdministrator(superAdmin);
 		superAdmin.getTeamMembers().add(account);
 		account = userRepo.saveAndFlush (account);
@@ -112,7 +121,6 @@ public class UserControllerImpl implements UserController {
 			mailer.sendMessage("New user Withinet Cloud OSGi Platform", superAdmin.getEmail(), bufferAdmin.toString());
 		} catch (MessagingException e) {
 			e.printStackTrace();
-			throw new UserControllerException ("Email system error: " + e.getMessage());
 		}
 		logger.info("create user " + account.getEmail () + ", with " + account.getPassword ());
 		return account;
@@ -121,14 +129,20 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void deleteAccount(Long id, Long requesterId)
 			throws UserControllerException {
-		User thisUser = getWithBasicAuth (id, requesterId);
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
+		User user = getWithBasicAuth (id, requesterId);
 		resetAccount (id, requesterId);
-		userRepo.delete(thisUser);
+		userRepo.delete(user);
 	}
 	
 	@Override
 	public void resetAccount(Long id, Long requesterId)
 			throws UserControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
 		getWithBasicAuth (id, requesterId);
 		try {
 			List<Instance> instances = instanceController.listInstancesByUser(id, requesterId);
@@ -161,7 +175,7 @@ public class UserControllerImpl implements UserController {
 		Validation.assertNotNull(account);
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		
+		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
 		User user = getWithBasicAuth (id, requesterId);
 
 		StringBuffer buffer = new StringBuffer ();
@@ -189,8 +203,9 @@ public class UserControllerImpl implements UserController {
 		}
 			
 		if (account.getRole() != null && !account.getRole().equals(user.getRole())) {
-			buffer.append("<br/>Role: " + account.getRole());
+			buffer.append("<br/>Role: " + account.getAssignedRole().getName());
 			user.setRole(account.getRole());
+			user.setAssignedRole(account.getAssignedRole());
 			sendEmail = true;
 		}
 			
@@ -209,7 +224,7 @@ public class UserControllerImpl implements UserController {
 			if (sendEmail)
 				mailer.sendMessage("Account update Withinet Cloud OSGi Platform", account.getEmail(), buffer.toString());
 		} catch (MessagingException e) {
-			throw new UserControllerException ("Email system error: " + e.getMessage());
+			e.printStackTrace();
 		}
 		return user;
 	}
@@ -217,6 +232,9 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public User readAccount(Long id, Long requesterId)
 			throws UserControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
 		return getWithBasicAuth (id, requesterId);
 	}
 	
@@ -236,6 +254,9 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public User login(String email, String password)
 			throws AccountLoginException {
+		Validation.assertNotNull(email);
+		Validation.assertNotNull(password);
+		email = email.toLowerCase().trim();
 		if (email == null) throw new AccountLoginException ("Email cannot be empty");
 		else if (password == null) throw new AccountLoginException ("Password cannot be empty");
 		User user = userRepo.findByEmailAndPassword(email, password);
@@ -249,6 +270,9 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public List<User> listTeamMembers(Long id, Long requesterId)
 			throws UserControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("admin"), requesterId); 
 		User user = getWithBasicAuth (id, requesterId);
 		List<User> collaborators = userRepo.findByAdministrator(user);
 		collaborators.remove(user);
@@ -258,6 +282,10 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void addTeamMember(User collaborator, Long id, Long requesterId)
 			throws UserControllerException {
+		Validation.assertNotNull(collaborator);
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("admin"), requesterId);
 		User user = getWithBasicAuth (id, requesterId);
 		collaborator.setPassword(PasswordGenerator.getRandomPassword());
 		collaborator.setLocation(user.getLocation());
@@ -290,13 +318,16 @@ public class UserControllerImpl implements UserController {
 		try {
 			mailer.sendMessage("Welcome to " + collaborator.getPlatformName(), collaborator.getEmail(), buffer.toString());
 		} catch (MessagingException e) {
-			throw new UserControllerException ("Email system error: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public List<User> addTeamMemberFromExcel(String fileName, Long requesterId)
 			throws UserControllerException {
+		Validation.assertNotNull(fileName);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("admin"), requesterId);
 		List<User> users = new ArrayList<User>();
 		try {
 			users = ExcelUserParser.parse(fileName);
@@ -312,6 +343,9 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void passwordReset(Long id, Long requesterId)
 			throws UserControllerException {
+		Validation.assertNotNull(id);
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(Arrays.asList("userAdmin"), requesterId);
 		User user = getWithBasicAuth (id, requesterId);
 		user.setPassword(PasswordGenerator.getRandomPassword());
 		
@@ -328,7 +362,7 @@ public class UserControllerImpl implements UserController {
 		try {
 			mailer.sendMessage("Password reset " + user.getPlatformName(), user.getEmail(), buffer.toString());
 		} catch (MessagingException e) {
-			throw new UserControllerException ("Email system error: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }

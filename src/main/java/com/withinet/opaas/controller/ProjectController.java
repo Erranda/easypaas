@@ -34,7 +34,7 @@ public interface ProjectController {
 	
 	public List<ProjectTeam> listParticipatingProjectsByUser (Long userId, Long requesterId) throws ProjectControllerException;
 	
-	public List<ProjectTeam> listProjectTeamMembersByProject (Long projectId, Long requesterId);
+	public List<User> listProjectTeamMembersByProject (Long projectId, Long requesterId);
 	
 	public List<ProjectBundle> listProjectBundlesByProject (Long projectId, Long requesterId);
 	

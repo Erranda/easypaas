@@ -34,5 +34,6 @@ public class TeamIndex extends Authenticated
     	table.setOutputMarkupId(true);
         add (table);
         add (new TeamAddMemberSectionWidget ("team-add-member-section", table));
+        add (new RoleTableWidget ("role-section"));
     }
 }

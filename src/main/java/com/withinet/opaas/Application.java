@@ -1,11 +1,12 @@
 package com.withinet.opaas;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
@@ -24,9 +25,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
+import com.withinet.opaas.controller.RoleController;
 import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.AccountLoginException;
+import com.withinet.opaas.controller.common.RoleControllerException;
 import com.withinet.opaas.controller.common.ServiceProperties;
+import com.withinet.opaas.model.PermissionRepository;
+import com.withinet.opaas.model.RolePermissionRepository;
+import com.withinet.opaas.model.RoleRepository;
+import com.withinet.opaas.model.domain.Permission;
+import com.withinet.opaas.model.domain.Role;
+import com.withinet.opaas.model.domain.RolePermission;
 import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.Index;
 import com.withinet.opaas.wicket.html.BundleIndex;
@@ -62,7 +71,7 @@ public class Application extends WebApplication {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String... args) {
 		SpringApplication.run(Application.class, args);
 
 	}
@@ -77,6 +86,18 @@ public class Application extends WebApplication {
 
 	@Autowired
 	com.withinet.opaas.model.UserRepository userRepo;
+	
+	@Autowired
+	PermissionRepository permissionRepo;
+	
+	@Autowired
+	RoleRepository roleRepo;
+	
+	@Autowired
+	RolePermissionRepository rpRepo;
+	
+	@Autowired
+	RoleController roleCtrl;
 
 	/**
 	 * <ul>
@@ -126,7 +147,156 @@ public class Application extends WebApplication {
 		web.setWorkingDirectory("");
 		web.setIntroduction("I am the main adminitrator for this system");
 		userRepo.save(web);
-
+		
+		Permission p1 = new Permission ();
+		p1.setValue("readProject");
+		p1.setDescription("Read projects");
+		permissionRepo.save(p1);
+		
+		Permission p2 = new Permission ();
+		p2.setValue("createProject");
+		p2.setDescription("Create projects");
+		permissionRepo.save(p2);
+		
+		Permission p3 = new Permission ();
+		p3.setValue("deleteProject");
+		p3.setDescription("Delete projects");
+		permissionRepo.save(p3);
+		
+		Permission p4 = new Permission ();
+		p4.setValue("updateProject");
+		p4.setDescription("Update projects");
+		permissionRepo.save(p4);
+		
+		Permission p5 = new Permission ();
+		p5.setValue("projectAdmin");
+		p5.setDescription("Project Admin");
+		permissionRepo.save(p5);
+		
+		Permission p6 = new Permission ();
+		p6.setValue("createBundle");
+		p6.setDescription("Create bundle");
+		permissionRepo.save(p6);
+		
+		Permission p7 = new Permission ();
+		p7.setValue("deleteBundle");
+		p7.setDescription("Delete bundle");
+		permissionRepo.save(p7);
+		
+		Permission p8 = new Permission ();
+		p8.setValue("readBundle");
+		p8.setDescription("Read bundle");
+		permissionRepo.save(p8);
+		
+		Permission p9 = new Permission ();
+		p9.setValue("updateBundle");
+		p9.setDescription("Update bundle");
+		permissionRepo.save(p9);
+		
+		Permission p10 = new Permission ();
+		p10.setValue("bundleAdmin");
+		p10.setDescription("Bundle Admin");
+		permissionRepo.save(p10);
+		
+		Permission p11 = new Permission ();
+		p11.setValue("createInstance");
+		p11.setDescription("Create Instance");
+		permissionRepo.save(p11);
+		
+		Permission p12 = new Permission ();
+		p12.setValue("readInstance");
+		p12.setDescription("Read Instance");
+		permissionRepo.save(p12);
+		
+		Permission p13 = new Permission ();
+		p13.setValue("deleteInstance");
+		p13.setDescription("Delete Instance");
+		permissionRepo.save(p13);
+		
+		Permission p14 = new Permission ();
+		p14.setValue("adminInstance");
+		p14.setDescription("Instance Administrator");
+		permissionRepo.save(p14);
+		
+		Permission p15 = new Permission ();
+		p15.setValue("createUser");
+		p15.setDescription("Create user");
+		permissionRepo.save(p15);
+		
+		Permission p16 = new Permission ();
+		p16.setValue("readUser");
+		p16.setDescription("Read user");
+		permissionRepo.save(p16);
+		
+		Permission p17 = new Permission ();
+		p17.setValue("deleteUser");
+		p17.setDescription("Delete user");
+		permissionRepo.save(p17);
+		
+		Permission p18 = new Permission ();
+		p18.setValue("updateUser");
+		p18.setDescription("Update user");
+		permissionRepo.save(p18);
+		
+		Permission p19 = new Permission ();
+		p19.setValue("userAdmin");
+		p19.setDescription("User Admin");
+		permissionRepo.save(p19);
+		
+		Permission p20 = new Permission ();
+		p20.setValue("createRole");
+		p20.setDescription("Create Role");
+		permissionRepo.save(p20);
+		
+		Permission p21 = new Permission ();
+		p21.setValue("deleteRole");
+		p21.setDescription("Delete Role");
+		permissionRepo.save(p21);
+		
+		Permission p22 = new Permission ();
+		p22.setValue("readRole");
+		p22.setDescription("Read Role");
+		permissionRepo.save(p22);
+		
+		Permission p23 = new Permission ();
+		p23.setValue("updateRole");
+		p23.setDescription("Update Role");
+		permissionRepo.save(p23);
+		
+		Permission p24 = new Permission ();
+		p24.setValue("adminRole");
+		p24.setDescription("Role Admin");
+		permissionRepo.save(p24);
+		
+		Permission p25 = new Permission ();
+		p25.setValue("superAdminRole");
+		p25.setDescription("Super Admin");
+		permissionRepo.save(p25);
+		
+		Permission p26 = new Permission ();
+		p26.setValue("admin");
+		p26.setDescription("Platform Administrator");
+		permissionRepo.save(p26);
+		
+		List<Permission> admin = Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, 
+				p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26);
+		
+		Role role = new Role ();
+		role.setName("ADMINISTRATOR");
+		role.setOwner(web);
+		roleRepo.save(role);
+		web.setAssignedRole(role);
+		userRepo.save(web);
+		
+		RolePermission rp = new RolePermission (web.getFullName(), role, p26);
+		rpRepo.save(rp);
+		
+		try {
+			roleCtrl.addPermission(role.getId(), admin, web.getID());
+		} catch (RoleControllerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 
 	@Autowired

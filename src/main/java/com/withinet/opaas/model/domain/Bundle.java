@@ -55,15 +55,15 @@ public class Bundle implements Serializable {
 	}
 
 	public void setSymbolicName(String symbolicName) {
-		this.symbolicName = symbolicName;
+		this.symbolicName = symbolicName.toLowerCase().trim();
 	}
 
 	public String getLocation() {
-		return location.trim();
+		return location;
 	}
 
 	public void setLocation(String location) {
-		this.location = location.trim();
+		this.location = location.toLowerCase().trim();
 	}
 
 	public Long getID() {

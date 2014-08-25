@@ -1,10 +1,21 @@
 <wicket:extend>
+<wicket:link>
+<link href="../js/plugins/chosen/chosen.min.css" rel="stylesheet" type="text/css" />
+</wicket:link>
 		<span wicket:id="team-table-widget"></span>
 		<span wicket:id="team-add-member-section"></span>
-		
+		<span wicket:id="role-section"></span>
 		<script>
 			$( document ).ready(function() {
   				$( "#teamNav" ).addClass('active');
 			});
+		</script>
+		
+		<wicket:link>
+		<script src="../js/plugins/chosen/chosen.jquery.min.js"></script>
+<script src="../js/demo/formsInit.js"></script>
+<script>
+    $(function () { formInit(); });
 </script>
+		</wicket:link>
 </wicket:extend>
