@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -72,18 +73,17 @@ public class InstanceSetupWidget extends Panel {
 	
 	@SpringBean
 	private InstanceController instanceController;
-
-	private String status;
-
-	public InstanceSetupWidget(String id) throws ProjectControllerException, UserControllerException {
-		super (id);Long uid = UserSession.get().getUser ().getID();
-		
-		
+	
+	private Boolean authorized;
+	
+	@Override
+	public void onInitialize () {
+		super.onInitialize();
+		setVisible (authorized);
+		Long uid = UserSession.get().getUser ().getID();
 		containerTypes = new ArrayList<String>();
 		containerTypes.add("Felix");
-		containerTypes.add("Knopflerfish");
 		containerTypes.add("Equinox");
-		containerTypes.add("Concierge");
 
 		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
@@ -98,18 +98,33 @@ public class InstanceSetupWidget extends Panel {
 						"containerChoice"), containerTypes);
 		setupForm.add(containerType);
 		
-		DropDownChoice<String> userProject = new DropDownChoice<String>(
-				"userProjects", new PropertyModel<String>(this,
-						"projectName"), listProjects (uid));
-		userProject.setRequired(true);
-		userProject.setLabel(new ResourceModel ("label.projects"));
-		setupForm.add(userProject);
+		DropDownChoice<String> userProject;
+		try {
+			userProject = new DropDownChoice<String>(
+					"userProjects", new PropertyModel<String>(this,
+							"projectName"), listProjects (uid));
+			userProject.setRequired(true);
+			userProject.setLabel(new ResourceModel ("label.projects"));
+			setupForm.add(userProject);
+		} catch (ProjectControllerException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			throw new WicketRuntimeException ();
+		}
 		
-		ListMultipleChoice<String> teamMembers = new ListMultipleChoice<String>(
-				"team", new Model(selectedTeam), listTeam(uid));
-		teamMembers.setRequired(true);
-		teamMembers.setLabel(new ResourceModel ("label.team"));
-		setupForm.add(teamMembers);
+		ListMultipleChoice<String> teamMembers;
+		try {
+			teamMembers = new ListMultipleChoice<String>(
+					"team", new Model(selectedTeam), listTeam(uid));
+			teamMembers.setRequired(true);
+			teamMembers.setLabel(new ResourceModel ("label.team"));
+			setupForm.add(teamMembers);
+		} catch (UserControllerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new WicketRuntimeException ();
+		}
+		
 
 		setupForm.add(new IndicatingAjaxButton("submit", setupForm) {
 			private static final long serialVersionUID = -6415555183396288060L;
@@ -144,29 +159,41 @@ public class InstanceSetupWidget extends Panel {
 				target.add(feedback);
 			}
 		});
-	
 	}
 	
+	public InstanceSetupWidget(String id) throws ProjectControllerException, UserControllerException {
+		super (id);	
+	}
+	
+	public InstanceSetupWidget(String id, boolean b) {
+		super (id);
+		this.authorized = b;
+	}
+
 	private List<String> listProjects (Long uid) throws ProjectControllerException {
 		userProjects = new ArrayList<String>();
-		for (Project project : projectController.listCreatedProjectsByOwner(uid, uid)){
-			userProjects.add(project.getName());
-			projectsModel.put(project.getName(), project);
+		if (authorized) {
+			for (Project project : projectController.listCreatedProjectsByOwner(uid, uid)){
+				userProjects.add(project.getName());
+				projectsModel.put(project.getName(), project);
+			}
 		}
 		return userProjects;
 	}
 	
 	private List<String> listTeam (Long uid) throws UserControllerException {
 		List<String> initTeam = new ArrayList<String> ();
-		for (User user : userController.listTeamMembers(uid, uid)) {
+		if (authorized) {
+			for (User user : userController.listTeamMembers(uid, uid)) {
+				String key = user.getFullName() + " [ " + user.getEmail() + " ]";
+				initTeam.add(key);
+				teamModel.put(key, user);
+			}
+			User user = UserSession.get().getUser();
 			String key = user.getFullName() + " [ " + user.getEmail() + " ]";
 			initTeam.add(key);
 			teamModel.put(key, user);
 		}
-		User user = UserSession.get().getUser();
-		String key = user.getFullName() + " [ " + user.getEmail() + " ]";
-		initTeam.add(key);
-		teamModel.put(key, user);
 		return initTeam;
 	}		
 

@@ -53,16 +53,18 @@ public class RolePermission implements Serializable {
     @NotNull
     private Date addedOn = new Date();
 
-    @ManyToOne
+    @ManyToOne (targetEntity = Role.class)
     @JoinColumn(
         name = "ROLE_ID",
         insertable = false, updatable = false)
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     private Role role;
 
-    @ManyToOne
+    @ManyToOne (targetEntity = Permission.class)
     @JoinColumn(
         name = "PERMISSION_ID",
         insertable = false, updatable = false)
+    @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     private Permission permission;
 
 
@@ -104,6 +106,16 @@ public class RolePermission implements Serializable {
 
     public Permission getPermission() {
         return this.permission;
+    }
+    
+    @Override
+    public boolean equals (Object o) {
+    	if (o == null) return false;
+		else if (!(o instanceof RolePermission))
+			return false;
+		else if (((RolePermission) o).getId() != getId())
+			return false;
+		return true;
     }
 
 }

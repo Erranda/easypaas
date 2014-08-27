@@ -6,35 +6,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
-import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
-import org.apache.wicket.validation.validator.StringValidator;
 
 import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.BundleController;
@@ -84,9 +72,23 @@ public class BundleSetupWidget extends Panel {
 
 	@SpringBean
 	private UserController accountController;
+	
+	Boolean authorized;
 
 	public BundleSetupWidget(String id) throws UserControllerException, BundleControllerException, ProjectControllerException {
 		super (id);
+		
+	}
+	
+	public BundleSetupWidget(String id, boolean b) {
+		super (id);
+		authorized = b;
+	}
+	
+	@Override
+	public void onInitialize () {
+		super.onInitialize();
+		setVisible (authorized);
 		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
 
@@ -94,13 +96,29 @@ public class BundleSetupWidget extends Panel {
 		feedback.setOutputMarkupPlaceholderTag(true);
 		setupForm.add(feedback);
 		
-		ListMultipleChoice<String> projects = new ListMultipleChoice<String>(
-				"projects", new Model(projectNameSelected), listProjects());
-		setupForm.add(projects);
+		ListMultipleChoice<String> projects;
+		try {
+			projects = new ListMultipleChoice<String>(
+					"projects", new Model(projectNameSelected), listProjects());
+			setupForm.add(projects);
+		} catch (ProjectControllerException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			throw new WicketRuntimeException ();
+		}
 		
-		ListMultipleChoice<String> bundles = new ListMultipleChoice<String>(
-				"bundles", new Model(projectFileBundlesSelected), listBundles());
-		setupForm.add(bundles);
+		
+		ListMultipleChoice<String> bundles;
+		try {
+			bundles = new ListMultipleChoice<String>(
+					"bundles", new Model(projectFileBundlesSelected), listBundles());
+			setupForm.add(bundles);
+		} catch (BundleControllerException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			throw new WicketRuntimeException ();
+		}
+		
 		
 		wicketFileUploadField = new FileUploadField("file");
 		wicketFileUploadField.setRequired(false);
@@ -239,7 +257,6 @@ public class BundleSetupWidget extends Panel {
 				return projectFileBundles;
 			}
 		});
-
 	}
 	
 	private List<Bundle> processSelectedBundles() {
@@ -253,26 +270,29 @@ public class BundleSetupWidget extends Panel {
 	private List<String> listBundles() throws BundleControllerException {
 		List<String> bundles = new ArrayList<String>();
 		Long uid = UserSession.get().getUser().getID();
-		
-		List<Bundle> bundlesRaw = bundleController.listBundlesByOwner(uid, uid);
-		for (Bundle bundle : bundlesRaw) {
-			bundles.add(bundle.getSymbolicName());
-			thisBundleModel.put(bundle.getSymbolicName(), bundle);
+		if (authorized) {
+			List<Bundle> bundlesRaw = bundleController.listBundlesByOwner(uid, uid);
+			for (Bundle bundle : bundlesRaw) {
+				bundles.add(bundle.getSymbolicName());
+				thisBundleModel.put(bundle.getSymbolicName(), bundle);
+			}
 		}
 		return bundles;
 	}
 
 	private List<String> listProjects() throws ProjectControllerException  {
 		Long uid = UserSession.get().getUser().getID();	
-		List<Project> projects = projectController.listCreatedProjectsByOwner(uid, uid);		
 		ArrayList<String> formList = new ArrayList<String>();
-		
-		for (Project project : projects) {
-			String formKey = project.getName();
-			formList.add(formKey);
-			thisProjectModel.put(formKey, project);
+		if (authorized) {
+			List<Project> projects = projectController.listCreatedProjectsByOwner(uid, uid);					
+			for (Project project : projects) {
+				String formKey = project.getName();
+				formList.add(formKey);
+				thisProjectModel.put(formKey, project);
+			}
+			Collections.sort(formList);
 		}
-		Collections.sort(formList);
+		
 		return formList;
 	}
 

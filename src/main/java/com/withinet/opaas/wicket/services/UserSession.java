@@ -1,6 +1,8 @@
 package com.withinet.opaas.wicket.services;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
@@ -11,9 +13,11 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.withinet.opaas.controller.common.ServiceProperties;
+import com.withinet.opaas.model.domain.Role;
+import com.withinet.opaas.model.domain.RolePermission;
 import com.withinet.opaas.model.domain.User;
 
-public class UserSession extends WebSession {
+public class UserSession extends AuthenticatedWebSession  {
 	/**
 	 * 
 	 */
@@ -50,4 +54,21 @@ public class UserSession extends WebSession {
     public void logout (Request request, Response response) {
     	user = null;  
     }
+
+	@Override
+	public boolean authenticate(String arg0, String arg1) {
+		return user != null;
+	}
+
+	@Override
+	public Roles getRoles() {
+		Roles roles = new Roles();
+		Role assigned = user.getAssignedRole();
+		if (assigned != null) {
+			for (RolePermission rp : assigned.getRolePermissions()) {
+				roles.add(rp.getPermission().getValue());
+			}
+		}
+		return roles;
+	}
 }

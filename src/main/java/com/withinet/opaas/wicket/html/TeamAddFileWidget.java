@@ -1,23 +1,17 @@
 package com.withinet.opaas.wicket.html;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
-import org.apache.wicket.markup.html.form.EmailTextField;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.validator.StringValidator;
 
 import com.withinet.opaas.controller.FileController;
 import com.withinet.opaas.controller.RoleController;
@@ -26,16 +20,14 @@ import com.withinet.opaas.controller.common.FileControllerException;
 import com.withinet.opaas.controller.common.RoleControllerException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.UserParserException;
-import com.withinet.opaas.controller.system.FileLocationGenerator;
 import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.util.ExcelUserParser;
 import com.withinet.opaas.wicket.services.UserSession;
 
 /**
- * Login page
  * 
- * @author kloe and Folarin
+ * @author Folarin Omotoriogun
  * 
  */
 public class TeamAddFileWidget extends Panel {
@@ -44,7 +36,6 @@ public class TeamAddFileWidget extends Panel {
 	 * 
 	 */
 	private static final long serialVersionUID = -6370041751528976156L;
-	private FileUpload upload;
 
 	@SpringBean
 	private FileController fileController;
@@ -56,10 +47,18 @@ public class TeamAddFileWidget extends Panel {
 	private RoleController roleController;
 
 	private Panel target;
+	
+	private Boolean authorized;
 
 	public TeamAddFileWidget(String id, Panel target) {
 		super(id);
 		this.setTarget(target);
+	}
+	
+	@Override
+	public void onInitialize () {
+		super.onInitialize();
+		setVisible (authorized);
 		Form<Void> uploadForm = new Form<Void>("addMemberFileForm");
 		add(uploadForm);
 		final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
@@ -72,6 +71,11 @@ public class TeamAddFileWidget extends Panel {
 				uploadForm, file);
 		uploadForm.add(progress);
 		uploadForm.add(new IndicatingAjaxButton("upload", uploadForm) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 6927791888245334927L;
+
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				FileUpload upload = file.getFileUpload();
@@ -115,7 +119,6 @@ public class TeamAddFileWidget extends Panel {
 										target.add(feedback);
 									}
 								} catch (UserControllerException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 									error(e.getMessage());
 									target.add(feedback);
@@ -125,12 +128,10 @@ public class TeamAddFileWidget extends Panel {
 							target.add(feedback);
 							target.add(getTarget());
 						} catch (FileControllerException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 							error(e.getMessage());
 							target.add(feedback);
 						} catch (UserParserException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 							error(e.getMessage());
 							target.add(feedback);
@@ -149,7 +150,11 @@ public class TeamAddFileWidget extends Panel {
 			}
 
 		});
+	}
 
+	public TeamAddFileWidget(String id, Panel target, Boolean authorized) {
+		this (id, target);
+		this.authorized = authorized;
 	}
 
 	public Panel getTarget() {

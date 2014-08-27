@@ -46,6 +46,8 @@ public class InstanceTableWidget extends Panel {
 	Long selected = null;
 
 	Long pid = null;
+	
+	private Boolean authorized;
 
 	private Map.Entry<Integer, StringBuffer> map;
 	/**
@@ -64,14 +66,21 @@ public class InstanceTableWidget extends Panel {
 		super(id);
 	}
 
-	public InstanceTableWidget(String string, Long pid) {
-		super(string);
+	public InstanceTableWidget(String id, Long pid, boolean b) {
+		super(id);
 		this.pid = pid;
+		this.authorized = b;
+	}
+
+	public InstanceTableWidget(String id, boolean b) {
+		super (id);
+		authorized = b;
 	}
 
 	@Override
 	public void onInitialize() {
 		super.onInitialize();
+		setVisible (authorized);
 		provider = new InstanceTableDataProvider();
 		final Label moreLogLabel = new Label("moreLog");
 		moreLogLabel.setOutputMarkupId(true);
@@ -98,7 +107,7 @@ public class InstanceTableWidget extends Panel {
 		columns.add(new PropertyColumn<Instance, String>(new Model<String>(
 				"Created by"), "ownerName"));
 		columns.add(new PropertyColumn<Instance, String>(new Model<String>(
-				"Since"), "created"));
+				"Created"), "created"));
 		columns.add(new AbstractColumn<Instance, String>(new Model<String>(
 				"Quick Action")) {
 
@@ -127,10 +136,7 @@ public class InstanceTableWidget extends Panel {
 						}
 					}
 				};
-				// BookmarkablePageLink<InstanceIndex> startInstance = new
-				// BookmarkablePageLink<InstanceIndex> ("start-instance",
-				// InstanceIndex.class, setStartInstanceLinkParameters
-				// (model.getObject()));
+				
 				IndicatingAjaxLink startInstance = new IndicatingAjaxLink("start-instance") {
 					private static final long serialVersionUID = 1L;
 
@@ -148,11 +154,8 @@ public class InstanceTableWidget extends Panel {
 						}
 					}
 				};
-				// BookmarkablePageLink<InstanceIndex> flushInstance = new
-				// BookmarkablePageLink<InstanceIndex> ("flush-instance",
-				// InstanceIndex.class, setFlushInstanceLinkParameters
-				// (model.getObject()));
-				IndicatingAjaxLink flushInstance = new IndicatingAjaxLink("flush-instance") {
+				
+				ConfirmationLink<String> flushInstance = new ConfirmationLink<String>("flush-instance", "Instance resources will be deleted permanently?") {
 					private static final long serialVersionUID = 1L;
 
 					@Override
@@ -254,32 +257,36 @@ public class InstanceTableWidget extends Panel {
 		@Override
 		public long size() {
 			Long USER_ID = UserSession.get().getUser().getID();
-
-			if (pid != null) {
-				try {
-					userInstances = instanceController.listInstancesByProject(
-							pid, USER_ID);
-				} catch (InstanceControllerException e1) {
-					error (e1.getMessage ());
+			if (authorized) {
+				if (pid != null) {
+					try {
+						userInstances = instanceController.listInstancesByProject(
+								pid, USER_ID);
+					} catch (InstanceControllerException e1) {
+						error (e1.getMessage ());
+						try {
+							userInstances = instanceController.listInstancesByUser(
+									USER_ID, USER_ID);
+						} catch (InstanceControllerException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							error (e.getMessage());
+						}
+						e1.printStackTrace();
+					}
+				} else {
 					try {
 						userInstances = instanceController.listInstancesByUser(
 								USER_ID, USER_ID);
+						
 					} catch (InstanceControllerException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						error (e.getMessage());
+						error(e.getMessage());
 					}
-					e1.printStackTrace();
-				}
-			} else {
-				try {
-					userInstances = instanceController.listInstancesByUser(
-							USER_ID, USER_ID);
-					
-				} catch (InstanceControllerException e) {
-					error(e.getMessage());
 				}
 			}
+			else 
+				userInstances = Collections.emptyList();
+			
 			return userInstances.size();
 		}
 

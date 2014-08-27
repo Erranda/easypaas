@@ -8,9 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
-import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.model.domain.RolePermission;
 import com.withinet.opaas.model.domain.User;
@@ -35,10 +33,14 @@ public class Authorizer implements com.withinet.opaas.controller.Authorizer {
 	public User authorize(String expPermission, Long uid) {
 		boolean authd = false;
 		User user = userRepo.findOne(uid);
-		for (RolePermission rp : user.getAssignedRole().getRolePermissions()) {
-			if (rp.getPermission().getValue().equals(expPermission)) {
-				authd = true;
+		if (user.getAssignedRole() != null) {
+			for (RolePermission rp : user.getAssignedRole().getRolePermissions()) {
+				if (rp.getPermission().getValue().equals(expPermission)) {
+					authd = true;
+				}
 			}
+		} else {
+			authd = false;
 		}
 		if (authd == false)
 			throw new ControllerSecurityException(

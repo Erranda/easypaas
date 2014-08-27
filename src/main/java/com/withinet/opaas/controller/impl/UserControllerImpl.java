@@ -26,13 +26,12 @@ import com.withinet.opaas.controller.common.AccountConflictException;
 import com.withinet.opaas.controller.common.BundleControllerException;
 import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.controller.common.ServiceProperties;
+import static com.withinet.opaas.controller.common.ServiceProperties.*;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.common.AccountLoginException;
 import com.withinet.opaas.controller.common.AccountNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
-import com.withinet.opaas.controller.common.UnauthorizedException;
 import com.withinet.opaas.controller.common.UserParserException;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.UserRepository;
@@ -131,7 +130,7 @@ public class UserControllerImpl implements UserController {
 			throws UserControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
+		authorizer.authorize(SYSTEM_ADMIN, requesterId); 
 		User user = getWithBasicAuth (id, requesterId);
 		resetAccount (id, requesterId);
 		userRepo.delete(user);
@@ -142,7 +141,7 @@ public class UserControllerImpl implements UserController {
 			throws UserControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
+		authorizer.authorize(SYSTEM_ADMIN, requesterId); 
 		getWithBasicAuth (id, requesterId);
 		try {
 			List<Instance> instances = instanceController.listInstancesByUser(id, requesterId);
@@ -175,7 +174,7 @@ public class UserControllerImpl implements UserController {
 		Validation.assertNotNull(account);
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
+		authorizer.authorize(SIGNED_IN, requesterId); 
 		User user = getWithBasicAuth (id, requesterId);
 
 		StringBuffer buffer = new StringBuffer ();
@@ -234,7 +233,7 @@ public class UserControllerImpl implements UserController {
 			throws UserControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("userAdmin"), requesterId); 
+		authorizer.authorize(SIGNED_IN, requesterId); 
 		return getWithBasicAuth (id, requesterId);
 	}
 	
@@ -272,7 +271,9 @@ public class UserControllerImpl implements UserController {
 			throws UserControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId); 
+		List<String> composite = new ArrayList<String>(READ_PROJECT);
+		composite.addAll(CREATE_PROJECT);
+		authorizer.authorize(composite, requesterId); 
 		User user = getWithBasicAuth (id, requesterId);
 		List<User> collaborators = userRepo.findByAdministrator(user);
 		collaborators.remove(user);
@@ -285,7 +286,7 @@ public class UserControllerImpl implements UserController {
 		Validation.assertNotNull(collaborator);
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		User user = getWithBasicAuth (id, requesterId);
 		collaborator.setPassword(PasswordGenerator.getRandomPassword());
 		collaborator.setLocation(user.getLocation());
@@ -309,7 +310,7 @@ public class UserControllerImpl implements UserController {
 		buffer.append("**********************************************************<br/>");
 		buffer.append("Email: " + collaborator.getEmail() + "<br/>");
 		buffer.append("Password: " + collaborator.getPassword() + "<br/><br/>");
-		buffer.append("<a target=\"_blank\" href=\"" + ServiceProperties.DOMAIN + "/login\">Login</a><br/><br/>");
+		buffer.append("<a target=\"_blank\" href=\"" + DOMAIN + "/login\">Login</a><br/><br/>");
 		buffer.append(user.getFullName());
 		buffer.append("<br/>Platform Administrator");
 		buffer.append("</body></html>");
@@ -327,7 +328,7 @@ public class UserControllerImpl implements UserController {
 			throws UserControllerException {
 		Validation.assertNotNull(fileName);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		List<User> users = new ArrayList<User>();
 		try {
 			users = ExcelUserParser.parse(fileName);
@@ -345,7 +346,7 @@ public class UserControllerImpl implements UserController {
 			throws UserControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("userAdmin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		User user = getWithBasicAuth (id, requesterId);
 		user.setPassword(PasswordGenerator.getRandomPassword());
 		

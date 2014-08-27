@@ -6,32 +6,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.validation.validator.StringValidator;
@@ -64,7 +56,6 @@ public class ProjectSetupWidget extends Panel {
 
 	private HashMap<String, User> thisTeamModel = new HashMap<String, User>();
 
-	private List<User> projectTeamSelected = new ArrayList<User>();
 
 	private ArrayList<String> projectFileBundlesSelected = new ArrayList<String>();
 
@@ -74,7 +65,6 @@ public class ProjectSetupWidget extends Panel {
 
 	private Boolean active = true;
 
-	private Project thisProject = null;
 
 	private List<Bundle> projectFileBundles = new ArrayList<Bundle>();
 
@@ -96,8 +86,54 @@ public class ProjectSetupWidget extends Panel {
 	@SpringBean
 	private FileController fileController;
 
-	public ProjectSetupWidget(String id) throws UserControllerException, BundleControllerException {
+	private boolean authorized;
+
+	public ProjectSetupWidget(String id) {
 		super (id);
+	}
+	
+	public ProjectSetupWidget(String id, boolean authorized) {
+		this (id);
+		this.authorized = authorized;
+	}
+
+	private Project createProject() throws ProjectControllerException {
+		// Create project first
+		Project thisProject = new Project();
+		thisProject.setName(name);
+		thisProject.setStatus(active ? "Active" : "Disabled");
+		Long userId = UserSession.get().getUser().getID();
+		thisProject = projectController.createProject(thisProject, userId);
+		// Add project team
+
+		for (Bundle bundle : processSelectedBundles()) {
+			projectController.addBundle(bundle, thisProject.getID(), userId);
+		}
+		
+		for (Bundle bundle : projectFileBundles) {
+			projectController.addBundle(bundle, thisProject.getID(), userId);
+		}
+		
+		for (User user : processSelectedTeam()) {
+			projectController.addCollaborator(user, thisProject.getID(), userId);
+		}
+
+		return projectController.readProjectById(thisProject.getID(), userId);
+	}
+
+	private List<User> processSelectedTeam() {
+		List<User> projectMembers = new ArrayList<User>();
+		for (String memberKey : projectTeam) {
+			if (thisTeamModel.get(memberKey) != null)
+				projectMembers.add(thisTeamModel.get(memberKey));
+		}
+		return projectMembers;
+	}
+
+	@Override
+	public void onInitialize() {
+		super.onInitialize();
+		setVisible (authorized);
 		Form<Void> setupForm = new Form<Void>("form");
 		add(setupForm);
 
@@ -111,13 +147,29 @@ public class ProjectSetupWidget extends Panel {
 		wicketName.setLabel(new ResourceModel("label.name"));
 		setupForm.add(wicketName);
 
-		ListMultipleChoice<String> bundles = new ListMultipleChoice<String>(
-				"bundles", new Model(projectFileBundlesSelected), listBundles());
-		setupForm.add(bundles);
+		ListMultipleChoice<String> bundles;
+		try {
+			bundles = new ListMultipleChoice<String>(
+					"bundles", new Model(projectFileBundlesSelected), listBundles());
+			setupForm.add(bundles);
+		} catch (BundleControllerException e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+			throw new WicketRuntimeException ();
+		}
+		
 
-		ListMultipleChoice<String> team = new ListMultipleChoice<String>(
-				"team", new Model(projectTeam), listTeam());
-		setupForm.add(team);
+		ListMultipleChoice<String> team;
+		try {
+			team = new ListMultipleChoice<String>(
+					"team", new Model(projectTeam), listTeam());
+			setupForm.add(team);
+		} catch (UserControllerException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			throw new WicketRuntimeException ();
+		}
+		
 
 		wicketFileUploadField = new FileUploadField("file");
 		wicketFileUploadField.setRequired(false);
@@ -224,7 +276,6 @@ public class ProjectSetupWidget extends Panel {
 				return projectFileBundles;
 			}
 		});
-
 	}
 	
 	private List<Bundle> processSelectedBundles() {
@@ -239,74 +290,31 @@ public class ProjectSetupWidget extends Panel {
 	private List<String> listBundles() throws BundleControllerException {
 		List<String> bundles = new ArrayList<String>();
 		Long uid = UserSession.get().getUser().getID();
-		
-		List<Bundle> bundlesRaw = bundleController.listBundlesByOwner(uid, uid);
-		for (Bundle bundle : bundlesRaw) {
-			bundles.add(bundle.getSymbolicName());
-			thisBundleModel.put(bundle.getSymbolicName(), bundle);
+		if (authorized) {
+			List<Bundle> bundlesRaw = bundleController.listBundlesByOwner(uid, uid);
+			for (Bundle bundle : bundlesRaw) {
+				bundles.add(bundle.getSymbolicName());
+				thisBundleModel.put(bundle.getSymbolicName(), bundle);
+			}
 		}
+		
 		return bundles;
 	}
 
 	private List<String> listTeam() throws UserControllerException {
 		Long uid = UserSession.get().getUser().getID();
-		
-		List<User> collaborators = accountController.listTeamMembers(uid, uid);
 		ArrayList<String> formList = new ArrayList<String>();
-		for (User user : collaborators) {
-			String formKey = user.getFullName() + " [" + user.getEmail() + "]";
-			formList.add(formKey);
-			thisTeamModel.put(formKey, user);
+		if (authorized) {
+			List<User> collaborators = accountController.listTeamMembers(uid, uid);
+			for (User user : collaborators) {
+				String formKey = user.getFullName() + " [" + user.getEmail() + "]";
+				formList.add(formKey);
+				thisTeamModel.put(formKey, user);
+			}
+			Collections.sort(formList);
 		}
-		Collections.sort(formList);
+		
 		return formList;
-	}
-
-	private void deleteProject() {
-		Long userId = UserSession.get().getUser().getID();
-		try {
-			projectController.deleteProject(thisProject.getID(), userId);
-		} catch (ProjectControllerException e) {
-			error("An error has occured");
-		}
-	}
-
-	private Project createProject() throws ProjectControllerException {
-		// Create project first
-		Project thisProject = new Project();
-		thisProject.setName(name);
-		thisProject.setStatus(active ? "Active" : "Disabled");
-		Long userId = UserSession.get().getUser().getID();
-		thisProject = projectController.createProject(thisProject, userId);
-		// Add project team
-
-		for (Bundle bundle : processSelectedBundles()) {
-			projectController.addBundle(bundle, thisProject.getID(), userId);
-		}
-		
-		for (Bundle bundle : projectFileBundles) {
-			projectController.addBundle(bundle, thisProject.getID(), userId);
-		}
-		
-		for (User user : processSelectedTeam()) {
-			projectController.addCollaborator(user, thisProject.getID(), userId);
-		}
-
-		return projectController.readProjectById(thisProject.getID(), userId);
-	}
-
-	private List<User> processSelectedTeam() {
-		List<User> projectMembers = new ArrayList<User>();
-		for (String memberKey : projectTeam) {
-			if (thisTeamModel.get(memberKey) != null)
-				projectMembers.add(thisTeamModel.get(memberKey));
-		}
-		return projectMembers;
-	}
-
-	@Override
-	public void renderHead(IHeaderResponse response) {
-		super.renderHead(response);
 	}
 
 }

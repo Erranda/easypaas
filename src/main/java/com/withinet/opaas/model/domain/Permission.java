@@ -26,7 +26,7 @@ public class Permission implements Serializable {
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="PERMISSION_VALUE", nullable=false)
+	@Column(name="PERMISSION_VALUE", nullable=false, unique=true)
 	@NotNull
 	private String value;
 	
@@ -52,5 +52,15 @@ public class Permission implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	@Override
+	public boolean equals (Object o) {
+		if (o == null) return false;
+		else if (!(o instanceof Permission))
+			return false;
+		else if (((Permission) o).getId() != getId())
+			return false;
+		return true;
 	}
 }

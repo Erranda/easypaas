@@ -4,7 +4,7 @@
 package com.withinet.opaas.controller.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +15,18 @@ import com.withinet.opaas.controller.UserController;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.RoleControllerException;
+import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.PermissionRepository;
 import com.withinet.opaas.model.RolePermissionRepository;
 import com.withinet.opaas.model.RoleRepository;
+import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.model.domain.Permission;
 import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.RolePermission;
 import com.withinet.opaas.model.domain.User;
+import static com.withinet.opaas.controller.common.ServiceProperties.*;
 
 /**
  * @author Folarin
@@ -41,6 +44,13 @@ public class RoleControllerImpl implements RoleController {
 	private RolePermissionRepository rpRepo;
 	
 	private PermissionRepository permRepo;
+	
+	private UserRepository userRepo;
+	
+	@Autowired
+	public void setUserRepository (UserRepository userRepository) {
+		userRepo = userRepository;
+	}
 	
 	@Autowired
 	public void setPermissionRepository (PermissionRepository permRepo) {
@@ -75,9 +85,10 @@ public class RoleControllerImpl implements RoleController {
 			throws RoleControllerException {
 		Validation.assertNotNull(userRole);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		DomainConstraintValidator<Role> dcv = new  DomainConstraintValidator<Role> ();
 		if (!dcv.isValid(userRole)) throw new IllegalArgumentException ("Bad request");
+		Permission basic = permRepo.findByValue("signedIn");
 		User user;
 		try {
 			user = userCtrl.readAccount(requesterId, requesterId);
@@ -88,7 +99,9 @@ public class RoleControllerImpl implements RoleController {
 			e.printStackTrace();
 			throw new RoleControllerException (e.getMessage());
 		}
-		return roleRepo.saveAndFlush(userRole);
+		userRole = roleRepo.saveAndFlush(userRole);
+		addPermission (userRole.getId(), basic, requesterId);
+		return userRole;
 	}
 
 	/* (non-Javadoc)
@@ -99,8 +112,17 @@ public class RoleControllerImpl implements RoleController {
 			throws RoleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		User admin = authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
+		if (role.getName().equals("SUPER ADMINISTRATOR") || role.getName().equals("ADMINISTRATOR"))
+			throw new RoleControllerException ("Security exception, this role cannot be deleted");
+		List<User> users = userRepo.findByAssignedRole(role);
+		for (User user : users) {
+			Role deprecated = roleRepo.findByOwnerAndName(admin, "AUTHENTICATED");
+			user.setAssignedRole(deprecated);
+			user.setRole(deprecated.getName());
+			userRepo.save(user);
+		}
 		roleRepo.delete(role.getId());
 	}
 
@@ -112,8 +134,8 @@ public class RoleControllerImpl implements RoleController {
 			throws RoleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
-		Role role = getRoleWithAuth (id, requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
+		getRoleWithAuth (id, requesterId);
 		
 		return null;
 	}
@@ -126,7 +148,7 @@ public class RoleControllerImpl implements RoleController {
 			throws RoleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		return getRoleWithAuth (id, requesterId);
 	}
 
@@ -138,7 +160,7 @@ public class RoleControllerImpl implements RoleController {
 			Long requesterId) throws RoleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		User user = authorizer.authorize(Arrays.asList("admin"), requesterId);
+		User user = authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
 		if (role.getOwner().getID () != requesterId)
 			throw new RoleControllerException ("You are not allowed to perform this action");
@@ -158,7 +180,7 @@ public class RoleControllerImpl implements RoleController {
 	public Role addPermission(Long id, Permission permission, Long requesterId) throws RoleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		User user = authorizer.authorize(Arrays.asList("admin"), requesterId);
+		User user = authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
 		if (role.getOwner().getID () != requesterId)
 			throw new RoleControllerException ("You are not allowed to perform this action");
@@ -176,11 +198,17 @@ public class RoleControllerImpl implements RoleController {
 	public void removePermission(Long id, Long pid, Long requesterId) throws RoleControllerException  {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
 		Permission perm = permRepo.findOne(pid);
-		RolePermission rolePerm = rpRepo.findByRoleAndPermission(role, perm);
-		rpRepo.delete(rolePerm);
+		RolePermission thisRp = null;
+		for (RolePermission rp : role.getRolePermissions()) {
+			if (rp.getPermission().equals(perm))
+				thisRp = rp;
+		}
+		role.getRolePermissions().remove(thisRp);
+		roleRepo.save(role);
+		rpRepo.delete(thisRp);
 	}
 	
 	private Role getRoleWithAuth (Long id, Long uid) {
@@ -196,20 +224,30 @@ public class RoleControllerImpl implements RoleController {
 	public List<Role> readRolesByOwner(Long requesterId)
 			throws RoleControllerException {
 		Validation.assertNotNull(requesterId);
-		User user = authorizer.authorize(Arrays.asList("admin"), requesterId);
-		return roleRepo.findByOwner(user);
+		User user = authorizer.authorize(SYSTEM_ADMIN, requesterId);
+		return roleRepo.findByOwnerAndNameNot(user, ServiceProperties.SUPER_ADMIN_NAME);
 	}
 	
 	@Override
 	public List<Permission> readRolePermissions (Long id, Long requesterId) throws RoleControllerException  {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("admin"), requesterId);
+		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
 		List<Permission> perms = new ArrayList<Permission> ();
 		for (RolePermission rp : rpRepo.findByRole(role)) {
-			perms.add(rp.getPermission());
+			if (!rp.getPermission().getValue().equals("signedIn")){
+				perms.add(rp.getPermission());
+			}
 		}
+		return perms;
+	}
+	
+	@Override
+	public List<Permission> readAllPermissions (Long requesterId) throws RoleControllerException {
+		Validation.assertNotNull(requesterId);
+		User user = authorizer.authorize(SYSTEM_ADMIN, requesterId);
+		List<Permission> perms = permRepo.findByValueNotLike ("signedIn");
 		return perms;
 	}
 }

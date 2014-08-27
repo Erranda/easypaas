@@ -35,5 +35,8 @@ public interface RoleController {
 	public void removePermission (Long id, Long pid, Long requesterId) throws RoleControllerException;
 	
 	public List<Permission> readRolePermissions (Long id, Long requesterId) throws RoleControllerException;
+
+	public List<Permission> readAllPermissions(Long requesterId)
+			throws RoleControllerException;
 	
 }

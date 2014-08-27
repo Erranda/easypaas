@@ -43,7 +43,6 @@ public class Bundle implements Serializable {
 	private String location;
 	
 	@Column(name="UPDATED", nullable=false)	
-	@Temporal(TemporalType.DATE)
 	private java.util.Date updated;
 	
 	@OneToMany (mappedBy="bundle", fetch=FetchType.EAGER)

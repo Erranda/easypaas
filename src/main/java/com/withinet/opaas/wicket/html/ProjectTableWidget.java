@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeAction;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -47,6 +48,7 @@ import com.withinet.opaas.wicket.services.UserSession;
  * @author Folarin
  *
  */
+@AuthorizeAction(action="RENDER", roles={"authorizedProject", "projectAdmin"})
 public class ProjectTableWidget extends Panel {
 	
 	/**
@@ -57,6 +59,7 @@ public class ProjectTableWidget extends Panel {
 	private final List<IColumn<Project, String>> columns = Collections.synchronizedList(new ArrayList<IColumn<Project, String>>());
 	private int resultSize = 20;
 	private Long selected = null;
+	private boolean authorized = false;
 	
 	private String projectName = null;
 	private String containerChoice = "Felix";
@@ -81,12 +84,20 @@ public class ProjectTableWidget extends Panel {
 		
 	}
 	
+	public ProjectTableWidget(String id, boolean authorized) {
+		super(id);
+		this.authorized = authorized;
+		setVisible (authorized);
+	}
+
 	@Override
 	public void onInitialize () {
 		super.onInitialize();
 		addStartInstanceForm ();
 		columns.add(new PropertyColumn<Project, String>(
 				new Model<String>("Name"), "name"));
+		columns.add(new PropertyColumn<Project, String>(
+				new Model<String>("Created By"), "owner.fullName"));
 		columns.add(new PropertyColumn<Project, String>(
 				new Model<String>("Created"), "created"));
 		columns.add(new PropertyColumn<Project, String>(
@@ -128,12 +139,16 @@ public class ProjectTableWidget extends Panel {
 						}
 					}
 				};
-				
+				Long uid = UserSession.get().getUser().getID();
+				if (model.getObject().getOwner().getID() != uid && model.getObject().getOwner().getAdministrator().getID() != uid) {
+					//You can only delete a project you created or you are an administrator to the owner
+					deleteProject.setVisible(false);
+				}
+					
 				//BookmarkablePageLink<ProjectIndex> deleteProject = new BookmarkablePageLink<ProjectIndex> ("delete-project", ProjectIndex.class, setDeleteProjectLinkParameters (model.getObject()));
-				deleteProject.add(new JavascriptEventConfirmation ("onClick", "All instances will be deleted as well. Continue?"));
 				BookmarkablePageLink<ProjectIndex> viewBundles = new BookmarkablePageLink<ProjectIndex> ("view-bundles", BundleIndex.class, setBundlesLinkParameters (model.getObject()));
 				BookmarkablePageLink<ProjectIndex> viewInstances = new BookmarkablePageLink<ProjectIndex> ("view-instances", InstanceIndex.class, setInstancesLinkParameters (model.getObject()));
-				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, viewProject, deleteProject, viewBundles, viewInstances);
+				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, deleteProject, viewProject, viewBundles, viewInstances);
 				item.add(button);
 			}
 			private PageParameters setInstancesLinkParameters(Project project) {
@@ -179,14 +194,11 @@ public class ProjectTableWidget extends Panel {
 		List<String> containerChoices = new ArrayList<String> ();
 		containerChoices.add("Felix");
 		containerChoices.add("Equinox");
-		containerChoices.add("Knopflerfish");
-		containerChoices.add("Concierge");
 		
 		DropDownChoice<String> wicketContainerChoices = new DropDownChoice<String>("containerChoice" ,new PropertyModel<String>(this,"containerChoice"), containerChoices);
 		setupForm.add (wicketContainerChoices);
 		
-		setupForm.add(new IndicatingAjaxButton("submit", setupForm)
-	        {
+		setupForm.add(new IndicatingAjaxButton("submit", setupForm) {
 	            /**
 				 * 
 				 */
@@ -201,7 +213,7 @@ public class ProjectTableWidget extends Panel {
 						Long uid = UserSession.get().getUser().getID();
 						instance.setContainerType(containerChoice);
 						instanceController.createInstance(instance, selected, uid, uid);
-						info("Your instance is ready <a style=\"color:#fff\" href=\"" + instance.getCpanelUrl() + "\">Go to Cpanel</a>");
+						info("Instance is ready for " + UserSession.get().getUser().getFullName() + " <a style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
 					} catch (InstanceControllerException e) {
 						error (e.getMessage());
 						e.printStackTrace();
@@ -242,10 +254,12 @@ public class ProjectTableWidget extends Panel {
 		public long size() {
 			try {
 				long USER_ID = UserSession.get().getUser().getID();
-				userProjects = projectController.listCreatedProjectsByOwner(USER_ID, USER_ID);
+				if (authorized)
+					userProjects = projectController.listAllProjects(USER_ID, USER_ID);					
 			} catch (ProjectControllerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				error (e.getMessage());
 			} 
 			return userProjects.size();
 		}

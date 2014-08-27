@@ -4,7 +4,6 @@
 package com.withinet.opaas.wicket.html;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
@@ -42,7 +42,7 @@ import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
 
 /**
- * @author Folarin
+ * @author Folarin Omotoriogun
  *
  */
 public class RoleTableWidget extends Panel {
@@ -51,9 +51,6 @@ public class RoleTableWidget extends Panel {
 	
 	@SpringBean
 	private RoleController roleController;
-	
-	@SpringBean
-	private PermissionRepository permRepo;
 	
 	private Map<String, Permission> permissionModel = new HashMap<String, Permission> ();
 	
@@ -70,17 +67,35 @@ public class RoleTableWidget extends Panel {
 	private RoleTableDataProvider provider = new RoleTableDataProvider ();
 	
 	private DefaultDataTable<Role, String> table = null;
+
+	private boolean authorized;
 	
 	/**
 	 * @param id
 	 */
 	public RoleTableWidget(String id) {
 		super(id);
-		for (Permission permission : permRepo.findAll()) {
-			String key = permission.getDescription();
-			allPermissions.add(key);
-			permissionModel.put(key, permission);
+	}
+	
+	@Override
+	public void onInitialize () {
+		super.onInitialize();
+		setVisible (authorized);
+		if (authorized) {
+			try {
+				List<Permission> permissions = null;
+				
+				for (Permission permission : roleController.readAllPermissions(UserSession.get().getUser().getID())) {
+					String key = permission.getDescription();
+					allPermissions.add(key);
+					permissionModel.put(key, permission);
+				}
+				Collections.sort(allPermissions);
+			} catch (RoleControllerException e1) {
+				throw new WicketRuntimeException ();
+			}
 		}
+		
 		roleModel = new RoleModel ();
 		roleModel.user = UserSession.get().getUser();
 		form = new RoleForm ("role-form");
@@ -156,11 +171,17 @@ public class RoleTableWidget extends Panel {
 				"role-table", columns, provider, resultSize));
 		table.setOutputMarkupId(true);
 		
-		add (new IndicatingAjaxLink ("add-role") {
+		add (new IndicatingAjaxLink<String> ("add-role") {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				roleModel.setName(null);
+				roleModel.user = UserSession.get().getUser();
 				roleModel.setId(null);
 				roleModel.setUId(UserSession.get().getUser().getID());
 				roleModel.setPermissions(Collections.<String> emptyList());
@@ -170,7 +191,6 @@ public class RoleTableWidget extends Panel {
 			}
 		});
 	}
-
 	/**
 	 * @param id
 	 * @param model
@@ -179,9 +199,18 @@ public class RoleTableWidget extends Panel {
 		super(id, model);
 	}
 	
-	@SuppressWarnings("unused")
+	public RoleTableWidget(String id, boolean b) {
+		this (id);
+		authorized = b;
+	}
+
 	private class RoleModel implements IClusterable {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private Long id;
 		
 		private User user;
@@ -248,16 +277,25 @@ public class RoleTableWidget extends Panel {
 				@Override
 	            protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 				{
-					Long uid = roleModel.uid;
+					Long uid = UserSession.get().getUser().getID();
 					Long id = roleModel.id;
 					
 					if (id != null) {
 						try {
 							List<Permission> permissions = new ArrayList<Permission> ();
+							List<Permission> cPermissions = roleController.readRolePermissions(id, uid);
 							for (String permission : roleModel.permissions) {
-								if (permissionModel.get(permission) != null)
+								if (permissionModel.get(permission) != null) {
 									permissions.add(permissionModel.get(permission));
+								}	
 							}
+							for (Permission p : cPermissions) {
+								if (!permissions.contains(p)) {
+									roleController.removePermission(id, p.getId(), uid);
+								}
+									
+							}
+							
 							roleController.addPermission(id, permissions, uid);
 							TeamIndex teamIndex = new TeamIndex();
 							teamIndex.info ("Role updated");
@@ -316,12 +354,17 @@ public class RoleTableWidget extends Panel {
 		@Override
 		public long size() {
 			Long uid = UserSession.get().getUser().getID();
-			try {
-				roles = roleController.readRolesByOwner(uid);
-			} catch (RoleControllerException e) {
-				error (e.getMessage());
-				e.printStackTrace();
+			if (authorized) {
+				try {
+					roles = roleController.readRolesByOwner(uid);
+				} catch (RoleControllerException e) {
+					error (e.getMessage());
+					e.printStackTrace();
+				}
+			} else {
+				roles = Collections.emptyList();
 			}
+			
 			return roles.size();
 		}
 

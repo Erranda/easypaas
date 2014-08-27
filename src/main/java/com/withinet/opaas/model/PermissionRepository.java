@@ -8,6 +8,8 @@ import com.withinet.opaas.model.domain.Permission;
 
 public interface PermissionRepository extends JpaRepository <Permission, Long>{
 	
-	List<Permission> findByValue (String value);
+	Permission findByValue (String value);
+
+	List<Permission> findByValueNotLike(String value);
 	
 }

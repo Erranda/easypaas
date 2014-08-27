@@ -21,6 +21,7 @@ import com.withinet.opaas.controller.common.BundleNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.ProjectControllerException;
+import static com.withinet.opaas.controller.common.ServiceProperties.*;
 import com.withinet.opaas.controller.common.UnauthorizedException;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.controller.system.FileService;
@@ -50,13 +51,14 @@ public class BundleControllerImpl implements BundleController {
 	
 	Authorizer authorizer;
 	
-	private ProjectController projectController;
+	ProjectController projectController;
 	
 	@Autowired
 	public void setAuthorizer (Authorizer authorizer) {
 		this.authorizer = authorizer;
 	}
 	
+	@Autowired
 	public void setProjectController (ProjectController projectController) {
 		this.projectController = projectController;
 	}
@@ -92,7 +94,7 @@ public class BundleControllerImpl implements BundleController {
 		Validation.assertNotNull(requesterId);
 		DomainConstraintValidator<Bundle> dcv = new  DomainConstraintValidator<Bundle> ();
 		if (!dcv.isValid(bundle)) throw new IllegalArgumentException ("Bad request");
-		User user = authorizer.authorize(Arrays.asList("createBundle", "bundleAdmin"), requesterId);
+		User user = authorizer.authorize(CREATE_BUNDLE, requesterId);
 		if (bundleRepository.findByOwnerAndSymbolicName(user, bundle.getSymbolicName()) != null) 
 			throw new BundleConflictException ("Bundle with name " + bundle.getSymbolicName() + " already exists");
 		bundle.setUpdated(new Date());
@@ -108,7 +110,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("deleteBundle", "bundleAdmin"), requesterId);
+		authorizer.authorize(DELETE_BUNDLE, requesterId);
 		Bundle forDelete = getWithBasicAuth (id, requesterId);
 		bundleRepository.delete(forDelete);
 		try {
@@ -126,7 +128,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(bundle);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("updateBundle", "bundleAdmin"), requesterId);
+		authorizer.authorize(UPDATE_BUNDLE, requesterId);
 		Bundle forSave = getWithBasicAuth (bundle.getID(), requesterId);
 		if (bundle.getLocation() != null)
 			forSave.setLocation(bundle.getLocation());
@@ -154,7 +156,9 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("readBundle", "bundleAdmin"), requesterId);
+		List<String> composite = new ArrayList<String>(READ_PROJECT);
+		composite.addAll(READ_BUNDLE);
+		authorizer.authorize(composite, requesterId);
 		return getWithBasicAuth (id, requesterId);
 	}
 
@@ -165,7 +169,7 @@ public class BundleControllerImpl implements BundleController {
 	public List<Bundle> listBundlesByOwner(Long id, Long requesterId) throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		User user = authorizer.authorize(Arrays.asList("createBundle", "bundleAdmin"), requesterId);			
+		User user = authorizer.authorize(READ_BUNDLE, requesterId);			
 		return bundleRepository.findByOwner(user);
 	}
 
@@ -174,7 +178,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(name);
 		Validation.assertNotNull(requesterId);
-		User user = authorizer.authorize(Arrays.asList("createBundle", "readBundle", "bundleAdmin"), requesterId);
+		User user = authorizer.authorize(READ_BUNDLE, requesterId);
 		if (user == null || user.getID() == 0)
 			throw new UnauthorizedException ("Unauthorized");
 		return bundleRepository.findByOwnerAndSymbolicName(user, name);
@@ -185,7 +189,7 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("readBundle", "bundleAdmin"), requesterId);
+		authorizer.authorize(READ_BUNDLE, requesterId);
 		List<ProjectBundle> projectBundles = projectController.listProjectBundlesByProject(id, requesterId);
 		List<Bundle> bundles = new ArrayList<Bundle> ();
 		if (projectBundles.size() > 0)
@@ -198,7 +202,7 @@ public class BundleControllerImpl implements BundleController {
 	public void refreshBundleInstances (Long id, Long requesterId) throws BundleControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(Arrays.asList("createInstance", "adminInstance"), requesterId);
+		authorizer.authorize(CREATE_BUNDLE, requesterId);
 		try {
 			List<Project> projects = projectController.listProjectsByBundle(id, requesterId);
 			for (Project project : projects) {

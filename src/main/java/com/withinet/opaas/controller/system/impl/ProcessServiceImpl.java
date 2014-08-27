@@ -22,6 +22,7 @@ import com.withinet.opaas.controller.system.ProcessService;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.domain.Bundle;
 import com.withinet.opaas.model.domain.Instance;
+import com.withinet.opaas.model.domain.ProjectBundle;
 
 /**
  * @author Folarin
@@ -59,10 +60,9 @@ public class ProcessServiceImpl implements ProcessService {
 		String logLocation = instance.getLogFile();
 		Validation.assertNotNull(logLocation);
 		try {
-			List<Bundle> bundles = bundleController.listBundlesByProject(pid, uid);
 			List<String> config = new ArrayList<String> ();
-			for (Bundle bundle : bundles) {
-				config.add(bundle.getLocation());
+			for (ProjectBundle bundle : instance.getProject().getProjectBundles()) {
+				config.add(bundle.getBundle().getLocation());
 			}
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
@@ -78,8 +78,6 @@ public class ProcessServiceImpl implements ProcessService {
 			liveProcesses.put(iid, thisProcess);
 			beginLogging (thisProcess, iid, logLocation);
 			return true;
-		} catch (BundleControllerException e) {
-			throw new ProcessServiceException (e.getMessage());
 		} catch (IOException e) {
 			throw new ProcessServiceException (e.getMessage());
 		} catch (RuntimeException e) {

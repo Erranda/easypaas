@@ -12,5 +12,7 @@ public interface RoleRepository extends JpaRepository <Role, Long>{
 	public Role  findByOwnerAndName (User owner, String name);
 	
 	public List<Role> findByOwner (User owner);
+
+	public List<Role> findByOwnerAndNameNot(User owner, String superAdminName);
 	
 }

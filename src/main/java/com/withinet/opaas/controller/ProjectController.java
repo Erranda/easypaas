@@ -51,5 +51,8 @@ public interface ProjectController {
 
 	public void refreshProjectInstancesDirty(Long id, Long requesterId)
 			throws ProjectControllerException;
+
+	public List<Project> listAllProjects(Long userId, Long requesterId)
+			throws ProjectControllerException;
 	
 }

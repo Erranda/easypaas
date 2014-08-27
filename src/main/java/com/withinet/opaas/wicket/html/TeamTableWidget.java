@@ -72,13 +72,25 @@ public class TeamTableWidget extends Panel {
 	private Map<String, Role> rolesModel = new HashMap<String, Role> ();
 	
 	private User user;
+	
+	private Boolean authorized;
 
 	/**
 	 * @param id
 	 */
 	public TeamTableWidget(String id) {
 		super(id);
+	}
 
+	public TeamTableWidget(String id, boolean b) {
+		this (id);
+		authorized = b;
+	}
+	
+	@Override
+	public void onInitialize () {
+		super.onInitialize();
+		setVisible (authorized);
 		columns.add(new PropertyColumn<User, String>(new Model<String>("Name"),
 				"fullName"));
 		columns.add(new PropertyColumn<User, String>(
@@ -95,18 +107,6 @@ public class TeamTableWidget extends Panel {
 			@Override
 			public void populateItem(Item<ICellPopulator<User>> item,
 					String componentId, final IModel<User> model) {
-				// BookmarkablePageLink<TeamIndex> updateUser = new
-				// BookmarkablePageLink<TeamIndex> ("update-user",
-				// TeamIndex.class, setUpdateUserLinkParameters
-				// (model.getObject()));
-				// BookmarkablePageLink<TeamIndex> deleteUser = new
-				// BookmarkablePageLink<TeamIndex> ("delete-user",
-				// TeamIndex.class, setDeleteUserLinkParameters
-				// (model.getObject()));
-				// BookmarkablePageLink<TeamIndex> cleanUser = new
-				// BookmarkablePageLink<TeamIndex> ("clean-user",
-				// TeamIndex.class, setCleanUserLinkParameters
-				// (model.getObject()));
 				IndicatingAjaxLink updateUser = new IndicatingAjaxLink("update-user") {
 					private static final long serialVersionUID = 1L;
 
@@ -124,11 +124,8 @@ public class TeamTableWidget extends Panel {
 						}
 					}
 				};
-				// BookmarkablePageLink<InstanceIndex> startInstance = new
-				// BookmarkablePageLink<InstanceIndex> ("start-instance",
-				// InstanceIndex.class, setStartInstanceLinkParameters
-				// (model.getObject()));
-				IndicatingAjaxLink deleteUser = new IndicatingAjaxLink("delete-user") {
+				
+				ConfirmationLink<String> deleteUser = new ConfirmationLink<String>("delete-user", "Caution: All user artifacts will be removed?") {
 					private static final long serialVersionUID = 1L;
 
 					@Override
@@ -148,7 +145,7 @@ public class TeamTableWidget extends Panel {
 				// BookmarkablePageLink<InstanceIndex> ("flush-instance",
 				// InstanceIndex.class, setFlushInstanceLinkParameters
 				// (model.getObject()));
-				IndicatingAjaxLink resetUser = new IndicatingAjaxLink("reset-user") {
+				ConfirmationLink<String> resetUser = new ConfirmationLink<String>("reset-user", "User artifacts will be cleared and new password sent?") {
 					private static final long serialVersionUID = 1L;
 
 					@Override
@@ -176,9 +173,8 @@ public class TeamTableWidget extends Panel {
 		add(dataTable);
 		
 		add (updateForm = new UpdateForm("update-user-form"));
-
 	}
-
+	
 	private class UpdateForm extends Form<User> {
 		
 		public UpdateForm(String id) {
@@ -239,9 +235,11 @@ public class TeamTableWidget extends Panel {
 		public List<String> initRoles () throws RoleControllerException {
 			Long uid = UserSession.get().getUser().getID();
 			List<String> roles = new ArrayList<String> ();
-			for (Role role : roleController.readRolesByOwner(uid)) {
-				roles.add(role.getName());
-				rolesModel.put(role.getName(), role);
+			if (authorized) {
+				for (Role role : roleController.readRolesByOwner(uid)) {
+					roles.add(role.getName());
+					rolesModel.put(role.getName(), role);
+				}
 			}
 			return roles;
 	    }
@@ -270,12 +268,17 @@ public class TeamTableWidget extends Panel {
 		@Override
 		public long size() {
 			Long uid = UserSession.get().getUser().getID();
-			try {
-				teamMembers = userController.listTeamMembers(uid, uid);
-			} catch (UserControllerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (authorized) {
+				try {
+					teamMembers = userController.listTeamMembers(uid, uid);
+				} catch (UserControllerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				teamMembers = Collections.emptyList();
 			}
+			
 			return teamMembers.size();
 		}
 

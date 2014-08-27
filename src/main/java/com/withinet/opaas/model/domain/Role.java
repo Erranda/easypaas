@@ -37,7 +37,7 @@ public class Role implements Serializable {
 	private String name;
 	
 	@OneToMany (mappedBy="role", fetch=FetchType.EAGER)
-	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.LOCK})	
+	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK})	
 	private Set<RolePermission> permissions = new HashSet <RolePermission> ();
 
 	public User getOwner() {
@@ -61,7 +61,7 @@ public class Role implements Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = name.toUpperCase().trim();
 	}
 
 }

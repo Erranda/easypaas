@@ -38,7 +38,6 @@ public class Instance implements Serializable {
 	private String cpanelUrl;
 	
 	@Column(name="CREATED", nullable=false)	
-	@Temporal(TemporalType.DATE)
 	private Date created;
 	
 	@Column(name="HOST_NAME", nullable=false)

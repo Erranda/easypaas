@@ -31,6 +31,11 @@
 			<artifactId>wicket-extensions</artifactId>
 			<version>${wicket.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-auth-roles</artifactId>
+			<version>${wicket.version}</version>
+		</dependency>
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -89,28 +94,28 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
-</dependencies>
+	</dependencies>
 	<build>
-	<resources>
-            <resource>
-                <!-- Copy wicket HTML and other resource files from the java directory -->
-                <filtering>false</filtering>
-                <directory>${basedir}/src/main/java</directory>
-                <includes>
-                    <include>**/*.html</include>
-                    <include>**/*.js</include>
-                    <include>**/*.png</include>
-                    <include>**/*.css</include>
-                    <include>**/*.jpg</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-            </resource>
-</resources>
+		<resources>
+			<resource>
+				<!-- Copy wicket HTML and other resource files from the java directory -->
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/java</directory>
+				<includes>
+					<include>**/*.html</include>
+					<include>**/*.js</include>
+					<include>**/*.png</include>
+					<include>**/*.css</include>
+					<include>**/*.jpg</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -126,5 +131,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>

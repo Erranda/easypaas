@@ -1,52 +1,58 @@
 package com.withinet.opaas.wicket.html;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import com.withinet.opaas.controller.Authorizer;
 import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
-import com.withinet.opaas.controller.common.BundleControllerException;
-import com.withinet.opaas.controller.common.ProjectControllerException;
-import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.wicket.services.UserSession;
 
-
+import static com.withinet.opaas.controller.common.ServiceProperties.*;
 /**
- * @author Martijn Dashorst
+ * @author Folarin Omotoriogun
  */
 public class ProjectIndex extends Authenticated
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1340763028068919773L;
+
 	@SpringBean
 	ProjectController projectController;
 	
 	@SpringBean
 	InstanceController instanceController;
 	
-	Long userId = UserSession.get().getUser().getID();
+	@SpringBean
+	Authorizer authorizer;
 	
     /**
      * Constructor.
      */
     public ProjectIndex ()
     {
-        add (new ProjectTableWidget ("project-table-widget"));
+    	Long uid = UserSession.get().getUser().getID();
+    	
+    	try {
+    		authorizer.authorize(READ_PROJECT, uid);
+    		ProjectTableWidget projectTableWidget = new ProjectTableWidget ("project-table-widget", true);
+    		add (projectTableWidget);
+    	} catch (ControllerSecurityException e) {
+    		ProjectTableWidget projectTableWidget = new ProjectTableWidget ("project-table-widget", false);
+    		add (projectTableWidget);
+    	}
+       
 	    try {
-			add (new ProjectSetupWidget ("project-setup-widget"));
-		} catch (UserControllerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			error (e.getMessage());
-		} catch (BundleControllerException e) {
-			e.printStackTrace();
-			error (e.getMessage());
+	    	authorizer.authorize(CREATE_PROJECT, uid);
+    		ProjectSetupWidget projectSetupWidget = new ProjectSetupWidget ("project-setup-widget", true);
+    		add (projectSetupWidget);
+		} catch (ControllerSecurityException e) {
+			ProjectSetupWidget projectSetupWidget = new ProjectSetupWidget ("project-setup-widget", false);
+    		add (projectSetupWidget);
 		}
     }
     

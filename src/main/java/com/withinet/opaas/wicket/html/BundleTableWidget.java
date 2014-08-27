@@ -3,18 +3,15 @@
  */
 package com.withinet.opaas.wicket.html;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.form.upload.UploadProgressBar;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -27,13 +24,10 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
 
@@ -71,8 +65,8 @@ public class BundleTableWidget extends Panel {
 	@SpringBean
 	private ProjectController projectController;
 
-	private FileUpload upload;
 
+	private Boolean authorized;
 
 	private Long pid = null;
 
@@ -81,21 +75,34 @@ public class BundleTableWidget extends Panel {
 	 */
 	public BundleTableWidget(String id) {
 		super(id);
-		initialize();
+		super.onInitialize();
 	}
 
 	public BundleTableWidget(String id, Long pid) {
 		super(id);
 		this.pid = pid;
-		initialize();
 	}
 
-	public void initialize() {
+	public BundleTableWidget(String id, boolean b) {
+		this (id);
+		this.authorized = b;
+	}
+	
+	public BundleTableWidget(String id, Long pid, boolean b) {
+		this (id, pid);
+		authorized = b;
+	}
 
+	@Override
+	public void onInitialize() {
+		super.onInitialize();
+		setVisible (authorized);
 		columns.add(new PropertyColumn<Bundle, String>(
 				new Model<String>("Name"), "symbolicName"));
+		columns.add(new PropertyColumn<Bundle, String>(
+				new Model<String>("Created By"), "owner.fullName"));
 		columns.add(new PropertyColumn<Bundle, String>(new Model<String>(
-				"Updated"), "updated"));
+				"Last Updated"), "updated"));
 
 		final DataTable<Bundle, String> dataTable = new DefaultDataTable<Bundle, String>(
 				"bundle-table", columns, provider, resultSize);
@@ -116,6 +123,11 @@ public class BundleTableWidget extends Panel {
 				final ConfirmationLink<String> deleteBundle = new ConfirmationLink<String>(
 						"update-instances-delete",
 						"Projects and instances with bundle will be updated as well. Continue?") {
+
+					/**
+							 * 
+							 */
+							private static final long serialVersionUID = -6638248099291384547L;
 
 					@Override
 					public void onClick(AjaxRequestTarget target) {
@@ -155,7 +167,7 @@ public class BundleTableWidget extends Panel {
 				// BookmarkablePageLink<BundleIndex> ("update-link",
 				// BundleIndex.class, setUpdateBundleLinkParameters
 				// (model.getObject()));
-				IndicatingAjaxLink updateBundle = new IndicatingAjaxLink("update-link") {
+				IndicatingAjaxLink<String> updateBundle = new IndicatingAjaxLink<String>("update-link") {
 					private static final long serialVersionUID = 1L;
 
 					@Override
@@ -194,6 +206,11 @@ public class BundleTableWidget extends Panel {
 		setupForm.add(progress);
 
 		setupForm.add(new ConfirmationButton("submit", "All instances will be updated?" , setupForm) {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 7432809572142555276L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -248,6 +265,11 @@ public class BundleTableWidget extends Panel {
 	private class BundleTableDataProvider extends
 			SortableDataProvider<Bundle, String> {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6823150414258297627L;
+
 		private final long USER_ID = UserSession.get().getUser().getID();
 
 		private List<Bundle> userBundles = null;
@@ -266,30 +288,35 @@ public class BundleTableWidget extends Panel {
 
 		@Override
 		public long size() {
-			if (pid != null) {
-				try {
-					userBundles = bundleController.listBundlesByProject(pid,
-							USER_ID);
-					// pid = null;
-				} catch (BundleControllerException e1) {
-					// error (e1.getMessage ());
+			if (authorized) {
+				if (pid != null) {
 					try {
-						userBundles = bundleController.listBundlesByOwner(
-								USER_ID, USER_ID);
-					} catch (BundleControllerException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						userBundles = bundleController.listBundlesByProject(pid,
+								USER_ID);
+						// pid = null;
+					} catch (BundleControllerException e1) {
+						// error (e1.getMessage ());
+						try {
+							userBundles = bundleController.listBundlesByOwner(
+									USER_ID, USER_ID);
+						} catch (BundleControllerException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						e1.printStackTrace();
 					}
-					e1.printStackTrace();
+				} else {
+					try {
+						userBundles = bundleController.listBundlesByOwner(USER_ID,
+								USER_ID);
+					} catch (BundleControllerException e) {
+						error(e.getMessage());
+					}
 				}
 			} else {
-				try {
-					userBundles = bundleController.listBundlesByOwner(USER_ID,
-							USER_ID);
-				} catch (BundleControllerException e) {
-					error(e.getMessage());
-				}
+				userBundles = Collections.emptyList();
 			}
+			
 			return userBundles.size();
 		}
 	}
