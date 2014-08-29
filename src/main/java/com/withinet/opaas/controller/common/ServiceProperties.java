@@ -25,15 +25,15 @@ public class ServiceProperties {
 
 	public static final int MAXPORT = 65535;
 
-	public static final String EMAILER_USERNAME = "withinetsolutions@gmail.com";
+	public static final String EMAILER_USERNAME = "auto-respond@wandlist.com";
 
-	public static final String EMAILER_PASSWORD = "Xda3txyn";
+	public static final String EMAILER_PASSWORD = "!dSutjn0";
 
 	public static final String EMAILER_SMTP_AUTH = "true";
 
-	public static final String EMAILER_STARTTLS_ENABLE = "true";
+	public static final String EMAILER_STARTTLS_ENABLE = "false";
 
-	public static final String EMAILER_SMTP_HOST = "smtp.gmail.com";
+	public static final String EMAILER_SMTP_HOST = "smtp.wandlist.com";
 
 	public static final String EMAILER_SMTP_PORT = "587";
 
