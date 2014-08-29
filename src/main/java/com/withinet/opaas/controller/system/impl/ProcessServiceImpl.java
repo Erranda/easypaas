@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +24,7 @@ import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.domain.Bundle;
 import com.withinet.opaas.model.domain.Instance;
 import com.withinet.opaas.model.domain.ProjectBundle;
+import com.withinet.opaas.util.EasyWriter;
 
 /**
  * @author Folarin
@@ -61,14 +63,18 @@ public class ProcessServiceImpl implements ProcessService {
 		Validation.assertNotNull(logLocation);
 		try {
 			List<String> config = new ArrayList<String> ();
+			String configDir = instance.getWorkingDirectory() + "/config_instance";
+			String policyLocation = configDir + "/all.policy"; 
+			String instanceConfigLocation = configDir + "/org.apache.felix.webconsole.internal.servlet.OsgiManager.cfg";
+			writeConfig (instance,  instanceConfigLocation, policyLocation);
 			for (ProjectBundle bundle : instance.getProject().getProjectBundles()) {
 				config.add(bundle.getBundle().getLocation());
 			}
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");
-			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort()
-					);
+			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort() + " " +
+							   "-Dfelix.fileinstall.dir="+ configDir);
 			config.add("--skipInvalidBundles");
 			config.add("--platform="+instance.getContainerType().toLowerCase().trim());	
 			config.add("--usePersistedState="+ !instance.isDirty());
@@ -114,6 +120,14 @@ public class ProcessServiceImpl implements ProcessService {
 		Pipe pipe = new Pipe(process, logFile);
 		logPipes.put(instanceId, pipe);
 		pipe.start();		
+	}
+	
+	private void writeConfig (Instance instance, String location, String policyLocation) throws IOException {
+		String fileLocation = location;
+		List<String> config = Arrays.asList("username=" + instance.getOwner().getEmail(), "password=" + instance.getOwner().getPassword());
+		EasyWriter.write(config, fileLocation);
+		List<String> policy = Arrays.asList("grant {", "permission java.io.FilePermission \"", instance.getWorkingDirectory() + "\"" + "\"read,write\";", "};");
+		EasyWriter.write(policy, policyLocation);
 	}
 
 }

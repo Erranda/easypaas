@@ -11,8 +11,11 @@ import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.UrlResourceReference;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.lang.Bytes;
@@ -38,6 +41,8 @@ import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.RolePermission;
 import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.Index;
+import com.withinet.opaas.wicket.html.AccountIndex;
+import com.withinet.opaas.wicket.html.Authenticated;
 import com.withinet.opaas.wicket.html.BundleIndex;
 import com.withinet.opaas.wicket.html.Dashboard;
 import com.withinet.opaas.wicket.html.InstanceIndex;
@@ -110,6 +115,7 @@ public class Application extends WebApplication {
 	@Override
 	protected void init() {
 		super.init();
+		getJavaScriptLibrarySettings().setJQueryReference(new PackageResourceReference(Authenticated.class, "../js/libs/jquery-1.9.1.min-ver-1409112303268.js"));
 		getMarkupSettings().setStripWicketTags(true);
 		getMarkupSettings().setStripComments(true);
 		getMarkupSettings().setCompressWhitespace(true);
@@ -131,6 +137,7 @@ public class Application extends WebApplication {
 		mountPage("/bundles", BundleIndex.class);
 		mountPage("/team", TeamIndex.class);
 		mountPage("/instances", InstanceIndex.class);
+		mountPage("/account", AccountIndex.class);
 
 		User web = new User();
 		web.setCreated(new Date());

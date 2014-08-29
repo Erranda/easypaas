@@ -40,6 +40,7 @@ public abstract class Authenticated extends WebPage {
 	public Authenticated() {
 		if(UserSession.get().userNotLoggedIn()) throw new RestartResponseAtInterceptPageException(
 				Login.class);
+		setVersioned (false);
 		
 		feedback = new FeedbackPanel ("feedback");
 		feedback.setEscapeModelStrings(false);

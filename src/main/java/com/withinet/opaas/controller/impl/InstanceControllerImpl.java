@@ -244,7 +244,7 @@ public class InstanceControllerImpl implements InstanceController {
 		Validation.assertNotNull(adminId);
 		Validation.assertNotNull(requesterId);
 		User user = authorizer.authorize(SYSTEM_ADMIN, requesterId);
-		return instanceRepository.findByAdministrator(user);
+		return instanceRepository.findByAdministratorAndOwnerNot(user, user);
 	}
 	
 	private Instance getWithBasicAuth (Long instanceId, Long requesterId) throws InstanceControllerException {

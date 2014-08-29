@@ -15,11 +15,11 @@ public class ServiceProperties {
 
     public static final String HOME = "/home/newuser/beta/cloud";
     
-    public static final String DOMAIN = "http://cloud.withinet.co.uk";
+    //public static final String DOMAIN = "http://cloud.withinet.co.uk";
     
 	//public static final String HOME = "C:/Users/Folarin/Desktop/opaas/";
 
-	//public static final String DOMAIN = "http://localhost";
+	public static final String DOMAIN = "http://localhost";
 
 	public static final int MINPORT = 9000;
 

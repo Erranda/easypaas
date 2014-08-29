@@ -17,5 +17,7 @@ public interface InstanceRepository extends JpaRepository<Instance, Long> {
 	public List<Instance> findByAdministrator (User administrator);
 
 	public Instance findByPort(Integer port);
+
+	public List<Instance> findByAdministratorAndOwnerNot(User user, User user2);
 	
 }

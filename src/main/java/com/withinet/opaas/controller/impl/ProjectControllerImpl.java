@@ -154,7 +154,9 @@ public class ProjectControllerImpl implements ProjectController {
 			throws ProjectControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(READ_PROJECT, requesterId);
+		List<String> composite = new ArrayList<String> (READ_PROJECT);
+		composite.addAll(CREATE_PROJECT);
+		authorizer.authorize(composite, requesterId);
 		// You have to be a team member or owner to see details
 		Project thisProject = projectRepository.findOne(id);
 		if (thisProject == null)
