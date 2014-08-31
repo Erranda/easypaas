@@ -207,7 +207,7 @@ public class ProjectTableWidget extends Panel {
 						instanceController.createInstance(instance, selected, uid, uid);
 						info("Instance is ready for " + UserSession.get().getUser().getFullName() + " <a style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
 					} catch (InstanceControllerException e) {
-						error (e.getMessage());
+						error ("Error: " + e.getMessage());
 						e.printStackTrace();
 						setResponsePage (getPage());
 					}

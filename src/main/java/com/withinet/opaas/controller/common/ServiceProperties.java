@@ -41,11 +41,11 @@ public class ServiceProperties {
 
 	public static final String SUPER_ADMIN_EMAIL = "folarinomotoriogun@gmail.com";
 	
-	public static final String SECURITY_BUNDLE_LOCATION = "/security-1.0.0.jar";
+	public static final String SECURITY_BUNDLE_LOCATION = "/home/newuser/beta/security-1.0.0.jar";
 
-/*	public static final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
+/*  public static final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 
-	public static final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";*/
+	public static final String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"; */
 
 	public static final List<String> SIGNED_IN = Arrays.asList("signedIn", "admin");/*
 

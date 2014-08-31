@@ -27,6 +27,7 @@ import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.domain.Bundle;
 import com.withinet.opaas.model.domain.Instance;
 import com.withinet.opaas.model.domain.ProjectBundle;
+import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.util.EasyWriter;
 
 /**
@@ -52,7 +53,7 @@ public class ProcessServiceImpl implements ProcessService {
 	 * @see com.withinet.opaas.controller.system.ProcessService#startProcess(com.withinet.opaas.model.domain.Instance)
 	 */
 	@Override
-	public boolean startProcess(Instance instance) throws ProcessServiceException {
+	public boolean startProcess(Instance instance, User user) throws ProcessServiceException {
 		Validation.assertNotNull(instance);
 		if (instance.getWorkingDirectory() == null)
 			throw new ProcessServiceException ("Working directory cannot be null for instance");
@@ -73,12 +74,7 @@ public class ProcessServiceImpl implements ProcessService {
 			for (ProjectBundle bundle : instance.getProject().getProjectBundles()) {
 				config.add(bundle.getBundle().getLocation() + "@10");
 			}
-			URL url = getClass().getResource(ServiceProperties.SECURITY_BUNDLE_LOCATION);
-			String securityBundle = url.toString().replaceAll("file:\"", "");
-			securityBundle = securityBundle.replaceAll("!/security-1.0.0.jar", "");
-			securityBundle = securityBundle.replaceAll("file:/", "");
-			securityBundle = securityBundle.replaceAll("file:/", "");
-			config.add(securityBundle);
+			config.add(ServiceProperties.SECURITY_BUNDLE_LOCATION);
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");
@@ -87,8 +83,8 @@ public class ProcessServiceImpl implements ProcessService {
 							   "-Dinstance.home=" + instance.getWorkingDirectory() + " " +
 							   "-Djava.security.policy="+policyLocation + " " +
 							   "-Dorg.osgi.framework.security=osgi" + " " +
-							   "-Dinstance.username=" + instance.getOwner().getEmail() + " " +
-							   "-Dinstance.password=" + instance.getOwner().getPassword()
+							   "-Dinstance.username=" + user.getEmail() + " " +
+							   "-Dinstance.password=" + user.getPassword()
 					);
 			config.add("--skipInvalidBundles");
 			config.add("--platform="+instance.getContainerType().toLowerCase().trim());	

@@ -106,7 +106,7 @@ public class InstanceControllerImpl implements InstanceController {
 			File logFile = fileLocationGenerator.getInstanceLogFile(ownerId, iid);
 			instance.setLogFile(logFile.getAbsolutePath());
 			instanceRepository.saveAndFlush(instance);
-			processService.startProcess(instance);
+			processService.startProcess(instance, user);
 			//There should be a cron like service monitoring instances
 			instance.setStatus("Live");
 			instanceRepository.saveAndFlush(instance);
@@ -282,7 +282,7 @@ public class InstanceControllerImpl implements InstanceController {
 	public void startInstance (Long id, Long requesterId, boolean dirty) throws InstanceControllerException {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
-		authorizer.authorize(START_INSTANCE, requesterId);
+		User user = authorizer.authorize(START_INSTANCE, requesterId);
 		Instance instance = getWithBasicAuth (id, requesterId);
 		try {
 			fileService.deleteFile(instance.getLogFile());
@@ -291,7 +291,7 @@ public class InstanceControllerImpl implements InstanceController {
 		}
 		instance.setDirty(dirty);
 		try {
-			processService.startProcess(instance);
+			processService.startProcess(instance, user);
 		} catch (ProcessServiceException e) {
 			throw new InstanceControllerException (e.getMessage());
 		}
