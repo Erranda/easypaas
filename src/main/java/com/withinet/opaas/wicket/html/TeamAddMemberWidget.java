@@ -76,6 +76,7 @@ public class TeamAddMemberWidget extends Panel {
 	    try {
 			DropDownChoice<String> wicketRole = new DropDownChoice<String>("role", new PropertyModel<String> (user, "role"), initRoles ());
 			addMemberForm.add (wicketRole);
+			wicketRole.setRequired(true);
 		} catch (RoleControllerException e1) {
 			throw new WicketRuntimeException (e1.getMessage ());
 		}

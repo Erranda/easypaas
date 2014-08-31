@@ -37,4 +37,6 @@ public interface UserController {
 	public void resetAccount(Long id, Long requesterId) throws UserControllerException;
 	
 	public void passwordReset (Long id, Long requesterId) throws UserControllerException;
+
+	public List<User> listAllUsers(Long requesterId);
 }

@@ -32,6 +32,8 @@ public interface InstanceController {
 
 	public void startInstance(Long id, Long requesterId, boolean b)
 			throws InstanceControllerException;
+
+	public List<Instance> listAllInstances(Long requesterId);
 	
 }
 

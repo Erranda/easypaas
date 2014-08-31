@@ -299,5 +299,12 @@ public class InstanceControllerImpl implements InstanceController {
 		instance.setStatus("Live");
 		instanceRepository.saveAndFlush (instance);
 	}
+	
+	@Override
+	public List<Instance> listAllInstances (Long requesterId) {
+		Validation.assertNotNull(requesterId);
+		authorizer.authorize(SUPER_ADMIN, requesterId);
+		return instanceRepository.findAll();
+	}
 
 }

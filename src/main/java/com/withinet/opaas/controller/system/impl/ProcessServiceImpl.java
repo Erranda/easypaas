@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,9 +71,14 @@ public class ProcessServiceImpl implements ProcessService {
 			String instanceConfigLocation = configDir + "/org.apache.felix.webconsole.internal.servlet.OsgiManager.cfg";
 			writeConfig (instance,  instanceConfigLocation, policyLocation);
 			for (ProjectBundle bundle : instance.getProject().getProjectBundles()) {
-				config.add(bundle.getBundle().getLocation());
+				config.add(bundle.getBundle().getLocation() + "@10");
 			}
-			config.add(new File(ServiceProperties.SECURITY_BUNDLE_LOCATION).getAbsolutePath());
+			URL url = getClass().getResource(ServiceProperties.SECURITY_BUNDLE_LOCATION);
+			String securityBundle = url.toString().replaceAll("file:\"", "");
+			securityBundle = securityBundle.replaceAll("!/security-1.0.0.jar", "");
+			securityBundle = securityBundle.replaceAll("file:/", "");
+			securityBundle = securityBundle.replaceAll("file:/", "");
+			config.add(securityBundle);
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");

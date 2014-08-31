@@ -95,12 +95,19 @@ public class RoleControllerImpl implements RoleController {
 			Role role = roleRepo.findByOwnerAndName(user, userRole.getName());
 			if (role != null)
 				throw new RoleControllerException ("A role with this name already exists");
+			Role test = new Role ();
+			test.setName(SUPER_ADMIN_NAME);
+			Role test2 = new Role ();
+			test2.setName(ADMINISTRATOR_NAME);
+			if ((userRole.getName().equals(test.getName())) || (userRole.getName().equals(test2.getName())))
+				throw new RoleControllerException ("This role name is reserved");
+			userRole = roleRepo.saveAndFlush(userRole);
+			addPermission (userRole.getId(), basic, requesterId);
 		} catch (UserControllerException e) {
 			e.printStackTrace();
 			throw new RoleControllerException (e.getMessage());
 		}
-		userRole = roleRepo.saveAndFlush(userRole);
-		addPermission (userRole.getId(), basic, requesterId);
+		
 		return userRole;
 	}
 
@@ -114,7 +121,7 @@ public class RoleControllerImpl implements RoleController {
 		Validation.assertNotNull(requesterId);
 		User admin = authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
-		if (role.getName().equals("SUPER ADMINISTRATOR") || role.getName().equals("ADMINISTRATOR"))
+		if (role.getName().equals(SUPER_ADMIN_NAME) || role.getName().equals(ADMINISTRATOR_NAME))
 			throw new RoleControllerException ("Security exception, this role cannot be deleted");
 		List<User> users = userRepo.findByAssignedRole(role);
 		for (User user : users) {

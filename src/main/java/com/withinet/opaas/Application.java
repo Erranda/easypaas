@@ -268,6 +268,11 @@ public class Application extends WebApplication {
 			p15.setDescription("Session: User can sign into system");
 			permissionRepo.save(p15);
 			
+			Permission p16 = new Permission ();
+			p16.setValue("superAdmin");
+			p16.setDescription("System administrator");
+			permissionRepo.save(p16);
+			
 			/*Permission p16 = new Permission ();
 			p16.setValue("readUser");
 			p16.setDescription("Read user");
@@ -326,22 +331,26 @@ public class Application extends WebApplication {
 			List<Permission> admin = Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, 
 					p26, p27, p28, p29, p30, p40);
 			
+			List<Permission> sadmin = Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, 
+					p26, p27, p28, p29, p30, p40, p16);
+			
 			Role role0 = new Role ();
 			role0.setName(SUPER_ADMIN_NAME);
 			role0.setOwner(web);
 			roleRepo.save(role0);
 			
 			Role role = new Role ();
-			role.setName("ADMINISTRATOR");
+			role.setName(ADMINISTRATOR_NAME);
 			role.setOwner(web);
 			roleRepo.save(role);
 			
 			Role role2 = new Role ();
-			role2.setName("AUTHENTICATED");
+			role2.setName(AUTHENTICATED_NAME);
 			role2.setOwner(web);
 			roleRepo.save(role2);
 			
 			web.setAssignedRole(role0);
+			web.setRole(role0.getName());
 			dummy.setAssignedRole(role2);
 			userRepo.save(web);
 			userRepo.save(dummy);
@@ -352,7 +361,7 @@ public class Application extends WebApplication {
 			
 			try {
 				roleCtrl.addPermission(role.getId(), admin, web.getID());
-				roleCtrl.addPermission(role0.getId(), admin, web.getID());
+				roleCtrl.addPermission(role0.getId(), sadmin, web.getID());
 				roleCtrl.addPermission(role2.getId(), p15, web.getID());
 			} catch (RoleControllerException e) {
 				e.printStackTrace();

@@ -41,7 +41,7 @@ public class ServiceProperties {
 
 	public static final String SUPER_ADMIN_EMAIL = "folarinomotoriogun@gmail.com";
 	
-	public static final String SECURITY_BUNDLE_LOCATION = "src/main/resources/security-1.0.0.jar";
+	public static final String SECURITY_BUNDLE_LOCATION = "/security-1.0.0.jar";
 
 /*	public static final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 
@@ -125,7 +125,9 @@ public class ServiceProperties {
 
 	public static final List<String> DELETE_ROLE = "ROLE.DELETE.ALL";*/
 
-	public static final List<String> SYSTEM_ADMIN = Arrays.asList("admin", "superAdmin");
+	public static final List<String> SYSTEM_ADMIN = Arrays.asList("admin");
+	
+	public static final List<String> SUPER_ADMIN = Arrays.asList("superAdmin");
 	
 	public static final String SUPER_ADMIN_NAME = "SUPER ADMINISTRATOR";
 	

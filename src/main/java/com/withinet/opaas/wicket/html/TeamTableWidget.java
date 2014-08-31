@@ -36,10 +36,13 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 
+import com.withinet.opaas.controller.Authorizer;
 import com.withinet.opaas.controller.RoleController;
 import com.withinet.opaas.controller.UserController;
+import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.RoleControllerException;
+import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.User;
@@ -63,6 +66,9 @@ public class TeamTableWidget extends Panel {
 
 	@SpringBean
 	UserController userController;
+	
+	@SpringBean
+	Authorizer authorizer;
 	
 	UpdateForm updateForm = null;
 	
@@ -95,6 +101,8 @@ public class TeamTableWidget extends Panel {
 				"fullName"));
 		columns.add(new PropertyColumn<User, String>(
 				new Model<String>("Email"), "email"));
+		columns.add(new PropertyColumn<User, String>(
+				new Model<String>("Approved By"), "administrator.email"));
 		columns.add(new PropertyColumn<User, String>(
 				new Model<String>("Status"), "status"));
 		columns.add(new PropertyColumn<User, String>(
@@ -289,10 +297,15 @@ public class TeamTableWidget extends Panel {
 			Long uid = UserSession.get().getUser().getID();
 			if (authorized) {
 				try {
-					teamMembers = userController.listTeamMembers(uid, uid);
-				} catch (UserControllerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					authorizer.authorize(ServiceProperties.SUPER_ADMIN, uid);
+					teamMembers = userController.listAllUsers(uid);
+				} catch (ControllerSecurityException e) {
+					try {
+						teamMembers = userController.listTeamMembers(uid, uid);
+					} catch (UserControllerException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			} else {
 				teamMembers = Collections.emptyList();

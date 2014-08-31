@@ -318,7 +318,7 @@ public class RoleTableWidget extends Panel {
 							}
 							roleController.addPermission(role.getId(), permissions, uid);
 							TeamIndex teamIndex = new TeamIndex();
-							teamIndex.info ("Role updated");
+							teamIndex.info ("Role created");
 							setResponsePage (teamIndex);
 						} catch (RoleControllerException e) {
 							error (e.getMessage());

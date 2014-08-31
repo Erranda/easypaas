@@ -27,9 +27,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import com.withinet.opaas.controller.Authorizer;
 import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.InstanceControllerException;
+import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.model.domain.Instance;
 import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.util.EasyReader;
@@ -48,6 +51,9 @@ public class InstanceTableWidget extends Panel {
 	Long pid = null;
 	
 	private Boolean authorized;
+	
+	@SpringBean
+	Authorizer authorizer;
 
 	private Map.Entry<Integer, StringBuffer> map;
 	/**
@@ -265,22 +271,29 @@ public class InstanceTableWidget extends Panel {
 					} catch (InstanceControllerException e1) {
 						error (e1.getMessage ());
 						try {
-							userInstances = instanceController.listInstancesByUser(
-									USER_ID, USER_ID);
-						} catch (InstanceControllerException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							error (e.getMessage());
+							authorizer.authorize(ServiceProperties.SUPER_ADMIN, USER_ID);
+							userInstances = instanceController.listAllInstances(USER_ID);
+						} catch (ControllerSecurityException e) {
+							try {
+								userInstances = instanceController.listInstancesByUser(USER_ID, USER_ID);
+							} catch (InstanceControllerException e2) {
+								e2.printStackTrace();
+								error (e2.getMessage());
+							}
 						}
 						e1.printStackTrace();
 					}
 				} else {
 					try {
-						userInstances = instanceController.listInstancesByUser(
-								USER_ID, USER_ID);
-						
-					} catch (InstanceControllerException e) {
-						error(e.getMessage());
+						authorizer.authorize(ServiceProperties.SUPER_ADMIN, USER_ID);
+						userInstances = instanceController.listAllInstances(USER_ID);
+					} catch (ControllerSecurityException e) {
+						try {
+							userInstances = instanceController.listInstancesByUser(USER_ID, USER_ID);
+						} catch (InstanceControllerException e2) {
+							e2.printStackTrace();
+							error (e2.getMessage());
+						}
 					}
 				}
 			}

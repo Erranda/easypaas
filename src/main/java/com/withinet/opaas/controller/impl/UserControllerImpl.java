@@ -366,4 +366,12 @@ public class UserControllerImpl implements UserController {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public List<User> listAllUsers (Long requesterId) {
+		User user = authorizer.authorize(SUPER_ADMIN, requesterId);
+		List<User> users = userRepo.findAll();
+		users.remove(user);
+		return users;
+	}
 }
