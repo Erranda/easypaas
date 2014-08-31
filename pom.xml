@@ -107,6 +107,7 @@
 					<include>**/*.png</include>
 					<include>**/*.css</include>
 					<include>**/*.jpg</include>
+					<include>**/*.properties</include>
 				</includes>
 				<excludes>
 					<exclude>**/*.java</exclude>

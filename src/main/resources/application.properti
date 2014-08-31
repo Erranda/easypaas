@@ -1,11 +1,9 @@
-# suppress inspection "UnusedProperty" for whole file
-
 # Spring
 spring.profiles.active=dev
 
 # Server
 server.port=80
-server.sessionTimeout=30
+server.sessionTimeout=10000
 
 # JPA
 spring.jpa.hibernate.ddl-auto=update
