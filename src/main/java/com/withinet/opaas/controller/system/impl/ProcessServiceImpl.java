@@ -80,7 +80,7 @@ public class ProcessServiceImpl implements ProcessService {
 							   "-Dfelix.fileinstall.dir="+ configDir + " " +
 							   "-Dinstance.home=" + instance.getWorkingDirectory() + " " +
 							   "-Djava.security.policy="+policyLocation + " " +
-							   "-Dorg.osgi.framework.security=osgi" + " " +
+							   //"-Dorg.osgi.framework.security=osgi" + " " +
 							   "-Dinstance.username=" + instance.getOwner().getEmail() + " " +
 							   "-Dinstance.password=" + instance.getOwner().getPassword()
 					);
