@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.ops4j.pax.runner.platform.PlatformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.common.BundleControllerException;
+import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.system.ProcessService;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.domain.Bundle;
@@ -70,11 +72,18 @@ public class ProcessServiceImpl implements ProcessService {
 			for (ProjectBundle bundle : instance.getProject().getProjectBundles()) {
 				config.add(bundle.getBundle().getLocation());
 			}
+			config.add(new File(ServiceProperties.SECURITY_BUNDLE_LOCATION).getAbsolutePath());
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");
 			config.add("--vmo=-Dorg.osgi.service.http.port=" + instance.getPort() + " " +
-							   "-Dfelix.fileinstall.dir="+ configDir);
+							   "-Dfelix.fileinstall.dir="+ configDir + " " +
+							   "-Dinstance.home=" + instance.getWorkingDirectory() + " " +
+							   "-Djava.security.policy="+policyLocation + " " +
+							   "-Dorg.osgi.framework.security=osgi" + " " +
+							   "-Dinstance.username=" + instance.getOwner().getEmail() + " " +
+							   "-Dinstance.password=" + instance.getOwner().getPassword()
+					);
 			config.add("--skipInvalidBundles");
 			config.add("--platform="+instance.getContainerType().toLowerCase().trim());	
 			config.add("--usePersistedState="+ !instance.isDirty());
@@ -87,7 +96,8 @@ public class ProcessServiceImpl implements ProcessService {
 		} catch (IOException e) {
 			throw new ProcessServiceException (e.getMessage());
 		} catch (RuntimeException e) {
-			e.printStackTrace();
+			throw new ProcessServiceException (e.getMessage());
+		} catch (PlatformException e) {
 			throw new ProcessServiceException (e.getMessage());
 		}
 	}
@@ -123,10 +133,9 @@ public class ProcessServiceImpl implements ProcessService {
 	}
 	
 	private void writeConfig (Instance instance, String location, String policyLocation) throws IOException {
-		String fileLocation = location;
 		List<String> config = Arrays.asList("username=" + instance.getOwner().getEmail(), "password=" + instance.getOwner().getPassword());
-		EasyWriter.write(config, fileLocation);
-		List<String> policy = Arrays.asList("grant {", "permission java.io.FilePermission \"", instance.getWorkingDirectory() + "\"" + "\"read,write\";", "};");
+		EasyWriter.write(config, location);
+		List<String> policy = Arrays.asList("grant {", "permission java.security.AllPermission;", "};");
 		EasyWriter.write(policy, policyLocation);
 	}
 

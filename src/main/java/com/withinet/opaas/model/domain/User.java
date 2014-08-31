@@ -49,7 +49,6 @@ public class User implements Serializable {
 	private String password;
 	
 	@Column(name="CREATED", nullable=false)	
-	@Temporal(TemporalType.DATE)
 	private java.util.Date created;
 	
 	@Column (name="USER_LOCATION", nullable = false, length = 255)

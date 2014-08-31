@@ -13,11 +13,12 @@ import org.apache.wicket.markup.html.panel.Panel;
 public class TeamTableQuickAction extends Panel {
 
 	public TeamTableQuickAction(String id, WebMarkupContainer updateUserLink, WebMarkupContainer deleteUserLink, 
-			WebMarkupContainer flushUserLink) {
+			WebMarkupContainer flushUserLink, WebMarkupContainer resetPassword) {
 		super(id);
 		add (updateUserLink);
 		add (deleteUserLink);
 		add (flushUserLink);
+		add (resetPassword);
 	}
 
 }

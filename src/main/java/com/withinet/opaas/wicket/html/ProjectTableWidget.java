@@ -122,8 +122,7 @@ public class ProjectTableWidget extends Panel {
 						 target.appendJavaScript("showModal ()"); 
 					}                                                                                                                                                      
 				};
-				BookmarkablePageLink<ProjectIndex> viewProject = new BookmarkablePageLink<ProjectIndex> ("view-project", ProjectIndex.class, setViewProjectLinkParameters (model.getObject()));
-				viewProject.setVisible(false);
+				
 				ConfirmationLink<String>  deleteProject = new ConfirmationLink<String> ("delete-project", "All instances will be deleted as well. Continue?") {
 
 					@Override
@@ -145,10 +144,9 @@ public class ProjectTableWidget extends Panel {
 					deleteProject.setVisible(false);
 				}
 					
-				//BookmarkablePageLink<ProjectIndex> deleteProject = new BookmarkablePageLink<ProjectIndex> ("delete-project", ProjectIndex.class, setDeleteProjectLinkParameters (model.getObject()));
 				BookmarkablePageLink<ProjectIndex> viewBundles = new BookmarkablePageLink<ProjectIndex> ("view-bundles", BundleIndex.class, setBundlesLinkParameters (model.getObject()));
 				BookmarkablePageLink<ProjectIndex> viewInstances = new BookmarkablePageLink<ProjectIndex> ("view-instances", InstanceIndex.class, setInstancesLinkParameters (model.getObject()));
-				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, deleteProject, viewProject, viewBundles, viewInstances);
+				ProjectTableQuickAction button = new ProjectTableQuickAction (componentId, startInstance, deleteProject, viewBundles, viewInstances);
 				item.add(button);
 			}
 			private PageParameters setInstancesLinkParameters(Project project) {
@@ -159,12 +157,6 @@ public class ProjectTableWidget extends Panel {
 			private PageParameters setBundlesLinkParameters(Project project) {
 				PageParameters linkParameters = new PageParameters();
 				linkParameters.add("pid", project.getID());
-				return linkParameters;
-			}
-			private PageParameters setStartInstanceLinkParameters (Project project) {
-				PageParameters linkParameters = new PageParameters();
-				linkParameters.add("pid", project.getID());
-				linkParameters.add("action", "start");
 				return linkParameters;
 			}
 			

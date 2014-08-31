@@ -144,7 +144,7 @@ public class Register extends Stateless {
 					target.add(feedback);
 				}
 				} else {
-					error ("Platform in Beta, we need some Wittiness");
+					error ("This is only for testing, please confirm");
 					target.add(feedback);
 				}
 					

@@ -15,11 +15,11 @@ public class ServiceProperties {
 
     public static final String HOME = "/home/newuser/beta/cloud";
     
-    //public static final String DOMAIN = "http://cloud.withinet.co.uk";
+    public static final String DOMAIN = "http://cloud.withinet.co.uk";
     
 	//public static final String HOME = "C:/Users/Folarin/Desktop/opaas/";
 
-	public static final String DOMAIN = "http://localhost";
+	//public static final String DOMAIN = "http://localhost";
 
 	public static final int MINPORT = 9000;
 
@@ -40,6 +40,8 @@ public class ServiceProperties {
 	public static final String SUPER_ADMIN_PASSWORD = "Folarin@123";
 
 	public static final String SUPER_ADMIN_EMAIL = "folarinomotoriogun@gmail.com";
+	
+	public static final String SECURITY_BUNDLE_LOCATION = "src/main/resources/security-1.0.0.jar";
 
 /*	public static final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 

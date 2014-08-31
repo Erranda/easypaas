@@ -1,6 +1,7 @@
 package com.withinet.opaas.controller.system.impl;
 
 import org.ops4j.pax.runner.Run;
+import org.ops4j.pax.runner.platform.PlatformException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class PaxRunner extends Run {
 	 * @return
 	 * @throws ContainerLauncherException
 	 */
-	public static Process startContainer(String... parameters) {
+	public static Process startContainer(String... parameters) throws PlatformException {
 		PaxJavaRunner runner = new PaxJavaRunner(false);
 		main(runner, parameters);
 		return runner.getFrameWorkProcess();

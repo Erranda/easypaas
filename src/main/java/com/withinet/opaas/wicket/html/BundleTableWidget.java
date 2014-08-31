@@ -3,6 +3,7 @@
  */
 package com.withinet.opaas.wicket.html;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -227,6 +228,10 @@ public class BundleTableWidget extends Panel {
 						try {
 							Long userId = UserSession.get().getUser().getID();
 							Bundle bundle = bundleController.readBundle(selected, userId);
+							File file = new File (bundle.getLocation());
+							if (!file.isDirectory() && !file.isFile ()) {
+								throw new BundleControllerException ("Maven bundles cannot be replaced");
+							}
 							String location = bundle.getLocation();
 							fileService.deleteFile(location);
 							location = FilenameUtils.getFullPathNoEndSeparator(location) + "/" + upload.getClientFileName();

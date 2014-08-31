@@ -5,9 +5,9 @@
     </encoder>
   </appender>
 
-  <logger name="deng" level="INFO"/>
+  <logger name="deng" level="WARN"/>
 
-  <root level="INFO">
+  <root level="WARN">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

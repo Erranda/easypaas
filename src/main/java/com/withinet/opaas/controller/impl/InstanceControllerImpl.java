@@ -25,6 +25,7 @@ import com.withinet.opaas.controller.system.FileLocationGenerator;
 import com.withinet.opaas.controller.system.FileService;
 import com.withinet.opaas.controller.system.ProcessService;
 import com.withinet.opaas.controller.system.Validation;
+import com.withinet.opaas.controller.system.impl.ProcessServiceException;
 import com.withinet.opaas.model.InstanceRepository;
 import com.withinet.opaas.model.domain.Instance;
 import com.withinet.opaas.model.domain.Project;
@@ -119,6 +120,9 @@ public class InstanceControllerImpl implements InstanceController {
 			rollBack (instance);
 			throw e;
 		} catch (UserControllerException e) {
+			rollBack (instance);
+			throw new InstanceControllerException (e.getMessage());
+		} catch (ProcessServiceException e) {
 			rollBack (instance);
 			throw new InstanceControllerException (e.getMessage());
 		}
@@ -286,7 +290,11 @@ public class InstanceControllerImpl implements InstanceController {
 			throw new InstanceControllerException ("Could not delete previous log file");
 		}
 		instance.setDirty(dirty);
-		processService.startProcess(instance);
+		try {
+			processService.startProcess(instance);
+		} catch (ProcessServiceException e) {
+			throw new InstanceControllerException (e.getMessage());
+		}
 		//Important this comes after process call
 		instance.setStatus("Live");
 		instanceRepository.saveAndFlush (instance);

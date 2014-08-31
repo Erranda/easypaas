@@ -98,7 +98,9 @@ public class TeamTableWidget extends Panel {
 		columns.add(new PropertyColumn<User, String>(
 				new Model<String>("Status"), "status"));
 		columns.add(new PropertyColumn<User, String>(
-				new Model<String>("Since"), "created"));
+				new Model<String>("Role"), "role"));
+		columns.add(new PropertyColumn<User, String>(
+				new Model<String>("Created"), "created"));
 		columns.add(new AbstractColumn<User, String>(new Model<String>(
 				"Quick Action")) {
 
@@ -161,9 +163,26 @@ public class TeamTableWidget extends Panel {
 						}
 					}
 				};
+				
+				ConfirmationLink<String> resetPassword = new ConfirmationLink<String>("reset-password", "User password will be reset and sent?") {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClick(AjaxRequestTarget target) {
+						Long id = model.getObject().getID();
+						Long uid = UserSession.get().getUser().getID();
+						try {
+							userController.passwordReset(id, uid);
+							getPage().info("User password reset successfully");
+							setResponsePage(getPage());
+						} catch (UserControllerException e) {
+							error(e.getMessage());
+						}
+					}
+				};
 
 				TeamTableQuickAction button = new TeamTableQuickAction(
-						componentId, updateUser, deleteUser, resetUser);
+						componentId, updateUser, deleteUser, resetUser, resetPassword);
 				item.add(button);
 			}
 		});

@@ -27,7 +27,7 @@ public class ProjectTableQuickAction extends Panel {
 	Authorizer authorizer;
 	
 	public ProjectTableQuickAction(String id, WebMarkupContainer startInstanceLink, 
-			WebMarkupContainer deleteProject, WebMarkupContainer viewProject,
+			WebMarkupContainer deleteProject,
 			WebMarkupContainer viewBundles, WebMarkupContainer viewInstances) {
 		super(id);
 		Long uid = UserSession.get().getUser().getID();
@@ -37,12 +37,6 @@ public class ProjectTableQuickAction extends Panel {
     		startInstanceLink.setVisible(false);
     	}
 		add (startInstanceLink);
-		try {
-    		authorizer.authorize(READ_PROJECT, uid);
-    	} catch (ControllerSecurityException e) {
-    		viewProject.setVisible(false);
-    	}
-		add (viewProject);
 		
 		try {
     		authorizer.authorize(DELETE_PROJECT, uid);

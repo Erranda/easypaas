@@ -354,8 +354,8 @@ public class UserControllerImpl implements UserController {
 		buffer.append("<html><body>");
 		buffer.append("Hi " + user.getFullName() + ",<br/><br/><br/>");
 		buffer.append("Your new password is " + user.getPassword());
-		buffer.append("**********************************************************<br/>");
-		buffer.append(user.getAdministrator().getFullName() + ",");
+		buffer.append("<br/>**********************************************************<br/><br/>");
+		buffer.append(user.getAdministrator().getFullName() + ",<br/><br/>");
 		buffer.append("<br/>Platform Administrator");
 		buffer.append("</body></html>");
 		
