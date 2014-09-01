@@ -203,9 +203,13 @@ public class ProjectTableWidget extends Panel {
 					Instance instance = new Instance ();
 					try {
 						Long uid = UserSession.get().getUser().getID();
+						Long start = System.currentTimeMillis();
+						Double startD = start.doubleValue();
 						instance.setContainerType(containerChoice);
 						instanceController.createInstance(instance, selected, uid, uid);
-						info("Instance is ready for " + UserSession.get().getUser().getFullName() + " <a style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
+						Long end = System.currentTimeMillis();
+						Double endD = end.doubleValue();
+						info("Instance created in " + (endD - startD)/1000 + " seconds for " + UserSession.get().getUser().getFullName() + " <a target=\"_blank\" style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
 					} catch (InstanceControllerException e) {
 						error ("Error: " + e.getMessage());
 						e.printStackTrace();

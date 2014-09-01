@@ -138,8 +138,13 @@ public class InstanceSetupWidget extends Panel {
 						try {
 							Long uid = UserSession.get().getUser().getID();
 							instance.setContainerType(containerChoice);
+							Long start = System.currentTimeMillis();
+							Double startD = start.doubleValue();
+							instance.setContainerType(containerChoice);
 							instanceController.createInstance(instance, projectsModel.get(projectName).getID(), thisUser.getID(), uid);
-							info("Instance is ready for " + thisUser.getFullName() + " <a style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
+							Long end = System.currentTimeMillis();
+							Double endD = end.doubleValue();
+							info("Instance created in " + (endD - startD)/1000 + " seconds for " + thisUser.getFullName() + " <a target=\"_blank\" style=\"color:#ff0\" href=\"" + instance.getCpanelUrl() + "\"> Go to Cpanel</a>");
 							target.add(feedback);
 						} catch (InstanceControllerException e) {
 							error (e.getMessage());
