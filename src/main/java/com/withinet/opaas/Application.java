@@ -45,6 +45,7 @@ import com.withinet.opaas.wicket.html.BundleIndex;
 import com.withinet.opaas.wicket.html.Dashboard;
 import com.withinet.opaas.wicket.html.InstanceIndex;
 import com.withinet.opaas.wicket.html.Login;
+import com.withinet.opaas.wicket.html.PageError;
 import com.withinet.opaas.wicket.html.ProjectIndex;
 import com.withinet.opaas.wicket.html.Register;
 import com.withinet.opaas.wicket.html.TeamIndex;
@@ -110,6 +111,9 @@ public class Application extends WebApplication {
 	@Override
 	protected void init() {
 		super.init();
+		getApplicationSettings().setPageExpiredErrorPage(PageError.class);
+		getApplicationSettings().setAccessDeniedPage(PageError.class);
+		getApplicationSettings().setInternalErrorPage(PageError.class);
 		getJavaScriptLibrarySettings().setJQueryReference(
 				new PackageResourceReference(Authenticated.class,
 						"../js/libs/jquery-1.9.1.min-ver-1409112303268.js"));
