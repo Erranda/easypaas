@@ -257,13 +257,18 @@ public class InstanceControllerImpl implements InstanceController {
 		Instance instance = instanceRepository.findOne(instanceId);
 		if (instance == null)
 			throw new InstanceControllerException ("Instance not found");
-		if ((requesterId
-				!= instance.getOwner().getID())
-			&&
-			requesterId 
-			 	!= instance.getAdministrator().getID())
-			throw new ControllerSecurityException ("You are not authorized to perform this action");
-		return instance;
+		try {
+			authorizer.authorize(SUPER_ADMIN, requesterId);
+			return instance;
+		} catch (ControllerSecurityException e) {
+			if ((requesterId
+					!= instance.getOwner().getID())
+				&&
+				requesterId 
+				 	!= instance.getAdministrator().getID())
+				throw new ControllerSecurityException ("You are not authorized to perform this action");
+			return instance;
+		}
 	}
 
 	@Override

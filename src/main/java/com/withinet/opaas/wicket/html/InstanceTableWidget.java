@@ -151,8 +151,8 @@ public class InstanceTableWidget extends Panel {
 						Long id = model.getObject().getId();
 						Long uid = UserSession.get().getUser().getID();
 						try {
-							boolean usecache = true;
-							instanceController.startInstance(id, uid, usecache);
+							boolean dirty = false;
+							instanceController.startInstance(id, uid, dirty);
 							getPage().info("Success, instance live");
 							setResponsePage(getPage());
 						} catch (InstanceControllerException e) {
