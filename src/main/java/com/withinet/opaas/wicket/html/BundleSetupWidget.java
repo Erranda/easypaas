@@ -236,7 +236,6 @@ public class BundleSetupWidget extends Panel {
 								if (e instanceof BundleConflictException) {
 									try {
 										projectFileBundles.set(i, bundleController.readBundleByName(projectFileBundles.get(i).getSymbolicName(), userId));
-										info ("Some bundles have been reused from your library due to name conflict");
 										info (e.getMessage());
 									} catch (BundleControllerException e1) {
 										throw new RuntimeException (e1.getMessage());

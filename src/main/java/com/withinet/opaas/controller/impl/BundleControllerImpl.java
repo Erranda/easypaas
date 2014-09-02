@@ -128,24 +128,12 @@ public class BundleControllerImpl implements BundleController {
 			throws BundleControllerException {
 		Validation.assertNotNull(bundle);
 		Validation.assertNotNull(requesterId);
+		DomainConstraintValidator<Bundle> dcv = new  DomainConstraintValidator<Bundle> ();
+		if (!dcv.isValid(bundle)) throw new IllegalArgumentException ("Bad request");
 		authorizer.authorize(UPDATE_BUNDLE, requesterId);
-		Bundle forSave = getWithBasicAuth (bundle.getID(), requesterId);
-		if (bundle.getLocation() != null)
-			forSave.setLocation(bundle.getLocation());
-		if (bundle.getSymbolicName() != null){
-			try {
-				Bundle temp = bundleRepository.findByOwnerAndSymbolicName(userController.readAccount(requesterId, requesterId), bundle.getSymbolicName());
-				if  (temp != null)
-					throw new BundleControllerException ("A bundle exists with that name");
-				else
-					forSave.setSymbolicName(bundle.getSymbolicName());
-			} catch (UserControllerException e) {
-				throw new BundleControllerException (e.getMessage());
-			}
-		}
-			forSave.setLocation(bundle.getLocation());
-		bundleRepository.saveAndFlush(forSave);
-		return forSave;
+		getWithBasicAuth (bundle.getID(), requesterId);
+		bundleRepository.saveAndFlush(bundle);
+		return bundle;
 	}
 
 	/* (non-Javadoc)

@@ -72,9 +72,8 @@ public class ProcessServiceImpl implements ProcessService {
 			String instanceConfigLocation = configDir + "/org.apache.felix.webconsole.internal.servlet.OsgiManager.cfg";
 			writeConfig (instance,  instanceConfigLocation, policyLocation);
 			for (ProjectBundle bundle : instance.getProject().getProjectBundles()) {
-				config.add(bundle.getBundle().getLocation() + "@10");
+				config.add(bundle.getBundle().getLocation());
 			}
-			config.add(ServiceProperties.SECURITY_BUNDLE_LOCATION);
 			config.add("--dir=" + instance.getWorkingDirectory());
 			if (instance.getPort() == null)
 				throw new ProcessServiceException ("Port number cannot be null");
@@ -84,8 +83,9 @@ public class ProcessServiceImpl implements ProcessService {
 							   "-Djava.security.policy="+policyLocation + " " +
 							   "-Dorg.osgi.framework.security=osgi" + " " +
 							   "-Dinstance.username=" + user.getEmail() + " " +
-							   "-Dinstance.password=" + user.getPassword()
-					);
+							   "-Dinstance.password=" + user.getPassword() + " " + 
+							   "-Djava.io.tmpdir=" + instance.getWorkingDirectory() + "/tmp"
+			);
 			config.add("--skipInvalidBundles");
 			config.add("--platform="+instance.getContainerType().toLowerCase().trim());	
 			config.add("--usePersistedState="+ !instance.isDirty());

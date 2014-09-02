@@ -142,12 +142,8 @@ public class UserControllerImpl implements UserController {
 		Validation.assertNotNull(id);
 		Validation.assertNotNull(requesterId);
 		authorizer.authorize(SYSTEM_ADMIN, requesterId); 
-		getWithBasicAuth (id, requesterId);
+		User user = getWithBasicAuth (id, requesterId);
 		try {
-			List<Instance> instances = instanceController.listInstancesByUser(id, requesterId);
-			for (Instance instance : instances) {
-				instanceController.deleteInstance(instance.getId(), requesterId);
-			}
 			List<Project> projects = projectController.listCreatedProjectsByOwner(id, requesterId);
 			for (Project project : projects) {
 				projectController.deleteProject(project.getID(), requesterId);
@@ -156,9 +152,12 @@ public class UserControllerImpl implements UserController {
 			for (Bundle bundle : bundles) {
 				bundleController.deleteBundle(bundle.getID(), requesterId);
 			}
-		} catch (InstanceControllerException e) {
-			e.printStackTrace();
-			throw new UserControllerException (e.getMessage());
+			
+			List<User> team = userRepo.findByAdministrator(user);
+			for (User member : team) {
+				// Recursion
+				resetAccount (member.getID(), user.getID());
+			}
 		} catch (ProjectControllerException e) {
 			e.printStackTrace();
 			throw new UserControllerException (e.getMessage());

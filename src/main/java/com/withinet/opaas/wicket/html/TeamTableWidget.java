@@ -135,7 +135,7 @@ public class TeamTableWidget extends Panel {
 					}
 				};
 				
-				ConfirmationLink<String> deleteUser = new ConfirmationLink<String>("delete-user", "Caution: All user artifacts will be removed?") {
+				ConfirmationLink<String> deleteUser = new ConfirmationLink<String>("delete-user", "Caution: All user artifacts will be removed including team members?") {
 					private static final long serialVersionUID = 1L;
 
 					@Override

@@ -158,17 +158,7 @@ public class ProjectControllerImpl implements ProjectController {
 		composite.addAll(CREATE_PROJECT);
 		authorizer.authorize(composite, requesterId);
 		// You have to be a team member or owner to see details
-		Project thisProject = projectRepository.findOne(id);
-		if (thisProject == null)
-			throw new ProjectNotFoundException("Project requested not found");
-		User thisUser = userRepository.findOne(requesterId);
-		if (thisUser == null)
-			throw new ControllerSecurityException(
-					"Authenticated request malformed");
-		if ((thisProject.getOwner().getID() != requesterId)
-				&& !isTeamMember(thisProject, thisUser))
-			throw new ControllerSecurityException(
-					"This action is not authorized");
+		Project thisProject = getWithBasicAuth(id, requesterId);
 		return thisProject;
 	}
 
@@ -183,7 +173,7 @@ public class ProjectControllerImpl implements ProjectController {
 		User thisUser = userRepository.findOne(requesterId);
 		if (thisUser == null)
 			throw new ControllerSecurityException("Requester unidentifiable");
-		if ((thisProject.getOwner().getID() != requesterId)
+		if ((thisProject.getOwner().getID() != requesterId) && (thisProject.getOwner().getAdministrator().getID() != requesterId)
 				&& !isTeamMember(thisProject, thisUser))
 			throw new ControllerSecurityException(
 					"This action is not authorized");
