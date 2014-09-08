@@ -98,6 +98,7 @@ public class TeamAddMemberWidget extends Panel {
 	    		try {
 	    			Role role = rolesModel.get(user.getRole());
 	    			if (role != null) {
+	    				user.setID(null);
 	    				user.setAssignedRole(role);
 						userController.addTeamMember(user, uid, uid);
 						info ("Member added");

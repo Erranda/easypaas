@@ -38,6 +38,7 @@ import com.withinet.opaas.model.domain.Permission;
 import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.RolePermission;
 import com.withinet.opaas.model.domain.User;
+import com.withinet.opaas.wicket.Education;
 import com.withinet.opaas.wicket.Index;
 import com.withinet.opaas.wicket.html.AccountIndex;
 import com.withinet.opaas.wicket.html.Authenticated;
@@ -139,6 +140,7 @@ public class Application extends WebApplication {
 		mountPage("/team", TeamIndex.class);
 		mountPage("/instances", InstanceIndex.class);
 		mountPage("/account", AccountIndex.class);
+		mountPage("/education", Education.class);
 
 		if (userRepo.findByRole("SUPER ADMINISTRATOR").size() == 0) {
 			User web = new User();

@@ -3,6 +3,7 @@
  */
 package com.withinet.opaas.wicket.html;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
@@ -21,6 +23,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataT
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EmailTextField;
 import org.apache.wicket.markup.html.form.Form;
@@ -34,6 +37,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.file.File;
 import org.apache.wicket.validation.validator.StringValidator;
 
 import com.withinet.opaas.controller.Authorizer;
@@ -44,6 +48,7 @@ import com.withinet.opaas.controller.common.InstanceControllerException;
 import com.withinet.opaas.controller.common.RoleControllerException;
 import com.withinet.opaas.controller.common.ServiceProperties;
 import com.withinet.opaas.controller.common.UserControllerException;
+import com.withinet.opaas.controller.system.FileLocationGenerator;
 import com.withinet.opaas.model.domain.Role;
 import com.withinet.opaas.model.domain.User;
 import com.withinet.opaas.wicket.services.UserSession;
@@ -74,6 +79,9 @@ public class TeamTableWidget extends Panel {
 	
 	@SpringBean
 	private RoleController roleController;
+	
+	@SpringBean
+	private FileLocationGenerator fileGenerator;
 
 	private Map<String, Role> rolesModel = new HashMap<String, Role> ();
 	
@@ -109,6 +117,19 @@ public class TeamTableWidget extends Panel {
 				new Model<String>("Role"), "role"));
 		columns.add(new PropertyColumn<User, String>(
 				new Model<String>("Created"), "created"));
+		columns.add(new AbstractColumn<User, String>(new Model<String>(
+				"Space Used (Bytes)")) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void populateItem(Item<ICellPopulator<User>> item,
+					String componentId, final IModel<User> model) {
+				long size = FileUtils.sizeOfDirectory(fileGenerator.getUserDrirectory(model.getObject().getID()));
+				item.add (new Label (componentId, size)); 
+			}
+		});
+		
 		columns.add(new AbstractColumn<User, String>(new Model<String>(
 				"Quick Action")) {
 
@@ -272,8 +293,12 @@ public class TeamTableWidget extends Panel {
 	    }
 	}
 
-	public class TeamTableDataProvider extends
-			SortableDataProvider<User, String> {
+	public class TeamTableDataProvider extends SortableDataProvider<User, String> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 101461442145829090L;
 
 		public TeamTableDataProvider(Long userId) {
 
@@ -303,16 +328,14 @@ public class TeamTableWidget extends Panel {
 					try {
 						teamMembers = userController.listTeamMembers(uid, uid);
 					} catch (UserControllerException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
 			} else {
 				teamMembers = Collections.emptyList();
 			}
-			
 			return teamMembers.size();
 		}
-
+	
 	}
 }

@@ -3,6 +3,7 @@
  */
 package com.withinet.opaas.controller.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ import com.withinet.opaas.controller.common.AccountNotFoundException;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.controller.common.DomainConstraintValidator;
 import com.withinet.opaas.controller.common.UserParserException;
+import com.withinet.opaas.controller.system.FileLocationGenerator;
 import com.withinet.opaas.controller.system.Validation;
 import com.withinet.opaas.model.UserRepository;
 import com.withinet.opaas.model.domain.Bundle;
@@ -64,6 +67,9 @@ public class UserControllerImpl implements UserController {
 	
 	@Autowired
 	FileController fileController;
+	
+	@Autowired
+	FileLocationGenerator fileGenerator;
 	
 	private Authorizer authorizer;
 	
@@ -152,7 +158,7 @@ public class UserControllerImpl implements UserController {
 			for (Bundle bundle : bundles) {
 				bundleController.deleteBundle(bundle.getID(), requesterId);
 			}
-			
+			FileUtils.cleanDirectory(fileGenerator.getUserDrirectory(id));
 			List<User> team = userRepo.findByAdministrator(user);
 			for (User member : team) {
 				// Recursion
@@ -162,6 +168,9 @@ public class UserControllerImpl implements UserController {
 			e.printStackTrace();
 			throw new UserControllerException (e.getMessage());
 		} catch (BundleControllerException e) {
+			e.printStackTrace();
+			throw new UserControllerException (e.getMessage());
+		} catch (IOException e) {
 			e.printStackTrace();
 			throw new UserControllerException (e.getMessage());
 		}
