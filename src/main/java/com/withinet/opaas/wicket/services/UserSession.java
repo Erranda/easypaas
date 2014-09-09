@@ -36,7 +36,13 @@ public class UserSession extends AuthenticatedWebSession  {
     }
 
     public void setUser(User user) {
-        this.user = user;
+    	if (user != null) {
+    		if (user.getStatus().equals("Disabled"))
+    			this.user = null;
+    		else {
+    			 this.user = user;
+    		}
+    	}
     }
 
     public boolean userLoggedIn() {

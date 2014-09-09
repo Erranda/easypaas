@@ -51,6 +51,9 @@ public class User implements Serializable {
 	@Column(name="CREATED", nullable=false)	
 	private java.util.Date created;
 	
+	@Column(name="LAST_SEEN", nullable=true)	
+	private java.util.Date lastSeen;
+	
 	@Column (name="USER_LOCATION", nullable = false, length = 255)
 	@NotNull
 	private String location;
@@ -277,5 +280,13 @@ public class User implements Serializable {
 
 	public void setIntroduction(String introduction) {
 		this.introduction = introduction;
+	}
+
+	public java.util.Date getLastSeen() {
+		return lastSeen;
+	}
+
+	public void setLastSeen(java.util.Date lastSeen) {
+		this.lastSeen = lastSeen;
 	}
 }

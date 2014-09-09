@@ -2,7 +2,9 @@ package com.withinet.opaas;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
@@ -60,13 +62,15 @@ import com.withinet.opaas.wicket.services.UserSession;
  * @author Folarin Omotoriogun
  * 
  */
-@Component
+@Component (value = "wicketapplication")
 @EnableAutoConfiguration
 @ComponentScan
-public class Application extends WebApplication {
+public class WicketApplication extends WebApplication {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	private final Map<Long, UserSession> sessions = new HashMap<Long, UserSession>();
 
 	/**
 	 * spring boot main method to build context
@@ -74,7 +78,7 @@ public class Application extends WebApplication {
 	 * @param args
 	 */
 	public static void main(String... args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(WicketApplication.class, args);
 
 	}
 
@@ -112,6 +116,7 @@ public class Application extends WebApplication {
 	@Override
 	protected void init() {
 		super.init();
+		
 		getApplicationSettings().setPageExpiredErrorPage(PageError.class);
 		getApplicationSettings().setAccessDeniedPage(PageError.class);
 		getApplicationSettings().setInternalErrorPage(PageError.class);
@@ -382,11 +387,20 @@ public class Application extends WebApplication {
 				if (user != null) {
 					session.setUser(user);
 				}
+				sessions.put(user.getID(), session);
 			} catch (AccountLoginException e) {
 
 			}
 		}
 		return session;
+	}
+	
+	public UserSession getUserSession (Long id) {
+		return sessions.get(id);
+	}
+	
+	public Map<Long, UserSession> getSessions () {
+		return sessions;
 	}
 
 }

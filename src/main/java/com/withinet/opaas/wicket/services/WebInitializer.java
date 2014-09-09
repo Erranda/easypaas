@@ -27,7 +27,7 @@ public class WebInitializer implements ServletContextInitializer {
 				WicketFilter.class);
 		filter.setInitParameter(WicketFilter.APP_FACT_PARAM,
 				SpringWebApplicationFactory.class.getName());
-		filter.setInitParameter(PARAM_APP_BEAN, "application");
+		filter.setInitParameter(PARAM_APP_BEAN, "wicketapplication");
 		// This line is the only surprise when comparing to the equivalent
 		// web.xml. Without some initialization seems to be missing.
 		filter.setInitParameter(WicketFilter.FILTER_MAPPING_PARAM, "/*");

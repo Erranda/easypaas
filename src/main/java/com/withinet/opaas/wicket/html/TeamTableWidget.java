@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.wicket.Application;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
@@ -40,6 +41,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.validation.validator.StringValidator;
 
+import com.withinet.opaas.WicketApplication;
 import com.withinet.opaas.controller.Authorizer;
 import com.withinet.opaas.controller.RoleController;
 import com.withinet.opaas.controller.UserController;
@@ -225,6 +227,11 @@ public class TeamTableWidget extends Panel {
 	
 	private class UpdateForm extends Form<User> {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2755408263154758096L;
+
 		public UpdateForm(String id) {
 			super(id);
 			final CSSFeedbackPanel feedback = new CSSFeedbackPanel("feedback");
@@ -265,6 +272,10 @@ public class TeamTableWidget extends Panel {
 						user.setQuota(Integer.parseInt(wicketQuota.getValue()));
 						userController.updateAccount(user, user.getID(), uid);
 						info("User updated");
+						UserSession u =((WicketApplication) Application.get()).getUserSession(user.getID());
+						if (u != null) 
+							u.setUser(user);
+						
 						setResponsePage(getPage());
 					} catch (UserControllerException e) {
 						error(e.getMessage());

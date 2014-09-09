@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.withinet.opaas.Application;
+import com.withinet.opaas.WicketApplication;
 import com.withinet.opaas.controller.BundleController;
 import com.withinet.opaas.controller.FileController;
 import com.withinet.opaas.controller.InstanceController;
@@ -79,7 +79,7 @@ public class UserControllerImpl implements UserController {
 	}
 	
 	private final static Logger logger = LoggerFactory
-			.getLogger(Application.class);
+			.getLogger(WicketApplication.class);
 	
 	
 	@Override

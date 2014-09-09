@@ -17,7 +17,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import com.withinet.opaas.Application;
+import com.withinet.opaas.WicketApplication;
 import com.withinet.opaas.controller.Authorizer;
 import com.withinet.opaas.controller.common.ControllerSecurityException;
 import com.withinet.opaas.wicket.services.UserSession;
@@ -41,13 +41,15 @@ public abstract class Authenticated extends WebPage {
 		if(UserSession.get().userNotLoggedIn()) throw new RestartResponseAtInterceptPageException(
 				Login.class);
 		setVersioned (false);
-		
+		if (UserSession.get().getUser().getStatus().equals("Disabled"))
+			throw new RestartResponseAtInterceptPageException(
+					Login.class);
 		feedback = new FeedbackPanel ("feedback");
 		feedback.setEscapeModelStrings(false);
 		feedback.setOutputMarkupId(true);
 		
 		add (feedback);
-		BookmarkablePageLink homeLink = new BookmarkablePageLink ("appNameLink", Application.get().getHomePage(), null);
+		BookmarkablePageLink homeLink = new BookmarkablePageLink ("appNameLink", WicketApplication.get().getHomePage(), null);
 		homeLink.add(new Label ("appName", "Withinet OSGi Cloud"));
 		add (homeLink);
 		
@@ -56,7 +58,7 @@ public abstract class Authenticated extends WebPage {
 		} catch (ControllerSecurityException e) {
 			
 		}
-		BookmarkablePageLink home = new BookmarkablePageLink ("home", Application.get().getHomePage(), null);
+		BookmarkablePageLink home = new BookmarkablePageLink ("home", WicketApplication.get().getHomePage(), null);
 		add (home);
 		
 		Long uid = UserSession.get().getUser().getID();

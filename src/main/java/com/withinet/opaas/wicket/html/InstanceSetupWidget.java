@@ -32,7 +32,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.validation.validator.StringValidator;
 
-import com.withinet.opaas.Application;
+import com.withinet.opaas.WicketApplication;
 import com.withinet.opaas.controller.InstanceController;
 import com.withinet.opaas.controller.ProjectController;
 import com.withinet.opaas.controller.UserController;

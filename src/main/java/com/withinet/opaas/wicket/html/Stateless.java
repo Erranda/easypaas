@@ -14,7 +14,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
-import com.withinet.opaas.Application;
+import com.withinet.opaas.WicketApplication;
 
 /**
  * @author Folarin
@@ -33,7 +33,7 @@ public abstract class Stateless extends WebPage {
 	public Stateless() {
 		StatelessLink home = new StatelessLink("appNameLink") {
             public void onClick() {
-                setResponsePage(Application.get().getHomePage());
+                setResponsePage(WicketApplication.get().getHomePage());
             }
         };
         home.add(new Label ("appName", "Withinet OSGi Cloud"));
