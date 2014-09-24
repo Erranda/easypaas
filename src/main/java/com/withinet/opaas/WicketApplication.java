@@ -19,8 +19,6 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.lang.Bytes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -78,6 +76,7 @@ public class WicketApplication extends WebApplication {
 	 * @param args
 	 */
 	public static void main(String... args) {
+		PropertiesInstaller.install();
 		SpringApplication.run(WicketApplication.class, args);
 
 	}
@@ -150,7 +149,7 @@ public class WicketApplication extends WebApplication {
 		if (userRepo.findByRole("SUPER ADMINISTRATOR").size() == 0) {
 			User web = new User();
 			web.setCreated(new Date());
-			web.setFullName("Withinet System Team");
+			web.setFullName(SUPER_ADMIN_REAL_NAME);
 			web.setPlatformName("OSGi Cloud Platform as a Service");
 			web.setStatus("Active");
 			web.setEmail(SUPER_ADMIN_EMAIL);
@@ -162,21 +161,6 @@ public class WicketApplication extends WebApplication {
 			web.setWorkingDirectory("");
 			web.setIntroduction("I am the main adminitrator for this system");
 			userRepo.save(web);
-
-			User dummy = new User();
-			dummy.setCreated(new Date());
-			dummy.setFullName("Withinet System Team");
-			dummy.setPlatformName("OSGi Cloud Platform as a Service");
-			dummy.setStatus("Active");
-			dummy.setEmail("a@b.com");
-			dummy.setPassword(SUPER_ADMIN_PASSWORD);
-			dummy.setLocation("United Kingdom");
-			dummy.setAdministrator(web);
-			dummy.setQuota(-1);
-			dummy.setRole("SUPER ADMINISTRATOR");
-			dummy.setWorkingDirectory("");
-			dummy.setIntroduction("I am the main adminitrator for this system");
-			userRepo.save(dummy);
 
 			Permission p1 = new Permission();
 			p1.setValue("readProject");
@@ -280,45 +264,9 @@ public class WicketApplication extends WebApplication {
 
 			Permission p16 = new Permission();
 			p16.setValue("superAdmin");
-			p16.setDescription("System administrator");
+			p16.setDescription("Super administrator");
 			permissionRepo.save(p16);
-
-			/*
-			 * Permission p16 = new Permission (); p16.setValue("readUser");
-			 * p16.setDescription("Read user"); permissionRepo.save(p16);
-			 * 
-			 * Permission p17 = new Permission (); p17.setValue("deleteUser");
-			 * p17.setDescription("Delete user"); permissionRepo.save(p17);
-			 * 
-			 * Permission p18 = new Permission (); p18.setValue("updateUser");
-			 * p18.setDescription("Update user"); permissionRepo.save(p18);
-			 * 
-			 * Permission p19 = new Permission (); p19.setValue("userAdmin");
-			 * p19.setDescription("User Admin"); permissionRepo.save(p19);
-			 */
-
-			/*
-			 * Permission p20 = new Permission (); p20.setValue("createRole");
-			 * p20.setDescription("Create Role"); permissionRepo.save(p20);
-			 * 
-			 * Permission p21 = new Permission (); p21.setValue("deleteRole");
-			 * p21.setDescription("Delete Role"); permissionRepo.save(p21);
-			 * 
-			 * Permission p22 = new Permission (); p22.setValue("readRole");
-			 * p22.setDescription("Read Role"); permissionRepo.save(p22);
-			 * 
-			 * Permission p23 = new Permission (); p23.setValue("updateRole");
-			 * p23.setDescription("Update Role"); permissionRepo.save(p23);
-			 * 
-			 * Permission p24 = new Permission (); p24.setValue("adminRole");
-			 * p24.setDescription("Role Admin"); permissionRepo.save(p24);
-			 */
-			/*
-			 * Permission p25 = new Permission ();
-			 * p25.setValue("superAdminRole");
-			 * p25.setDescription("Super Admin"); permissionRepo.save(p25);
-			 */
-
+			
 			Permission p26 = new Permission();
 			p26.setValue("admin");
 			p26.setDescription("PLATFORM OWNER: Full access to Projects, Instances, Bundles, and Teams");
@@ -349,9 +297,7 @@ public class WicketApplication extends WebApplication {
 
 			web.setAssignedRole(role0);
 			web.setRole(role0.getName());
-			dummy.setAssignedRole(role2);
 			userRepo.save(web);
-			userRepo.save(dummy);
 
 			// Important to call the role controller to initialize permissions
 			RolePermission rp = new RolePermission(web.getFullName(), role0,

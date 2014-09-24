@@ -121,7 +121,7 @@ public class RoleControllerImpl implements RoleController {
 		Validation.assertNotNull(requesterId);
 		User admin = authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		Role role = getRoleWithAuth (id, requesterId);
-		if (role.getName().equals(SUPER_ADMIN_NAME) || role.getName().equals(ADMINISTRATOR_NAME))
+		if (role.getName().equals(SUPER_ADMIN_NAME) || role.getName().equals(ADMINISTRATOR_NAME) || role.getName().equals(AUTHENTICATED_NAME))
 			throw new RoleControllerException ("Security exception, this role cannot be deleted");
 		List<User> users = userRepo.findByAssignedRole(role);
 		for (User user : users) {

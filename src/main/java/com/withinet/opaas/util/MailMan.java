@@ -18,6 +18,8 @@ public class MailMan {
 		Message message = new MimeMessage(getSession());
 
 		message.addRecipient(RecipientType.TO, new InternetAddress(address));
+		if (EMAILER_USERNAME == null)
+			throw new MessagingException ("Email not setup");
 		message.addFrom(new InternetAddress[] { new InternetAddress(EMAILER_USERNAME) });
 
 		message.setSubject(subject);

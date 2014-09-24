@@ -283,7 +283,7 @@ public class BundleSetupWidget extends Panel {
 		Long uid = UserSession.get().getUser().getID();	
 		ArrayList<String> formList = new ArrayList<String>();
 		if (authorized) {
-			List<Project> projects = projectController.listCreatedProjectsByOwner(uid, uid);					
+			List<Project> projects = projectController.listAllProjects(uid, uid);	
 			for (Project project : projects) {
 				String formKey = project.getName();
 				formList.add(formKey);

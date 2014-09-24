@@ -30,7 +30,6 @@ public class User implements Serializable {
 		
 	@Column(name="USER_FULLNAME", nullable=false, length=255)	
 	@NotNull (message = "Sorry, please provide your full name")
-	@Size (min = 2, max = 30)
 	private String fullName;
 	
 	@NotNull
@@ -39,12 +38,10 @@ public class User implements Serializable {
 	private String email;
 	
 	@NotNull
-	@Size (min = 2, max = 100)
 	@Column(name="USER_PLATFORM_NAME", nullable=false, length=255)	
 	private String platformName;
 	
 	@NotNull
-	@Size (min = 6, max = 100)
 	@Column(name="USER_PASSWORD", nullable=false, length=255)	
 	private String password;
 	

@@ -34,7 +34,6 @@ public class Instance implements Serializable {
 	
 	@Column(name="CPANEL_URL", nullable=false)
 	@NotNull
-	@URL
 	private String cpanelUrl;
 	
 	@Column(name="CREATED", nullable=false)	

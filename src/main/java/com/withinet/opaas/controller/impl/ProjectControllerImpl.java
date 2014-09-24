@@ -205,7 +205,6 @@ public class ProjectControllerImpl implements ProjectController {
 		Validation.assertNotNull(userId);
 		Validation.assertNotNull(requesterId);
 		List<String> composite = new ArrayList<String> (READ_PROJECT);
-		composite.addAll(CREATE_PROJECT);
 		authorizer.authorize(composite, requesterId);
 		User target = approveAccessCascadeType(userId, requesterId);
 		if (target == null || target.getID() == 0)
@@ -219,7 +218,6 @@ public class ProjectControllerImpl implements ProjectController {
 		Validation.assertNotNull(userId);
 		Validation.assertNotNull(requesterId);
 		List<String> composite = new ArrayList<String> (READ_PROJECT);
-		composite.addAll(CREATE_PROJECT);
 		authorizer.authorize(composite, requesterId);
 		User target = approveAccessCascadeType(userId, requesterId);
 		if (target == null || target.getID() == 0)
@@ -311,7 +309,7 @@ public class ProjectControllerImpl implements ProjectController {
 			throw new ProjectNotFoundException("Please save the bundle first");
 		if (thisProject == null)
 			throw new ProjectNotFoundException("Project is not recognized");
-		if ((thisProject.getOwner().getID() != requesterId)
+		if ((thisProject.getOwner().getID() != requesterId) && !isTeamMember(thisProject, user)
 				&& (thisProject.getOwner().getAdministrator().getID() != requesterId))
 			throw new UnauthorizedException("Unauthorized request");
 		ProjectBundle thisProjectBundle = new ProjectBundle(user.getEmail(),

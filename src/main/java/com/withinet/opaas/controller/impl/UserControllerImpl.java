@@ -126,6 +126,8 @@ public class UserControllerImpl implements UserController {
 			mailer.sendMessage("New user Withinet Cloud OSGi Platform", superAdmin.getEmail(), bufferAdmin.toString());
 		} catch (MessagingException e) {
 			e.printStackTrace();
+			throw new UserControllerException ("System not ready: Mail component not setup");
+			
 		}
 		logger.info("create user " + account.getEmail () + ", with " + account.getPassword ());
 		return account;
@@ -232,6 +234,7 @@ public class UserControllerImpl implements UserController {
 				mailer.sendMessage("Account update Withinet Cloud OSGi Platform", account.getEmail(), buffer.toString());
 		} catch (MessagingException e) {
 			e.printStackTrace();
+			throw new UserControllerException ("System not ready: Mail component not setup");
 		}
 		return user;
 	}
@@ -372,6 +375,7 @@ public class UserControllerImpl implements UserController {
 			mailer.sendMessage("Password reset " + user.getPlatformName(), user.getEmail(), buffer.toString());
 		} catch (MessagingException e) {
 			e.printStackTrace();
+			throw new UserControllerException ("System not ready: Mail component not setup");
 		}
 	}
 	

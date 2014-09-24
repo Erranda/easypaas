@@ -3,9 +3,11 @@ package com.withinet.opaas.controller.common;
 import java.util.Arrays;
 import java.util.List;
 
+import com.withinet.opaas.PropertiesInstaller;
+
 public class ServiceProperties {
 
-	public static final String name = "Opaas";
+	public static final String name = "JarCloud";
 
 	public static final int REMEMBER_ME_DURATION_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -13,35 +15,37 @@ public class ServiceProperties {
 
 	public static final String REMEMBER_ME_PASSWORD_COOKIE = "opaasPasswordCookie";
 
-    public static final String HOME = "/home/newuser/beta/cloud";
+    public static final String HOME = "jarcloud";
     
-    public static final String DOMAIN = "http://cloud.withinet.co.uk";
+    public static final String DOMAIN = PropertiesInstaller.get("domain");
     
 	//public static final String HOME = "C:/Users/Folarin/Desktop/opaas/";
 
 	//public static final String DOMAIN = "http://localhost";
 
-	public static final int MINPORT = 9000;
+	public static final int MINPORT = Integer.parseInt (PropertiesInstaller.get("min.port"));
 
-	public static final int MAXPORT = 65535;
+	public static final int MAXPORT = Integer.parseInt(PropertiesInstaller.get("max.port"));
 
-	public static final String EMAILER_USERNAME = "auto-respond@wandlist.com";
+	public static final String EMAILER_USERNAME = PropertiesInstaller.get("mailer.email");
 
-	public static final String EMAILER_PASSWORD = "!dSutjn0";
+	public static final String EMAILER_PASSWORD = PropertiesInstaller.get("mailer.password");
 
-	public static final String EMAILER_SMTP_AUTH = "true";
+	public static final String EMAILER_SMTP_AUTH = PropertiesInstaller.get("mailer.auth");
 
-	public static final String EMAILER_STARTTLS_ENABLE = "false";
+	public static final String EMAILER_STARTTLS_ENABLE = PropertiesInstaller.get("mailer.ttls");
 
-	public static final String EMAILER_SMTP_HOST = "smtp.wandlist.com";
+	public static final String EMAILER_SMTP_HOST = PropertiesInstaller.get("mailer.host");
 
-	public static final String EMAILER_SMTP_PORT = "587";
+	public static final String EMAILER_SMTP_PORT = PropertiesInstaller.get("mailer.port");
 
-	public static final String SUPER_ADMIN_PASSWORD = "Folarin@123";
+	public static final String SUPER_ADMIN_PASSWORD = PropertiesInstaller.get("password");
 
-	public static final String SUPER_ADMIN_EMAIL = "folarinomotoriogun@gmail.com";
+	public static final String SUPER_ADMIN_EMAIL = PropertiesInstaller.get("email");
 	
-	public static final String SECURITY_BUNDLE_LOCATION = "/home/newuser/beta/security-1.0.0.jar";
+	public static final String SUPER_ADMIN_REAL_NAME = PropertiesInstaller.get("name");
+	
+	public static final String SECURITY_BUNDLE_LOCATION = PropertiesInstaller.get("security.bundle");
 
 /*  public static final String salt = "$2a$10$C/O6cM/3gsYbve5.LEriJe";
 
@@ -59,7 +63,7 @@ public class ServiceProperties {
 
 	public static final List<String> CREATE_PROJECT = Arrays.asList("createProject", "projectAdmin", "admin");
 	
-	//public static final List<String> CREATE_PROJECT_BUNDLE = Arrays.asList("createProjectBundle", "projectAdmin", "admin");
+	// public static final List<String> CREATE_PROJECT_BUNDLE = Arrays.asList("createProjectBundle", "projectAdmin", "admin");
 
 	public static final List<String> READ_PROJECT = Arrays.asList("readProject", "projectAdmin", "admin");
 
