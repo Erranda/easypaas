@@ -362,7 +362,7 @@ public class UserControllerImpl implements UserController {
 		authorizer.authorize(SYSTEM_ADMIN, requesterId);
 		User user = getWithBasicAuth (id, requesterId);
 		user.setPassword(PasswordGenerator.getRandomPassword());
-		
+		userRepo.save(user);
 		StringBuffer buffer = new StringBuffer ();
 		buffer.append("<html><body>");
 		buffer.append("Hi " + user.getFullName() + ",<br/><br/><br/>");
