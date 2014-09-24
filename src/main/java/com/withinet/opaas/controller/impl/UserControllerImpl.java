@@ -271,6 +271,8 @@ public class UserControllerImpl implements UserController {
 		else if (password == null) throw new AccountLoginException ("Password cannot be empty");
 		User user = userRepo.findByEmailAndPassword(email, password);
 		if (user == null || user.getID() == null) throw new AccountLoginException ("The email or password you entered is incorrect.");
+		user.setLastSeen(new Date());
+		userRepo.save(user);
 		if (user.getStatus().equals("Disabled"))
 			throw new AccountLoginException ("Your account is not active");
 		return user;

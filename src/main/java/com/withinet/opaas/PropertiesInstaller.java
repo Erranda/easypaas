@@ -36,6 +36,11 @@ public class PropertiesInstaller {
 				throw new RuntimeException (e.getMessage());
 			}
 		}
+		try {
+			p.setProperty("security.bundle", new File ("security-1.0.0.jar").getCanonicalPath());
+		} catch (IOException e1) {
+			throw new RuntimeException (e1.getMessage());
+		}
 		input = ask ("What is your name?");
 		p.setProperty("name", input);
 		p.setProperty("email", ask ("What is your email address?"));
@@ -66,7 +71,10 @@ public class PropertiesInstaller {
 				p.setProperty("server.port", input);
 				input = ask("Do you have a running HSQLDB Server? Y or N", Arrays.asList("Y", "N", "y", "n"));
 				if (input.toUpperCase().equals("Y")) {
-					input = ask("Which address? (ip:port)");
+					input = ask("Which ip? (ip:port)");
+					String address = input;
+					input = ask ("Which port?");
+					input = address + ":" + input; 
 					p.setProperty("spring.datasource.url",
 							"jdbc:hsqldb:hsql://" + input);
 					input = ask("What's the database username?");
@@ -100,7 +108,6 @@ public class PropertiesInstaller {
 	private static void extractSecurityBundle (Properties p) throws IOException {
 		String location = new File(PropertiesInstaller.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getAbsolutePath().toString();
 		location = location.split("file:")[1].replace("!", "");
-		p.setProperty("security.bundle", location);
 		UnzipJar.unzipJar(location, "security-1.0.0.jar");
 	}
 	

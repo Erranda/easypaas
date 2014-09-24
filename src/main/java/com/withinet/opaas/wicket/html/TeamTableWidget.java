@@ -119,6 +119,8 @@ public class TeamTableWidget extends Panel {
 				new Model<String>("Role"), "role"));
 		columns.add(new PropertyColumn<User, String>(
 				new Model<String>("Created"), "created"));
+		columns.add(new PropertyColumn<User, String>(
+				new Model<String>("Last Seen"), "lastSeen"));
 		columns.add(new AbstractColumn<User, String>(new Model<String>(
 				"Space Used (Bytes)")) {
 
