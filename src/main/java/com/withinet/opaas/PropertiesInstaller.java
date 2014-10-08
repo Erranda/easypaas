@@ -22,8 +22,28 @@ public class PropertiesInstaller {
 				run ();
 			} 
 		} else {
-			run ();
+			 run ();
 		}	
+		verifyConfig ();
+	}
+	
+	private static void verifyConfig () {
+		String s = PropertiesInstaller.get("domain");
+		if (s == null) throw new RuntimeException ("Domain name not configured check application.properties file");
+		try {
+			s = PropertiesInstaller.get("min.port");
+			Integer.parseInt(s);
+			s = PropertiesInstaller.get("max.port");
+			Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			throw new RuntimeException ("Port number not integer check application.properties file");
+		}
+		s = PropertiesInstaller.get("security.bundle");
+		if (s == null) throw new RuntimeException ("Security bundle location not configured check application.properties file");
+		if (!new File (s).exists()) throw new RuntimeException ("Security bundle not in configured location " + s );
+		
+			
+			
 	}
 	
 	private static void run () {
@@ -42,12 +62,19 @@ public class PropertiesInstaller {
 			throw new RuntimeException (e1.getMessage());
 		}
 		input = ask ("What is your name?");
+		System.out.println ("******************************************************");
 		p.setProperty("name", input);
 		p.setProperty("email", ask ("What is your email address?"));
+		System.out.println ("******************************************************");
 		p.setProperty("password", ask ("What is your password?"));
+		System.out.println ("******************************************************");
 		p.setProperty("domain", ask("What is the domain name or ip of this server?"));
-		p.setProperty("min.port", ask("Minimum port for deployed application containers? (0 - 65535)"));
-		p.setProperty("max.port", ask("Maximum port for deployed application containers? (0 - 65535)"));
+		System.out.println ("******************************************************");
+		String minport = ask("Minimum port for deployed application containers? (1 - 65535)");
+		System.out.println ("******************************************************");
+		p.setProperty("min.port", minport);
+		p.setProperty("max.port", ask("Maximum port for deployed application containers? (" + minport + " - 65535)"));
+		System.out.println ("******************************************************");
 		p.setProperty("spring.jpa.hibernate.ddl-auto", "update");
 		p.setProperty("spring.jpa.show-sql", "false");
 		p.setProperty("spring.datasource.driverClassName",
@@ -68,18 +95,19 @@ public class PropertiesInstaller {
 				p.store(o, "Default");
 			} else if (input.toUpperCase().equals("N")) {
 				input = ask("What's your web server port for this application?");
+				System.out.println ("******************************************************");
 				p.setProperty("server.port", input);
-				input = ask("Do you have a running HSQLDB Server? Y or N", Arrays.asList("Y", "N", "y", "n"));
+				input = ask("Do you have a running database server? Y or N", Arrays.asList("Y", "N", "y", "n"));
+				System.out.println ("******************************************************");
 				if (input.toUpperCase().equals("Y")) {
-					input = ask("Which ip? (ip:port)");
-					String address = input;
-					input = ask ("Which port?");
-					input = address + ":" + input; 
-					p.setProperty("spring.datasource.url",
-							"jdbc:hsqldb:hsql://" + input);
+					input = ask("What's the jdbc data source url e.g jdbc:hsqldb:hsql://localhost:9001?");
+					System.out.println ("******************************************************");
+					p.setProperty("spring.datasource.url", input);
 					input = ask("What's the database username?");
+					System.out.println ("******************************************************");
 					p.setProperty("spring.datasource.username", input);
 					input = ask("What's the database password?");
+					System.out.println ("******************************************************");
 					p.setProperty("spring.datasource.password", input);
 				} else if (input.toUpperCase().equals("N")) {
 					p.setProperty("spring.datasource.url",

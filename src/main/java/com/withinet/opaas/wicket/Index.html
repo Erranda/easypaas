@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Withinet JarCloud</title>
+    <title>Withinet EasyPaaS</title>
 
     <!-- Bootstrap Core CSS -->
     <wicket:link>
@@ -55,7 +55,7 @@
                     <i class="fa fa-bars"></i>
                 </button>
                 <a class="navbar-brand page-scroll" href="#page-top">
-                    <i class="fa fa-cloud"></i>  <span class="light">OSGi CLOUD</span> Enterprise
+                    <i class="fa fa-cloud"></i>  <span class="light">EasyPaaS</span> Cloud
                 </a>
             </div>
 
@@ -75,14 +75,21 @@
                         <a class="page-scroll" href="#demo">Demo</a>
                     </li>
                     <li>
+                        <a wicket:id="download">Downloads</a>
+                    </li>
+                    <li>
+                        <a wicket:id="users">Users</a>
+                    </li>
+                    <li>
                         <a class="page-scroll" href="#contact">Team</a>
                     </li>
                     <li>
                         <a wicket:id="login" href="">Login</a>
                     </li>
                      <li>
-                        <a wicket:id="register" href="">Deploy Now</a>
+                        <a class="page-scroll" href="#donate">Donate</a>
                     </li>
+                    
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -99,7 +106,9 @@
 				    padding-bottom: 100px;
 				">
 				<h1 class="brand-heading">Java, and OSGi in the Cloud</h1>
-				<p class="intro-text">A Private Cloud Platform-as-a-Service for Testing and Deploying Web Based OSGi Applications</p>
+				<p class="intro-text">Setting up a Platform-as-a-Service (PaaS) cloud infrastructure is a complex undertaking requiring a significant investment in infrastructure management. 
+EasyPaaS is a light-weight PaaS implementation that allows Java-based systems to be deployed into application containers that are instantiated on-demand and controlled by the infrastructure. These containers are running standard OSGi middleware and can be populated with required services. 
+</p>
 				<a href="#about" class="btn btn-circle page-scroll">
 				<i class="fa fa-angle-double-down animated"></i>
 				</a>
@@ -156,6 +165,16 @@
 	 <section id="demo" class="container content-section text-center">
 	 <iframe width="560" height="315" src="//www.youtube.com/embed/MvlBUZ5EAXM" frameborder="0" allowfullscreen></iframe>
 	 </section>
+	 
+	 <section id="donate" class="container content-section text-center">
+	 	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHLwYJKoZIhvcNAQcEoIIHIDCCBxwCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYC53antVakZbzW9oIg6SCaEUSt/X46t1DV2tV9/j4EGIJCcj2P5R3F7TkBs7TT1K7oha1r1scEaTBlL06ZNGSqFE2sepUhQYXv7sPAtTN4D74P/naYDh1ITjSEbR9eR8PQ8154kQWGt/FSqeg+9xbIVmYQH4a0qcwNeFKNXL62AfzELMAkGBSsOAwIaBQAwgawGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIJJ2jSg5WJDeAgYjzofsxVAXxg1aawPrw+Gy2rnYCHJiJuCCXS0jPLI0K6c2kXRI7b+nb5RqNbsw8XLzeMPcWNDxmrR+u+91EIiXnUU8VfcygvgfpGf4EaJi/OZpaginUpGPJJunujZB2TOR8vmgNn4f0ndCKi57bIpzupnHkdTtvB0xvWB3s3Vry8LxN1yIWTQCRoIIDhzCCA4MwggLsoAMCAQICAQAwDQYJKoZIhvcNAQEFBQAwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMB4XDTA0MDIxMzEwMTMxNVoXDTM1MDIxMzEwMTMxNVowgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBR07d/ETMS1ycjtkpkvjXZe9k+6CieLuLsPumsJ7QC1odNz3sJiCbs2wC0nLE0uLGaEtXynIgRqIddYCHx88pb5HTXv4SZeuv0Rqq4+axW9PLAAATU8w04qqjaSXgbGLP3NmohqM6bV9kZZwZLR/klDaQGo1u9uDb9lr4Yn+rBQIDAQABo4HuMIHrMB0GA1UdDgQWBBSWn3y7xm8XvVk/UtcKG+wQ1mSUazCBuwYDVR0jBIGzMIGwgBSWn3y7xm8XvVk/UtcKG+wQ1mSUa6GBlKSBkTCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb22CAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCBXzpWmoBa5e9fo6ujionW1hUhPkOBakTr3YCDjbYfvJEiv/2P+IobhOGJr85+XHhN0v4gUkEDI8r2/rNk1m0GA8HKddvTjyGw/XqXa+LSTlDYkqI8OwR8GEYj4efEtcRpRYBxV8KxAW93YDWzFGvruKnnLbDAF6VR5w/cCMn5hzGCAZowggGWAgEBMIGUMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbQIBADAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTQxMDA3MTQyMzUxWjAjBgkqhkiG9w0BCQQxFgQUq8ues1QMVnBVEwJyiEUUE6ilMgwwDQYJKoZIhvcNAQEBBQAEgYCQ/n49hrNGbU2uokvkpwzrV/d4hF63bfshbMQwMOoeykcjNVi7vL6oEFhgIwX+i5bH4zQTbr4txnTs6jjSSKBjbpApx0ZfboXZQ73nICGPre21v97QqdxPxePzBIlKt+d1s1GJP7eIAB7xpX2zj0WvVMjMgZBxalcnOdWQVDnLzw==-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online.">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+</form>
+	 </section>
 	<hr/>
     <!-- Contact Section -->
     <section id="contact" class="container content-section text-center">
@@ -199,23 +218,22 @@
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p>&copy; Copyright 2014 - Withinet Cloud Enterprises </p>
+            <p>&copy; Copyright 2014 - Withinet Technologies  </p> <span style="display:none" wicket:id="downloads"></span>
         </div>
     </footer>
 	<wicket:link>
-    <!-- jQuery Version 1.11.0 -->
+	<!-- jQuery Version 1.11.0 -->
     <script src="js/jquery-1.11.0.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
+    
+      <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
+    
 
     <!-- Plugin JavaScript -->
     <script src="js/jquery.easing.min.js"></script>
-
-    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
-
-    <!-- Custom Theme JavaScript -->
+    
     <script src="js/grayscale.js"></script>
 	</wicket:link>
 </body>

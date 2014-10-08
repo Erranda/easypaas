@@ -7,7 +7,7 @@ import com.withinet.opaas.PropertiesInstaller;
 
 public class ServiceProperties {
 
-	public static final String name = "Withinet JarCloud";
+	public static final String name = "EasyPaaS Cloud";
 
 	public static final int REMEMBER_ME_DURATION_IN_SECONDS = 1 * 24 * 60 * 60;
 

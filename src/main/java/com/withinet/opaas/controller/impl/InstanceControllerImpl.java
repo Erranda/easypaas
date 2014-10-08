@@ -5,6 +5,7 @@ package com.withinet.opaas.controller.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Date;
 import java.util.List;
 
@@ -134,16 +135,28 @@ public class InstanceControllerImpl implements InstanceController {
 			instanceRepository.delete(instance);
 	}
 	
-	private int getOpenPort () {
+	private int getOpenPort () throws InstanceControllerException {
 		int min = MINPORT;
 		int max = MAXPORT;
 		int difference = max - min;
-		int port = (int)((Math.random()*difference) + min);		
+		int port = (int)((Math.random()*difference) + min);	
+		int portCount = 0;
 		while (true) {
-			if(instanceRepository.findByPort (port) == null)
-					return port;
+			portCount++;
+			if(instanceRepository.findByPort (port) == null) { 
+				ServerSocket socket = null;
+			    try {
+			        socket = new ServerSocket(port);
+			        socket.close();
+			        return port;
+			    } catch (IOException e) {
+			    	port = (int)((Math.random()*difference) + min);
+			    } 
+			}		
 			else 
 				port = (int)((Math.random()*difference) + min);	
+			if (portCount == 1000)
+				throw new InstanceControllerException ("Could not find a free port after 1000 tries");
 		}
 	}
 	

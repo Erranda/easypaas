@@ -50,6 +50,7 @@ import com.withinet.opaas.wicket.html.PageError;
 import com.withinet.opaas.wicket.html.ProjectIndex;
 import com.withinet.opaas.wicket.html.Register;
 import com.withinet.opaas.wicket.html.TeamIndex;
+import com.withinet.opaas.wicket.html.Users;
 import com.withinet.opaas.wicket.services.UserSession;
 
 /**
@@ -145,6 +146,7 @@ public class WicketApplication extends WebApplication {
 		mountPage("/instances", InstanceIndex.class);
 		mountPage("/account", AccountIndex.class);
 		mountPage("/education", Education.class);
+		mountPage ("/users", Users.class);
 
 		if (userRepo.findByRole("SUPER ADMINISTRATOR").size() == 0) {
 			User web = new User();
