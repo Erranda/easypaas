@@ -1,5 +1,9 @@
 package com.withinet.opaas.wicket;
 
+import java.util.Date;
+
+import javax.mail.MessagingException;
+
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -11,8 +15,10 @@ import org.apache.wicket.markup.html.pages.RedirectPage;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import com.withinet.opaas.controller.common.UserControllerException;
 import com.withinet.opaas.model.DownloadRepository;
 import com.withinet.opaas.model.domain.Download;
+import com.withinet.opaas.util.MailMan;
 import com.withinet.opaas.wicket.html.Login;
 import com.withinet.opaas.wicket.html.Register;
 import com.withinet.opaas.wicket.html.Users;
@@ -37,6 +43,12 @@ public class Index extends WebPage {
 			@Override
 			public void onClick(AjaxRequestTarget arg0) {
 				dp.save(new Download ());
+				MailMan mailer = new MailMan ();	
+				try {
+					mailer.sendMessage("New download", "folarinomotoriogun@gmail.com", new Date ().toString());
+				} catch (MessagingException e) {
+					e.printStackTrace();					
+				}
 				throw new RestartResponseAtInterceptPageException (new RedirectPage ("https://sourceforge.net/projects/easypaas/files/easypaas-1.0.0.jar/download"));
 			}
 		});

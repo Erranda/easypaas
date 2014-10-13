@@ -1,0 +1,107 @@
+<wicket:extend>
+<br/>
+<div class="main">
+
+    <div class="container">
+
+      <div class="row">
+      	
+      	<div class="col-md-8">
+      		
+      		<div class="widget stacked">
+					
+				<div class="widget-header">
+					<i class="icon-pushpin"></i>
+					<h3>Frequently Asked Questions</h3>
+				</div> <!-- /widget-header -->
+				
+				<div class="widget-content">
+					
+					<h3>Search</h3>
+					
+					<br />
+					
+					<ol class="faq-list">
+						
+						<li>
+								<h4>How to start your platform as a service scenario with EasyPaaS?</h4>
+								<p>Download <a target="_blank" href="https://sourceforge.net/projects/easypaas/files/easypaas-1.0.0.jar/download">EasyPaaS</a> and run with Java 1.6 minimum as java -jar easypaas-1.0.0.jar</p>	
+								
+						</li>
+						
+						<li>
+								<h4>How do I configure the system?</h4>
+								<p>Once you run the main jar file, the auto configuration component will request some basic information relating the application configuration e.g your administration account details</p>	
+								
+						</li>
+						
+						<li>
+								<h4>How secure is the infrastructure?</h4>
+								<p>All instances are sandboxed with policies that restrict cross-instance attacks for read,write operation on the file system. Only relative directories are permitted within the system. Future release will allow extending the default policy.</p>	
+						</li>
+						
+						<li>
+								<h4>What are the system limits?</h4>
+								<p>All instances require a port number for communication. During configuration you will be asked to specify a port range for the host server, this range inherently limits the number of instances deployable on the system. If your instance is taking long to deploy there's a chance you have run out of available ports.</p>	
+						</li>
+						
+						<li>
+							
+								<h4>Why are my team members not receiving their account details?</h4>
+								<p>The system has an email component which can be configured during start-up or later in the application.properties file of the launch working directory. Ensure the information provided is correct.</p>	
+								
+						</li>
+						
+						<li>
+								<h4>Some components are not visible in my view?</h4>
+								<p>An administrator can control what you see in your view based on roles and permission. Ensure your Administrator has given you the appropriate permissions on the system.</p>	
+								
+						</li>
+						
+						<li>		
+								<h4>Something went wrong and I get the Ooops page?</h4>
+								<p>This is an internal server error, check your application.properties file and ensure all your configuration details are systematically and syntactically correct</p>		
+						</li>
+						
+						<li>
+							
+								<h4>Application persistence?</h4>
+								<p>The application by default uses an embedded database server which last the lifetime of each run. If you require full persistence start a database server compatible with Java and add its configuration at start up or in the application.properties file.</p>	
+								
+						</li>
+						
+					</ol>
+					
+					
+				</div> <!-- /widget-content -->
+					
+			</div> <!-- /widget -->	
+			
+	    </div> <!-- /span8 -->
+	    
+	    
+	    
+	    <div class="col-md-4">
+					
+			<div class="widget widget-plain">
+				
+				<div class="widget-content">
+					
+					<a target="_blank" href="http://groups.google.com/d/forum/easypaas" class="btn btn-primary btn-support-ask">Ask A Question</a>
+					
+					
+					
+				</div> <!-- /widget-content -->
+					
+			</div> <!-- /widget -->
+			
+		</div> <!-- /span4 -->
+      	
+      	
+      	
+      </div> <!-- /row -->
+
+    </div> <!-- /container -->
+	    
+</div> <!-- /main -->
+</wicket:extend>
