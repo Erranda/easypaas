@@ -7,9 +7,9 @@
 		<version>1.0.1.RELEASE</version>
 	</parent>
 	<groupId>com.withinet</groupId>
-	<artifactId>paas</artifactId>
+	<artifactId>easypaas</artifactId>
 	<version>1.0.0</version>
-	<name>opaas</name>
+	<name>easypaas</name>
 	<description>A platform as a service for running osgi cloud applications</description>
 	<properties>
 		<wicket.version>6.16.0</wicket.version>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>org.ops4j.pax.runner</groupId>
 			<artifactId>pax-runner</artifactId>
-			<version>1.8.5</version>
+			<version>1.8.6</version>
 		</dependency>
 		<!-- Excel parser -->
 		<dependency>

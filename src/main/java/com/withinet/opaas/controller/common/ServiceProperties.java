@@ -15,7 +15,7 @@ public class ServiceProperties {
 
 	public static final String REMEMBER_ME_PASSWORD_COOKIE = "opaasPasswordCookie";
 
-    public static final String HOME = "jarcloud";
+    public static final String HOME = "easypaas";
     
     public static final String DOMAIN = PropertiesInstaller.get("domain");
     
