@@ -50,7 +50,7 @@ public abstract class Authenticated extends WebPage {
 		
 		add (feedback);
 		BookmarkablePageLink homeLink = new BookmarkablePageLink ("appNameLink", WicketApplication.get().getHomePage(), null);
-		homeLink.add(new Label ("appName", "Withinet OSGi Cloud"));
+		homeLink.add(new Label ("appName", "EasyPaaS Control Panel"));
 		add (homeLink);
 		
 		try {
